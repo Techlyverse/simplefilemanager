@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:file_manager/file_manager.dart';
-
 import 'package:flutter/material.dart';
 import 'package:open_filex/open_filex.dart';
 import 'preferences.dart';
@@ -8,7 +7,7 @@ import 'tile_grid.dart';
 import 'tile_list.dart';
 
 class DirectoryPage extends StatefulWidget {
-  const DirectoryPage({Key? key, required this.entity}) : super(key: key);
+  const DirectoryPage({super.key, required this.entity});
   final FileSystemEntity entity;
 
   @override

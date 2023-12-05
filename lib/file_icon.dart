@@ -3,10 +3,10 @@ import 'extension.dart';
 
 class FileIcon extends StatelessWidget {
   const FileIcon({
-    Key? key,
+    super.key,
     this.extension,
     required this.isFile,
-  }) : super(key: key);
+  });
   final String? extension;
   final bool isFile;
 

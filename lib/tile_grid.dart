@@ -5,10 +5,10 @@ import 'file_icon.dart';
 
 class TileGrid extends StatelessWidget {
   const TileGrid({
-    Key? key,
+    super.key,
     required this.entity,
     required this.onTap,
-  }) : super(key: key);
+  });
   final FileSystemEntity entity;
   final VoidCallback onTap;
 
