@@ -176,9 +176,6 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {
                 checkStatus();
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.amber[700],
-              ),
               child: const Text(
                 "Allow Read Files",
                 style: TextStyle(
