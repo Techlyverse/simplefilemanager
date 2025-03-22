@@ -1,4 +1,4 @@
-import 'package:filemanager/splash_screen.dart';
+import 'package:filemanager/homepage.dart';
 import 'package:flutter/services.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,11 +18,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        useMaterial3: true,
         primarySwatch: Colors.amber,
         textTheme: GoogleFonts.poppinsTextTheme(),
       ),
-      home: const SplashScreen(),
+      home: const HomePage(),
     );
   }
 }

@@ -1,8 +1,11 @@
+import 'package:filemanager/preferences.dart';
+import 'package:flutter/material.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
 import 'package:file_manager/file_manager.dart';
-import 'package:flutter/material.dart';
-import 'directory_page.dart';
-import 'preferences.dart';
+import 'build_grid.dart';
+import 'build_list.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,169 +16,180 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final FileManagerController fileManagerController = FileManagerController();
+  late bool? isAndroid13;
+  late bool? isReadAllowed;
+
+  Future<void> checkStatus() async {
+    if (isReadAllowed == true) {
+    } else if (isReadAllowed == false) {
+      if (isAndroid13 == null) checkAndroidVersion();
+      await requestReadPermission();
+    } else {
+      if (isAndroid13 == null) checkAndroidVersion();
+      checkPermissions();
+      await requestReadPermission();
+    }
+  }
+
+  Future<void> checkAndroidVersion() async {
+    final DeviceInfoPlugin info = DeviceInfoPlugin();
+    final AndroidDeviceInfo androidInfo = await info.androidInfo;
+    final int androidVersion = int.parse(androidInfo.version.release);
+    bool isTiramisu = androidVersion >= 13;
+    if (mounted) {
+      setState(() {
+        isAndroid13 = isTiramisu;
+      });
+    }
+
+    await Preferences.setAndroidVersion(isTiramisu);
+  }
+
+  Future<void> checkPermissions() async {
+    if (isAndroid13 == true) {
+      final videoStatus = await Permission.videos.status;
+      final audioStatus = await Permission.audio.status;
+      final photosStatus = await Permission.photos.status;
+
+      final listStatus = [videoStatus, audioStatus, photosStatus];
+      isReadAllowed =
+          listStatus.every((status) => status == PermissionStatus.granted);
+      if (mounted) setState(() {});
+    } else {
+      isReadAllowed = await Permission.storage.status.isGranted;
+      if (mounted) setState(() {});
+    }
+    await Preferences.setReadPermission(isReadAllowed!);
+  }
+
+  Future<void> requestReadPermission() async {
+    if (isAndroid13 == true) {
+      final request = await [
+        Permission.videos,
+        Permission.photos,
+        Permission.audio,
+      ].request();
+
+      isReadAllowed =
+          request.values.every((status) => status == PermissionStatus.granted);
+      if (isReadAllowed != true) {
+        openAppSettings();
+      }
+      await Preferences.setReadPermission(isReadAllowed!);
+    } else {
+      final status = await Permission.storage.request();
+      isReadAllowed = status.isGranted;
+      if (isReadAllowed != true) {
+        openAppSettings();
+      }
+      await Preferences.setReadPermission(isReadAllowed!);
+    }
+  }
+
+  // Future<void> navigateToHome() async {
+  //   await Navigator.push(
+  //     context,
+  //     MaterialPageRoute(builder: (context) => const HomePage()),
+  //   );
+  // }
+
+  @override
+  void initState() {
+    super.initState();
+    isAndroid13 = Preferences.getAndroidVersion();
+    isReadAllowed = Preferences.getReadPermission();
+    setState(() {});
+    checkStatus();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    fileManagerController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Files'),
-        actions: [
-          IconButton(
-            onPressed: () {
-              setState(() {
-                Preferences.setViewType(!Preferences.getViewType());
-              });
-            },
-            icon: Icon(Preferences.getViewType()
-                ? Icons.grid_on_rounded
-                : Icons.list_alt),
-          ),
-        ],
-      ),
-      body: FileManager(
-        controller: fileManagerController,
-        builder: (context, listFileSystemEntity) {
-          return FutureBuilder<List<Directory>>(
-              future: FileManager.getStorageList(),
-              builder: (context, snapshot) {
-                return Preferences.getViewType()
-                    ? BuildGrid(
-                        snapshot: snapshot.data,
-                        key: const Key("grid"),
-                      )
-                    : BuildList(
-                        snapshot: snapshot.data,
-                        key: const Key('list'),
-                      );
-              });
-        },
-      ),
+      appBar: isReadAllowed == true
+          ? AppBar(
+              title: const Text('My Files'),
+              actions: [
+                IconButton(
+                  onPressed: () {
+                    if (mounted) {
+                      setState(() {
+                        Preferences.setViewType(!Preferences.getViewType());
+                      });
+                    }
+                  },
+                  icon: Icon(Preferences.getViewType()
+                      ? Icons.grid_on_rounded
+                      : Icons.list_alt),
+                ),
+              ],
+            )
+          : null,
+      body: isReadAllowed == true
+          ? buildFileManagerHome()
+          : buildPermissionScreen(),
     );
   }
-}
 
-class BuildList extends StatelessWidget {
-  const BuildList({super.key, required this.snapshot});
-  final List<Directory>? snapshot;
+  Widget buildFileManagerHome() {
+    return FileManager(
+      controller: fileManagerController,
+      builder: (context, listFileSystemEntity) {
+        return FutureBuilder<List<Directory>>(
+            future: FileManager.getStorageList(),
+            builder: (context, snapshot) {
+              return Preferences.getViewType()
+                  ? BuildGrid(
+                      snapshot: snapshot.data,
+                      key: const Key("grid"),
+                    )
+                  : BuildList(
+                      snapshot: snapshot.data,
+                      key: const Key('list'),
+                    );
+            });
+      },
+    );
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-        key: key,
-        itemCount: snapshot?.length,
-        itemBuilder: (_, index) {
-          final bool sdCard = snapshot![index].path.split('/').last != '0';
-          return Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 12,
-            ),
+  Widget buildPermissionScreen() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: Column(
+        children: [
+          const SizedBox(height: 80),
+          const Text(
+            "Read permission is required to show files",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 20),
+          ),
+          const SizedBox(height: 100),
+          SizedBox(
+            height: 55,
+            width: 250,
             child: ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => DirectoryPage(
-                              entity: snapshot![index],
-                            )));
+                checkStatus();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xfff5f5f5),
-                //foregroundColor: Color(0xffeeeee),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 20,
-                ),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0)),
+                backgroundColor: Colors.amber[700],
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(
-                    sdCard ? Icons.sd_card : Icons.phone_android,
-                    size: 45,
-                    color: sdCard ? Colors.green[600] : Colors.blue[600],
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    sdCard ? 'SD Card' : 'Internal Storage',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
+              child: const Text(
+                "Allow Read Files",
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                ),
               ),
             ),
-          );
-        });
-  }
-}
-
-class BuildGrid extends StatelessWidget {
-  const BuildGrid({super.key, required this.snapshot});
-  final List<Directory>? snapshot;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      key: key,
-      padding: const EdgeInsets.all(20.0),
-      child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            mainAxisSpacing: 20,
-            crossAxisSpacing: 30,
-            crossAxisCount: 2,
-          ),
-          itemCount: snapshot?.length,
-          itemBuilder: (_, index) {
-            final bool sdCard = snapshot![index].path.split('/').last != '0';
-            return ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DirectoryPage(
-                      entity: snapshot![index],
-                    ),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xfff5f5f5),
-                //foregroundColor: Color(0xffeeeee),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 20,
-                ),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0)),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(
-                    sdCard ? Icons.sd_card : Icons.phone_android,
-                    size: 60,
-                    color: sdCard ? Colors.green[600] : Colors.blue[600],
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    sdCard ? 'SD Card' : 'Device',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }),
+          )
+        ],
+      ),
     );
   }
 }

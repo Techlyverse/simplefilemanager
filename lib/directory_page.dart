@@ -25,6 +25,8 @@ class _DirectoryPageState extends State<DirectoryPage> {
     super.initState();
   }
 
+//shanty
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,10 +41,12 @@ class _DirectoryPageState extends State<DirectoryPage> {
         actions: [
           IconButton(
             onPressed: () {
-              setState(() {
-                showGrid = !showGrid;
-                Preferences.setViewType(showGrid);
-              });
+              if (mounted) {
+                setState(() {
+                  showGrid = !showGrid;
+                  Preferences.setViewType(showGrid);
+                });
+              }
             },
             icon: Icon(showGrid ? Icons.grid_on_rounded : Icons.list_alt),
           ),
