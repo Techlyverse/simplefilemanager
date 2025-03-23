@@ -1,33 +1,33 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'directory_page.dart';
+import '../directory/directory_page.dart';
 
-class BuildGrid extends StatelessWidget {
-  const BuildGrid({super.key, required this.snapshot});
-  final List<Directory>? snapshot;
+class HomeGrid extends StatelessWidget {
+  const HomeGrid({super.key, required this.directories});
+  final List<Directory>? directories;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      key: key,
       padding: const EdgeInsets.all(20.0),
       child: GridView.builder(
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            mainAxisSpacing: 20,
-            crossAxisSpacing: 30,
+            mainAxisSpacing: 0,
+            crossAxisSpacing: 0,
             crossAxisCount: 2,
           ),
-          itemCount: snapshot?.length,
+          itemCount: directories?.length,
           itemBuilder: (_, index) {
-            if(snapshot != null && snapshot!.isNotEmpty){
-              final bool sdCard = snapshot?[index].path.split('/').last != '0';
+            if (directories != null && directories!.isNotEmpty) {
+              final bool sdCard =
+                  directories?[index].path.split('/').last != '0';
               return ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => DirectoryPage(
-                        entity: snapshot![index],
+                        entity: directories![index],
                       ),
                     ),
                   );
@@ -63,14 +63,11 @@ class BuildGrid extends StatelessWidget {
                   ],
                 ),
               );
-            }
-            else{
+            } else {
               return const Center(
                 child: Text("No directory found"),
               );
             }
-
-
           }),
     );
   }

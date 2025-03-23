@@ -1,18 +1,18 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'directory_page.dart';
+import '../directory/directory_page.dart';
 
-class BuildList extends StatelessWidget {
-  const BuildList({super.key, required this.snapshot});
-  final List<Directory>? snapshot;
+class HomeList extends StatelessWidget {
+  const HomeList({super.key, required this.directories});
+  final List<Directory>? directories;
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
         key: key,
-        itemCount: snapshot?.length,
+        itemCount: directories?.length,
         itemBuilder: (_, index) {
-          final bool sdCard = snapshot![index].path.split('/').last != '0';
+          final bool sdCard = directories![index].path.split('/').last != '0';
           return Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 20,
@@ -24,8 +24,8 @@ class BuildList extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) => DirectoryPage(
-                          entity: snapshot![index],
-                        )));
+                              entity: directories![index],
+                            )));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xfff5f5f5),
@@ -42,9 +42,11 @@ class BuildList extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Icon(
-                    sdCard ? Icons.sd_card : Icons.phone_android,
+                    sdCard
+                        ? Icons.sd_card_outlined
+                        : Icons.phone_android_outlined,
                     size: 45,
-                    color: sdCard ? Colors.green[600] : Colors.blue[600],
+                    color: sdCard ? Colors.amber[700] : Colors.blue[600],
                   ),
                   const SizedBox(width: 10),
                   Text(

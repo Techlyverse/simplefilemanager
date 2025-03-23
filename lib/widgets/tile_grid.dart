@@ -10,16 +10,18 @@ class TileGrid extends StatelessWidget {
     required this.onTap,
   });
   final FileSystemEntity entity;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final bool isFile = FileManager.isFile(entity);
+    final colorScheme = Theme.of(context).colorScheme;
     return ElevatedButton(
       onPressed: onTap,
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xfff5f5f5),
-        foregroundColor: Colors.grey,
+        elevation: 0.5,
+        backgroundColor: colorScheme.surfaceContainer,
+        foregroundColor: colorScheme.onSurface.withValues(alpha: 0.9),
         padding: const EdgeInsets.all(2),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.0),
@@ -38,7 +40,9 @@ class TileGrid extends StatelessWidget {
             child: Text(
               FileManager.basename(entity),
               maxLines: 1,
-              style: const TextStyle(fontSize: 12, color: Colors.black),
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
             ),
           ),
         ],

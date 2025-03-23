@@ -15,10 +15,11 @@ dependencies:
   cupertino_icons: ^1.0.2
   file_manager: ^1.0.2
   open_filex: ^4.7.0
-  get_storage: ^2.0.3
   google_fonts: ^6.1.0
   permission_handler: ^11.1.0
   device_info_plus: ^11.3.3
+  shared_preferences: ^2.5.2
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:

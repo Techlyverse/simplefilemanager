@@ -1,13 +1,15 @@
-import 'package:filemanager/homepage.dart';
-import 'package:flutter/services.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:filemanager/provider/app_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'features/home/homepage.dart';
+import 'preferences/preferences.dart';
+import 'theme/dark_theme.dart';
+import 'theme/light_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await GetStorage.init();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  await Preferences.initPreferences();
   runApp(const MyApp());
 }
 
@@ -16,12 +18,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.amber,
-        textTheme: GoogleFonts.poppinsTextTheme(),
+    return MultiProvider(
+      providers: [ChangeNotifierProvider(create: (context) => AppProvider())],
+      child: MaterialApp(
+        theme: lightTheme,
+        darkTheme: darkTheme,
+        themeMode: ThemeMode.system,
+        home: const HomePage(),
       ),
-      home: const HomePage(),
     );
   }
 }
