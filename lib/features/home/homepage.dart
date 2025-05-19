@@ -1,3 +1,5 @@
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:filemanager/preferences/preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
@@ -16,55 +18,56 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final _deviceInfoPlugin = DeviceInfoPlugin();
   FileManagerController fmc = FileManagerController();
-  final List<Permission> permissions = [
-    Permission.storage,
-    Permission.manageExternalStorage,
-    Permission.mediaLibrary,
-    Permission.audio,
-  ];
-  bool isAllowed = false;
+  late int androidSdk;
 
-  // bool readStorage = false;
-  // bool manageStorage = false;
-  // bool media = false;
-  // bool audio = false;
+  //TODO: create a helper class for this
+  Future<int> getAndroidSdkVersion() async {
+    final int? version = Preferences.getAndroidVersion();
+    if (version != null) return version;
 
-  Future<void> checkAndRequestPermission() async {
-    List<bool> statuses =
-        await Future.wait(permissions.map((e) => e.isGranted));
-
-    setState(() {
-      isAllowed = !statuses.contains(false);
-    });
-
-    if (statuses.contains(false)) {
-      await permissions.request();
-      await FileManager.requestFilesAccessPermission();
-    }
-
-    statuses = await Future.wait(permissions.map((e) => e.isGranted));
-
-    setState(() {
-      isAllowed = !statuses.contains(false);
-    });
+    final androidInfo = await _deviceInfoPlugin.androidInfo;
+    return androidInfo.version.sdkInt;
   }
 
-  Future<void> requestPermission() async {
+  //TODO: create a helper class for this
+  Future<List<Permission>> getPermissionList() async {
+    androidSdk = await getAndroidSdkVersion();
+    Preferences.setAndroidVersion(androidSdk);
+
+    List<Permission> permissions = [];
+
+    if (androidSdk >= 33) {
+      permissions.addAll([
+        Permission.photos,
+        Permission.videos,
+        Permission.audio,
+      ]);
+    } else if (androidSdk >= 29) {
+      permissions.addAll([Permission.manageExternalStorage]);
+    } else {
+      permissions.addAll([Permission.storage]);
+    }
+    return permissions;
+  }
+
+  Future<bool> checkAndRequestPermissions() async {
+    final permissions = await getPermissionList();
+    List<bool> status = await Future.wait(permissions.map((e) => e.isGranted));
     await permissions.request();
-    await FileManager.requestFilesAccessPermission();
+    return !status.contains(false);
+  }
 
-    final statuses = await Future.wait(permissions.map((e) => e.isGranted));
-
-    setState(() {
-      isAllowed = !statuses.contains(false);
-    });
+  Future<void> requestPermissions() async {
+    final permissions = await getPermissionList();
+    await permissions.request();
   }
 
   @override
   void initState() {
     super.initState();
-    checkAndRequestPermission();
+    getAndroidSdkVersion();
   }
 
   @override
@@ -79,7 +82,16 @@ class _HomePageState extends State<HomePage> {
           icon: Icon(Icons.more_vert),
         ),
       ]),
-      body: isAllowed ? buildFileManagerHome() : buildPermissionButton(),
+      body: FutureBuilder<bool>(
+        future: checkAndRequestPermissions(),
+        builder: (_, snapshot) {
+          if (snapshot.data != null && snapshot.data == true) {
+            return buildFileManagerHome();
+          } else {
+            return buildPermissionButton();
+          }
+        },
+      ),
     );
   }
 
@@ -108,23 +120,27 @@ class _HomePageState extends State<HomePage> {
         children: [
           const SizedBox(height: 80),
           const Text(
-            "Read permission is required to show files",
+            "Read and write permission is required to show files",
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 20),
           ),
           const SizedBox(height: 100),
-          SizedBox(
-            height: 55,
-            width: 250,
-            child: ElevatedButton(
-              onPressed: () {
-                requestPermission();
-              },
-              child: const Text(
-                "Allow Read Files",
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.white,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25.0),
+            child: SizedBox(
+              height: 55,
+              width: double.maxFinite,
+              child: ElevatedButton(
+                onPressed: () {
+                  checkAndRequestPermissions();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.amber.shade700,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text(
+                  "Allow Files Permission",
+                  style: TextStyle(fontSize: 16),
                 ),
               ),
             ),
