@@ -16,10 +16,14 @@ class FileIcon extends StatelessWidget {
         : Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: Colors.amber[700],
-              borderRadius: BorderRadius.circular(10),
+              color: Colors.amber[800],
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.folder, size: 25, color: Colors.white),
+            child: const Icon(
+              Icons.folder_open_rounded,
+              size: 26,
+              color: Colors.white,
+            ),
           );
   }
 }

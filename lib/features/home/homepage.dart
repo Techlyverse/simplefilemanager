@@ -20,7 +20,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final _deviceInfoPlugin = DeviceInfoPlugin();
   FileManagerController fmc = FileManagerController();
-  late int androidSdk;
+
+  List<Permission> permissions = [];
+  bool isPermissionGranted = false;
 
   //TODO: create a helper class for this
   Future<int> getAndroidSdkVersion() async {
@@ -32,11 +34,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   //TODO: create a helper class for this
-  Future<List<Permission>> getPermissionList() async {
-    androidSdk = await getAndroidSdkVersion();
+  Future<void> getPermissionList() async {
+    int androidSdk = await getAndroidSdkVersion();
     Preferences.setAndroidVersion(androidSdk);
-
-    List<Permission> permissions = [];
 
     if (androidSdk >= 33) {
       permissions.addAll([
@@ -49,49 +49,45 @@ class _HomePageState extends State<HomePage> {
     } else {
       permissions.addAll([Permission.storage]);
     }
-    return permissions;
   }
 
-  Future<bool> checkAndRequestPermissions() async {
-    final permissions = await getPermissionList();
+  Future<void> requestAndCheckPermissions() async {
+    if (permissions.isNotEmpty) await permissions.request();
     List<bool> status = await Future.wait(permissions.map((e) => e.isGranted));
-    await permissions.request();
-    return !status.contains(false);
+    isPermissionGranted = !status.contains(false);
+    setState(() {});
   }
 
-  Future<void> requestPermissions() async {
-    final permissions = await getPermissionList();
-    await permissions.request();
+  Future<void> checkPermissions() async {
+    await getPermissionList();
+    List<bool> status = await Future.wait(permissions.map((e) => e.isGranted));
+    isPermissionGranted = !status.contains(false);
   }
 
   @override
   void initState() {
     super.initState();
-    getAndroidSdkVersion();
+    checkPermissions();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('My Files'), actions: [
-        IconButton(
-          onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => SettingsScreen()));
-          },
-          icon: Icon(Icons.more_vert),
-        ),
-      ]),
-      body: FutureBuilder<bool>(
-        future: checkAndRequestPermissions(),
-        builder: (_, snapshot) {
-          if (snapshot.data != null && snapshot.data == true) {
-            return buildFileManagerHome();
-          } else {
-            return buildPermissionButton();
-          }
-        },
+      appBar: AppBar(
+        title: const Text('My Files'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => SettingsScreen()));
+            },
+            icon: Icon(Icons.settings_outlined),
+          ),
+        ],
       ),
+      body: isPermissionGranted
+          ? buildFileManagerHome()
+          : buildPermissionButton(),
     );
   }
 
@@ -132,7 +128,7 @@ class _HomePageState extends State<HomePage> {
               width: double.maxFinite,
               child: ElevatedButton(
                 onPressed: () {
-                  checkAndRequestPermissions();
+                  requestAndCheckPermissions();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.amber.shade700,

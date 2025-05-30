@@ -16,6 +16,4 @@ class Preferences {
 
   static Future<void> setAndroidVersion(int sdk) async => await _prefs.setInt(_keyAndroidSdk, sdk);
   static int? getAndroidVersion() => _prefs.getInt(_keyAndroidSdk);
-
-
 }

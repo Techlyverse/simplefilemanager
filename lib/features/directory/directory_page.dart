@@ -1,15 +1,11 @@
 import 'dart:io';
 import 'package:file_manager/file_manager.dart';
-import 'package:filemanager/features/directory/dir_grid.dart';
-import 'package:filemanager/features/directory/dir_list.dart';
+import 'package:filemanager/features/directory/file_list_view.dart';
 import 'package:filemanager/features/settings/settings_screen.dart';
 import 'package:filemanager/provider/app_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:open_filex/open_filex.dart';
 import 'package:provider/provider.dart';
-import '../../preferences/preferences.dart';
-import '../../widgets/tile_grid.dart';
-import '../../widgets/tile_list.dart';
+import 'file_grid_view.dart';
 
 class DirectoryPage extends StatefulWidget {
   const DirectoryPage({super.key, required this.entity});
@@ -48,7 +44,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => SettingsScreen()));
             },
-            icon: Icon(Icons.more_vert),
+            icon: Icon(Icons.settings_outlined),
           ),
         ],
       ),
@@ -58,8 +54,8 @@ class _DirectoryPageState extends State<DirectoryPage> {
           controller: fmc,
           builder: (context, listFileSystemEntity) {
             return provider.showGrid
-                ? DirGrid(entity: listFileSystemEntity, fmc: fmc)
-                : DirList(entity: listFileSystemEntity, fmc: fmc);
+                ? FileGridView(entity: listFileSystemEntity, fmc: fmc)
+                : FileListView(entity: listFileSystemEntity, fmc: fmc);
           },
         ),
       ),

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:file_manager/file_manager.dart';
 import 'file_icon.dart';
 
-class TileGrid extends StatelessWidget {
-  const TileGrid({
+class GridWidget extends StatelessWidget {
+  const GridWidget({
     super.key,
     required this.entity,
     required this.onTap,

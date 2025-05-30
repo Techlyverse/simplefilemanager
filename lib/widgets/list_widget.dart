@@ -3,8 +3,8 @@ import 'file_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:file_manager/file_manager.dart';
 
-class TileList extends StatelessWidget {
-  const TileList({
+class ListWidget extends StatelessWidget {
+  const ListWidget({
     super.key,
     required this.entity,
     required this.onTap,

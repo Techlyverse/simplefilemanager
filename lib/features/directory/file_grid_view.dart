@@ -1,13 +1,12 @@
 import 'dart:io';
 
 import 'package:file_manager/file_manager.dart';
+import 'package:filemanager/widgets/grid_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:open_filex/open_filex.dart';
 
-import '../../widgets/tile_grid.dart';
-
-class DirGrid extends StatelessWidget {
-  const DirGrid({super.key, required this.entity, required this.fmc});
+class FileGridView extends StatelessWidget {
+  const FileGridView({super.key, required this.entity, required this.fmc});
   final List<FileSystemEntity> entity;
   final FileManagerController fmc;
 
@@ -22,7 +21,7 @@ class DirGrid extends StatelessWidget {
         crossAxisCount: 4,
       ),
       itemBuilder: (context, index) {
-        return TileGrid(
+        return GridWidget(
           entity: entity[index],
           onTap: () {
             FileManager.isFile(entity[index])
