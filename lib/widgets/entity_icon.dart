@@ -1,16 +1,18 @@
+import 'dart:io';
+
+import 'package:filemanager/helper/extension.dart';
 import 'package:flutter/material.dart';
 import '../data/media_icons.dart';
 
-class FileIcon extends StatelessWidget {
-  const FileIcon({super.key, this.extension, required this.isFile});
-  final String? extension;
-  final bool isFile;
+class EntityIcon extends StatelessWidget {
+  const EntityIcon(this.entity, {super.key});
+  final FileSystemEntity entity;
 
   @override
   Widget build(BuildContext context) {
-    return isFile
+    return entity is File
         ? Image.asset(
-            mediaIcons[extension] ?? 'assets/unknown.png',
+            mediaIcons[entity.extension] ?? 'assets/unknown.png',
             height: 35,
           )
         : Container(

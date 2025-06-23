@@ -1,10 +1,11 @@
 import 'dart:io';
+import 'package:filemanager/helper/extension.dart';
 import 'package:flutter/material.dart';
-import 'package:file_manager/file_manager.dart';
-import 'file_icon.dart';
 
-class GridWidget extends StatelessWidget {
-  const GridWidget({
+import 'entity_icon.dart';
+
+class GridEntity extends StatelessWidget {
+  const GridEntity({
     super.key,
     required this.entity,
     required this.onTap,
@@ -14,7 +15,6 @@ class GridWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isFile = FileManager.isFile(entity);
     final colorScheme = Theme.of(context).colorScheme;
     return ElevatedButton(
       onPressed: onTap,
@@ -22,7 +22,7 @@ class GridWidget extends StatelessWidget {
         elevation: 0.5,
         backgroundColor: colorScheme.surfaceContainer,
         foregroundColor: colorScheme.onSurface.withValues(alpha: 0.9),
-        padding: const EdgeInsets.all(2),
+        padding: const EdgeInsets.all(4),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.0),
         ),
@@ -31,14 +31,11 @@ class GridWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const SizedBox(),
-          FileIcon(
-            isFile: isFile,
-            extension: isFile ? FileManager.getFileExtension(entity) : '',
-          ),
+          EntityIcon(entity),
           Padding(
             padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
             child: Text(
-              FileManager.basename(entity),
+              entity.name,
               maxLines: 1,
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,

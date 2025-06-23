@@ -1,14 +1,9 @@
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:filemanager/features/directory/directory_page.dart';
 import 'package:filemanager/preferences/preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'dart:io';
-import 'package:file_manager/file_manager.dart';
-import 'package:provider/provider.dart';
-import 'home_grid.dart';
-import 'home_list.dart';
-import '../settings/settings_screen.dart';
-import '../../provider/app_provider.dart';
+import '../../helper/app_controller.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -19,7 +14,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _deviceInfoPlugin = DeviceInfoPlugin();
-  FileManagerController fmc = FileManagerController();
+  AppController controller = AppController();
 
   List<Permission> permissions = [];
   bool isPermissionGranted = false;
@@ -67,47 +62,52 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    checkPermissions();
+    // checkPermissions();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Files'),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => SettingsScreen()));
-            },
-            icon: Icon(Icons.settings_outlined),
-          ),
-        ],
-      ),
-      body: isPermissionGranted
-          ? buildFileManagerHome()
-          : buildPermissionButton(),
-    );
+        appBar: AppBar(
+          title: const Text('My Files'),
+          actions: [
+            ValueListenableBuilder(
+                valueListenable: controller.showGrid,
+                builder: (_, showGrid, __) {
+                  return IconButton(
+                    onPressed: () {
+                      controller.updateViewType();
+                    },
+                    icon: Icon(showGrid ? Icons.list : Icons.grid_view),
+                  );
+                }),
+          ],
+        ),
+        body: DirectoryPage()
+
+        // isPermissionGranted
+        //     ? buildFileManagerHome()
+        //     : buildPermissionButton(),
+        );
   }
 
-  Widget buildFileManagerHome() {
-    return FileManager(
-      controller: fmc,
-      builder: (context, listFileSystemEntity) {
-        return FutureBuilder<List<Directory>>(
-            future: FileManager.getStorageList(),
-            builder: (context, snapshot) {
-              if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-                return context.watch<AppProvider>().showGrid
-                    ? HomeGrid(directories: snapshot.data)
-                    : HomeList(directories: snapshot.data);
-              }
-              return SizedBox();
-            });
-      },
-    );
-  }
+  // Widget buildFileManagerHome() {
+  //   return FileManager(
+  //     controller: fmc,
+  //     builder: (context, listFileSystemEntity) {
+  //       return FutureBuilder<List<Directory>>(
+  //           future: FileManager.getStorageList(),
+  //           builder: (context, snapshot) {
+  //             if (snapshot.data != null && snapshot.data!.isNotEmpty) {
+  //               return fmc.showGrid.value
+  //                   ? HomeGrid(directories: snapshot.data)
+  //                   : HomeList(directories: snapshot.data);
+  //             }
+  //             return SizedBox();
+  //           });
+  //     },
+  //   );
+  // }
 
   Widget buildPermissionButton() {
     return Padding(

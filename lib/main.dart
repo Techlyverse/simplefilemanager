@@ -1,8 +1,7 @@
-import 'package:filemanager/provider/app_provider.dart';
+import 'package:filemanager/features/directory/directory_page.dart';
+import 'package:filemanager/features/home/homepage.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import 'features/home/homepage.dart';
 import 'preferences/preferences.dart';
 import 'theme/dark_theme.dart';
 import 'theme/light_theme.dart';
@@ -18,14 +17,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (context) => AppProvider())],
-      child: MaterialApp(
-        theme: lightTheme,
-        darkTheme: darkTheme,
-        themeMode: ThemeMode.system,
-        home: const HomePage(),
-      ),
+    return MaterialApp(
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode: ThemeMode.system,
+      home: const DirectoryPage(),
     );
   }
 }
