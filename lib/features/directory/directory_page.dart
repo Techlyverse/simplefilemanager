@@ -28,7 +28,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        //backgroundColor: Colors.cyan.shade100,
         leading: IconButton(
           onPressed: () {
             controller.navigateBack();

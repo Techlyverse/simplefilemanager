@@ -16,34 +16,51 @@ class GridEntity extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return ElevatedButton(
-      onPressed: onTap,
-      style: ElevatedButton.styleFrom(
-        elevation: 0.5,
-        backgroundColor: colorScheme.surfaceContainer,
-        foregroundColor: colorScheme.onSurface.withValues(alpha: 0.9),
-        padding: const EdgeInsets.all(4),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const SizedBox(),
-          EntityIcon(entity),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(5, 0, 5, 5),
-            child: Text(
-              entity.name,
-              maxLines: 1,
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final double factor = constraints.biggest.shortestSide;
+        double size = factor * 0.5;
+        double fontSize = size * 0.08;
+        double borderRadius = size * 0.08;
+        final double padding = size * 0.05;
+        double spacing = size * 0.03;
+        return Center(
+          child: SizedBox(
+            width: size,
+            height: size,
+            child: ElevatedButton(
+              onPressed: onTap,
+              style: ElevatedButton.styleFrom(
+                elevation: 0.5,
+                backgroundColor: colorScheme.surfaceContainer,
+                foregroundColor: colorScheme.onSurface.withValues(alpha: 0.9),
+                padding: EdgeInsets.all(padding),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(borderRadius),
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(height: spacing,),
+                  EntityIcon(entity),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(padding, 0, padding, padding),
+                    child: Text(
+                      entity.name,
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ],
-      ),
+        );
+      },
+
     );
   }
 }

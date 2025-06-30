@@ -10,7 +10,7 @@ class AppController {
   static final AppController _instance = AppController._();
   factory AppController() => _instance;
 
-  static final _initialDirectory = Directory(r'C:/Users/raghv/Downloads');
+  static final _initialDirectory = Directory(r'/home/manu/Downloads');
 
   ValueNotifier<bool> showGrid = ValueNotifier(Preferences.getViewType());
 
