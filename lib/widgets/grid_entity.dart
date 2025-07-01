@@ -24,7 +24,8 @@ class GridEntity extends StatelessWidget {
         double borderRadius = size * 0.08;
         final double padding = size * 0.05;
         double spacing = size * 0.03;
-        return Center(
+        return Padding(
+          padding: EdgeInsets.all(padding * 2),
           child: SizedBox(
             width: size,
             height: size,
@@ -45,13 +46,13 @@ class GridEntity extends StatelessWidget {
                   SizedBox(height: spacing,),
                   EntityIcon(entity),
                   Padding(
-                    padding: EdgeInsets.fromLTRB(padding, 0, padding, padding),
+                    padding: EdgeInsets.fromLTRB(padding, 0, padding, padding*2),
                     child: Text(
                       entity.name,
                       maxLines: 1,
                       textAlign: TextAlign.center,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w600),
+                      style: TextStyle(fontSize: fontSize *1.5, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ],

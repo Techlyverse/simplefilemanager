@@ -25,46 +25,51 @@ class _DirectoryPageState extends State<DirectoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        //backgroundColor: Colors.cyan.shade100,
-        leading: IconButton(
-          onPressed: () {
-            controller.navigateBack();
-          },
-          icon: Icon(Icons.arrow_back),
-        ),
-        title: ValueListenableBuilder<FileSystemEntity>(
-          valueListenable: controller.fileSystemEntity,
-          builder: (_, entity, __) {
-            return Text(entity.name);
-          },
-        ),
-        actions: [
-          ValueListenableBuilder(
-              valueListenable: controller.showGrid,
-              builder: (_, showGrid, __) {
-                return IconButton(
-                  onPressed: () {
-                    controller.updateViewType();
-                  },
-                  icon: Icon(showGrid ? Icons.list : Icons.grid_view),
-                );
-              }),
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          double size = constraints.biggest.shortestSide * 0.5;
+          return Scaffold(
+            appBar: AppBar(
+              elevation: 0,
+              //backgroundColor: Colors.cyan.shade100,
+              leading: IconButton(
+                onPressed: () {
+                  controller.navigateBack();
+                },
+                icon: Icon(Icons.arrow_back),
+              ),
+              title: ValueListenableBuilder<FileSystemEntity>(
+                valueListenable: controller.fileSystemEntity,
+                builder: (_, entity, __) {
+                  return Text(entity.name, style: TextStyle(fontSize: size * 0.07),);
+                },
+              ),
+              actions: [
+                ValueListenableBuilder(
+                    valueListenable: controller.showGrid,
+                    builder: (_, showGrid, __) {
+                      return IconButton(
+                        onPressed: () {
+                          controller.updateViewType();
+                        },
+                        icon: Icon(showGrid ? Icons.list : Icons.grid_view),
+                      );
+                    }),
 
 
-        ],
-      ),
-      body: ValueListenableBuilder(
-          valueListenable: controller.showGrid,
-          builder: (_, showGrid, __) {
-            return ValueListenableBuilder(
-                valueListenable: controller.fileSystemEntities,
-                builder: (_, entities, __) {
-                  return EntityViewer(entities: entities, showGrid: showGrid);
-                });
-          }),
+              ],
+            ),
+            body: ValueListenableBuilder(
+                valueListenable: controller.showGrid,
+                builder: (_, showGrid, __) {
+                  return ValueListenableBuilder(
+                      valueListenable: controller.fileSystemEntities,
+                      builder: (_, entities, __) {
+                        return EntityViewer(entities: entities, showGrid: showGrid);
+                      });
+                }),
+          );
+        }
     );
   }
 }
