@@ -4,6 +4,7 @@ import 'package:filemanager/helper/app_controller.dart';
 import 'package:filemanager/helper/extension.dart';
 import 'package:filemanager/widgets/entity_viewer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class DirectoryPage extends StatefulWidget {
   const DirectoryPage({super.key, this.entity});
@@ -68,6 +69,40 @@ class _DirectoryPageState extends State<DirectoryPage> {
                         return EntityViewer(entities: entities, showGrid: showGrid);
                       });
                 }),
+            // adding the floatingActionButton -MG
+            //floatingActionButton: FloatingActionButton(onPressed: () {}, child: Icon(Icons.unfold_more),),
+            // trying the speed dial -MG
+            floatingActionButton: SpeedDial(
+              //overlayColor: Colors.transparent,
+              overlayOpacity: 0.2,
+              animatedIcon: AnimatedIcons.menu_close,
+              children: [
+                SpeedDialChild(
+                  child: Icon(Icons.insert_drive_file),
+                  label: 'Create File',
+                  labelStyle: TextStyle(
+                    color:  Theme.of(context).colorScheme.onSurface,
+                  ),
+                  onTap: (){},
+                ),
+                SpeedDialChild(
+                  child: Icon(Icons.create_new_folder),
+                  label: 'Create Folder',
+                  labelStyle: TextStyle(
+                    color:  Theme.of(context).colorScheme.onSurface,
+                  ),
+                  onTap: (){},
+                ),
+                SpeedDialChild(
+                  child: Icon(Icons.delete),
+                  label: 'Delete',
+                  labelStyle: TextStyle(
+                    color:  Theme.of(context).colorScheme.onSurface,
+                  ),
+                  onTap: (){},
+                )
+              ],
+            ),
           );
         }
     );
