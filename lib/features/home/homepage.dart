@@ -19,6 +19,8 @@ class _HomePageState extends State<HomePage> {
   List<Permission> permissions = [];
   bool isPermissionGranted = false;
 
+
+
   //TODO: create a helper class for this
   Future<int> getAndroidSdkVersion() async {
     final int? version = Preferences.getAndroidVersion();

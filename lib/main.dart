@@ -1,3 +1,4 @@
+import 'package:filemanager/custom.dart';
 import 'package:filemanager/features/directory/directory_page.dart';
 import 'package:filemanager/features/home/homepage.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
       darkTheme: darkTheme,
       themeMode: ThemeMode.system,
       home: const DirectoryPage(),
+      //home: SomeWidget(),
     );
   }
 }

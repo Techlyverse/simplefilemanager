@@ -5,6 +5,7 @@ import 'package:filemanager/helper/extension.dart';
 import 'package:filemanager/widgets/entity_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:path/path.dart' as p;
 
 class DirectoryPage extends StatefulWidget {
   const DirectoryPage({super.key, this.entity});
@@ -83,7 +84,9 @@ class _DirectoryPageState extends State<DirectoryPage> {
                   labelStyle: TextStyle(
                     color:  Theme.of(context).colorScheme.onSurface,
                   ),
-                  onTap: (){},
+                  onTap: () {
+
+                  },
                 ),
                 SpeedDialChild(
                   child: Icon(Icons.create_new_folder),
@@ -91,7 +94,16 @@ class _DirectoryPageState extends State<DirectoryPage> {
                   labelStyle: TextStyle(
                     color:  Theme.of(context).colorScheme.onSurface,
                   ),
-                  onTap: (){},
+                  onTap: () async {
+                    final currentDirPath = controller.fileSystemEntity.value.path;
+                    final folderNameFromUser = await showEditingFolderDialog(context, "Create Folder", "Enter new folder name", "Create");
+                    if(folderNameFromUser != null && folderNameFromUser.isNotEmpty){
+                      await createNewFolderInCurrentDir(folderNameFromUser!, currentDirPath);
+                      controller.fileSystemEntities.value = (controller.fileSystemEntity.value as Directory).listSync();
+                    }
+
+
+                  },
                 ),
                 SpeedDialChild(
                   child: Icon(Icons.delete),
@@ -107,4 +119,66 @@ class _DirectoryPageState extends State<DirectoryPage> {
         }
     );
   }
+
+  // function to show dialog prompt for editing buttons -MG
+  Future<String?> showEditingFolderDialog(BuildContext context, headingTitle, hintTitle, acceptButton) async{
+    String folderName = '';
+    final colorScheme = Theme.of(context).colorScheme;
+    return showDialog<String>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(headingTitle, style: TextStyle(color: colorScheme.onSurface),),
+            content: TextField(
+              style: TextStyle(color: colorScheme.onSurface),
+              decoration: InputDecoration(hintText: hintTitle, hintStyle: TextStyle(color: colorScheme.onSurface) ),
+              onChanged: (value) {
+                folderName = value.trim();
+              },
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, null),
+                child: Text('Cancel'),
+              ),
+              TextButton(
+                  onPressed: () {
+                    if (folderName.isNotEmpty){
+                      Navigator.pop(context, folderName);
+                    }
+                  },
+                  child: Text(acceptButton)
+              ),
+            ],
+          );
+    }
+    );
+  }
+
+  Future<void> createNewFolderInCurrentDir(String folderName, pathOfCurDir) async {
+    final newFolderPath = p.join(pathOfCurDir, folderName);
+    final newFolder = Directory(newFolderPath);
+    if ( !(await newFolder.exists())){
+      await newFolder.create();
+      await showTimedDialog(context, "New folder created.");
+    } else {
+      await showTimedDialog(context, "Folder with this name already exists.");
+    }
+  }
+
+  Future<void> showTimedDialog(BuildContext context, content, {Duration duration = const Duration(seconds: 6)}) async {
+    showDialog(
+        context: context,
+        //barrierDismissible: false,
+        builder: (context) => AlertDialog(
+          content: Text(content, style: TextStyle(color: Theme.of(context).colorScheme.onSurface,)),
+        )
+    );
+    await Future.delayed(duration);
+    if(Navigator.canPop(context)){
+      Navigator.pop(context);
+    }
+  }
+
+
 }

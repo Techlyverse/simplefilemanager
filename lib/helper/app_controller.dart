@@ -11,6 +11,7 @@ class AppController {
   static final AppController _instance = AppController._();
   factory AppController() => _instance;
 
+
   static final _initialDirectory = Directory(r'/home/manu/Downloads');
   // a list that contains all the directories that we went through for the current directory -MG
   List<String> pathList = [_initialDirectory.toString()];
