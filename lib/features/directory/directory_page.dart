@@ -80,11 +80,27 @@ class _DirectoryPageState extends State<DirectoryPage> {
               children: [
                 SpeedDialChild(
                   child: Icon(Icons.insert_drive_file),
-                  label: 'Create File',
+                  label: 'Rename Folder',
                   labelStyle: TextStyle(
                     color:  Theme.of(context).colorScheme.onSurface,
                   ),
-                  onTap: () {
+                  onTap: () async {
+                    final folderNamesFromUser = await showTwoTextFieldsDialog(context, "Rename Folder", "Enter the folder you want to rename", "Enter new folder name", "Rename");
+                    if ( folderNamesFromUser![1].isNotEmpty){
+                      final oldName = folderNamesFromUser[0];
+                      final newName = folderNamesFromUser[1];
+                      final currentDir = controller.fileSystemEntity.value as Directory;
+                      final oldFolder = Directory(p.join(currentDir.path, oldName));
+                      if (await oldFolder.exists()){
+                        await renameCurrentFolder(newName, oldFolder);
+                      } else {
+                        await showTimedDialog(context, "The folder you want to rename does not exist.");
+                      }
+                      controller.fileSystemEntities.value = (controller.fileSystemEntity.value as Directory).listSync();
+
+                    } else {
+                      await showTimedDialog(context, "Either the folder you want to rename does not exist or you did not fill the data required, please retry.");
+                    }
 
                   },
                 ),
@@ -155,6 +171,60 @@ class _DirectoryPageState extends State<DirectoryPage> {
     );
   }
 
+  // function that shows a dialog box and takes two strings from user and returns a list of strings -MG
+  Future<List<String>?> showTwoTextFieldsDialog(BuildContext context, headingTitle, hintTitle1, hintTitle2, acceptButton){
+    String oldFolderName = '';
+    String newFolderName = '';
+    final colorScheme = Theme.of(context).colorScheme;
+    return showDialog<List<String>>(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            title: Text(headingTitle, style: TextStyle(color: colorScheme.onSurface),),
+            content: Column(
+              children: [
+                TextField(
+                  style: TextStyle(color: colorScheme.onSurface),
+                  decoration: InputDecoration(hintText: hintTitle1, hintStyle: TextStyle(color: colorScheme.onSurface)),
+                  onChanged: (value) {
+                    oldFolderName = value.trim();
+                  },
+                ),
+                TextField(
+                  style: TextStyle(color: colorScheme.onSurface),
+                  decoration: InputDecoration(hintText: hintTitle2, hintStyle: TextStyle(color: colorScheme.onSurface)),
+                  onChanged: (value) {
+                    newFolderName = value.trim();
+                  },
+                ),
+
+              ],
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(context, null),
+                  child: Text('Cancel'),
+              ),
+              TextButton(
+                  onPressed: () async {
+                    if(oldFolderName.isNotEmpty && newFolderName.isNotEmpty){
+                      Navigator.pop(context, [oldFolderName, newFolderName]);
+                    }
+                    else {
+                      await showTimedDialog(context, "Please retry and fill the folder name fields.");
+                      Navigator.pop(context, null);
+                    }
+                  },
+                  child: Text(acceptButton)
+              )
+            ],
+
+          );
+        }
+    );
+  }
+
+
   Future<void> createNewFolderInCurrentDir(String folderName, pathOfCurDir) async {
     final newFolderPath = p.join(pathOfCurDir, folderName);
     final newFolder = Directory(newFolderPath);
@@ -163,6 +233,18 @@ class _DirectoryPageState extends State<DirectoryPage> {
       await showTimedDialog(context, "New folder created.");
     } else {
       await showTimedDialog(context, "Folder with this name already exists.");
+    }
+  }
+
+  Future<void> renameCurrentFolder(String newFolderName, Directory folderWeWantToRename) async {
+    final parentDir = folderWeWantToRename.parent;
+    final newPath = p.join(parentDir.path, newFolderName);
+
+    final renamedFolder = Directory(newPath);
+    if(await renamedFolder.exists()){
+      await showTimedDialog(context, "Folder with this name already exists.");
+    } else {
+      await folderWeWantToRename.rename(newPath);
     }
   }
 
