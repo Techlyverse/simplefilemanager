@@ -1,5 +1,6 @@
+import 'dart:async';
+import 'dart:ffi';
 import 'dart:io';
-
 import 'package:filemanager/helper/app_controller.dart';
 import 'package:filemanager/helper/extension.dart';
 import 'package:filemanager/widgets/entity_viewer.dart';
@@ -117,8 +118,6 @@ class _DirectoryPageState extends State<DirectoryPage> {
                       await createNewFolderInCurrentDir(folderNameFromUser!, currentDirPath);
                       controller.fileSystemEntities.value = (controller.fileSystemEntity.value as Directory).listSync();
                     }
-
-
                   },
                 ),
                 SpeedDialChild(
@@ -127,7 +126,15 @@ class _DirectoryPageState extends State<DirectoryPage> {
                   labelStyle: TextStyle(
                     color:  Theme.of(context).colorScheme.onSurface,
                   ),
-                  onTap: (){},
+                  onTap: () async {
+                    final currentDirPath = controller.fileSystemEntity.value.path;
+                    final folderToBeDeletedFromUser = await showEditingFolderDialog(context, "Delete Folder", "Enter the name of folder to be deleted", "Delete");
+                    final isUserSure = await showChoiceDialog(context, "Are you sure you want to delete ${folderToBeDeletedFromUser} folder?");
+                    if (folderToBeDeletedFromUser != null && folderToBeDeletedFromUser.isNotEmpty && isUserSure == true){
+                      await deleteFolder(folderToBeDeletedFromUser, currentDirPath);
+                      controller.fileSystemEntities.value = (controller.fileSystemEntity.value as Directory).listSync();
+                    }
+                  },
                 )
               ],
             ),
@@ -171,6 +178,32 @@ class _DirectoryPageState extends State<DirectoryPage> {
     );
   }
 
+  // function that shows the user a dialog for choice and returns a bool value -MG
+  Future<bool?> showChoiceDialog(BuildContext context, headingTitle){
+    return showDialog<bool>(
+      context: context,
+      builder: (context){
+        return AlertDialog(
+          title: Text(headingTitle, style: TextStyle(color: Theme.of(context).colorScheme.onSurface),),
+          actions: [
+            TextButton(
+                onPressed: (){
+                  Navigator.pop(context, false);
+                },
+                child: Text("No")
+            ),
+            TextButton(
+                onPressed: (){
+                  Navigator.pop(context, true);
+                },
+                child: Text("Yes")
+            )
+          ],
+        );
+      }
+    );
+  }
+
   // function that shows a dialog box and takes two strings from user and returns a list of strings -MG
   Future<List<String>?> showTwoTextFieldsDialog(BuildContext context, headingTitle, hintTitle1, hintTitle2, acceptButton){
     String oldFolderName = '';
@@ -181,24 +214,27 @@ class _DirectoryPageState extends State<DirectoryPage> {
         builder: (context){
           return AlertDialog(
             title: Text(headingTitle, style: TextStyle(color: colorScheme.onSurface),),
-            content: Column(
-              children: [
-                TextField(
-                  style: TextStyle(color: colorScheme.onSurface),
-                  decoration: InputDecoration(hintText: hintTitle1, hintStyle: TextStyle(color: colorScheme.onSurface)),
-                  onChanged: (value) {
-                    oldFolderName = value.trim();
-                  },
-                ),
-                TextField(
-                  style: TextStyle(color: colorScheme.onSurface),
-                  decoration: InputDecoration(hintText: hintTitle2, hintStyle: TextStyle(color: colorScheme.onSurface)),
-                  onChanged: (value) {
-                    newFolderName = value.trim();
-                  },
-                ),
-
-              ],
+            content: SingleChildScrollView(
+              child: Column(
+                children: [
+                  TextField(
+                    style: TextStyle(color: colorScheme.onSurface),
+                    decoration: InputDecoration(hintText: hintTitle1, hintStyle: TextStyle(color: colorScheme.onSurface)),
+                    onChanged: (value) {
+                      oldFolderName = value.trim();
+                    },
+                  ),
+                  SizedBox(height: 1,),
+                  TextField(
+                    style: TextStyle(color: colorScheme.onSurface),
+                    decoration: InputDecoration(hintText: hintTitle2, hintStyle: TextStyle(color: colorScheme.onSurface)),
+                    onChanged: (value) {
+                      newFolderName = value.trim();
+                    },
+                  ),
+              
+                ],
+              ),
             ),
             actions: [
               TextButton(
@@ -246,6 +282,18 @@ class _DirectoryPageState extends State<DirectoryPage> {
     } else {
       await folderWeWantToRename.rename(newPath);
     }
+  }
+
+  Future<void> deleteFolder(String folderToBeDeletedName, pathOfCurDir) async {
+    final folderToBeDeletedPath = p.join(pathOfCurDir, folderToBeDeletedName);
+    final folderToBeDeleted = Directory(folderToBeDeletedPath);
+    if(await folderToBeDeleted.exists()){
+      await folderToBeDeleted.delete(recursive: true);
+      await showTimedDialog(context, "Successfully deleted.");
+    } else{
+      await showTimedDialog(context, "Folder with this name does not exist.");
+    }
+
   }
 
   Future<void> showTimedDialog(BuildContext context, content, {Duration duration = const Duration(seconds: 6)}) async {
