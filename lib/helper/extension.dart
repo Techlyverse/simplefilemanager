@@ -43,8 +43,4 @@ extension FileSystemEntityExtension on FileSystemEntity {
     // It correctly handles multiple extensions and no extension.
     return p.extension(path);
   }
-
-
-
-
 }
