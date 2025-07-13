@@ -15,17 +15,9 @@ class EntityIcon extends StatelessWidget {
             mediaIcons[entity.extension] ?? 'assets/unknown.png',
             height: 35,
           )
-        : Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: Colors.amber[800],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.folder_open_rounded,
-              size: 26,
-              color: Colors.white,
-            ),
+        : Image.asset(
+            mediaIcons[entity.extension] ?? 'assets/folder.png',
+            height: 35,
           );
   }
 }

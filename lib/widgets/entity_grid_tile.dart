@@ -1,0 +1,49 @@
+import 'dart:io';
+
+import 'package:filemanager/helper/extension.dart';
+import 'package:flutter/material.dart';
+
+import 'entity_icon.dart';
+
+class EntityGridTile extends StatelessWidget {
+  const EntityGridTile({
+    super.key,
+    required this.entity,
+    required this.onTap,
+  });
+  final FileSystemEntity entity;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return SizedBox(
+      width: 70,
+      height: 70,
+      child: TextButton(
+        onPressed: onTap,
+        style: TextButton.styleFrom(
+          backgroundColor: colorScheme.surfaceContainerLowest,
+          foregroundColor: colorScheme.onSurface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            EntityIcon(entity),
+            Text(
+              entity.name,
+              maxLines: 1,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 10),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

@@ -1,41 +1,38 @@
 import 'dart:io';
 
 import 'package:filemanager/helper/app_controller.dart';
+import 'package:filemanager/widgets/entity_grid_tile.dart';
+import 'package:filemanager/widgets/entity_list_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:open_file/open_file.dart';
 
-import 'grid_entity.dart';
-import 'list_entity.dart';
-
 class EntityViewer extends StatelessWidget {
-  const EntityViewer({super.key, required this.entities, required this.showGrid});
+  const EntityViewer({super.key, required this.entities});
   final List<FileSystemEntity> entities;
-  final bool showGrid;
 
   @override
   Widget build(BuildContext context) {
-    return showGrid ? buildGrid() : buildList();
+    return ValueListenableBuilder(
+        valueListenable: AppController().showGrid,
+        builder: (_, showGrid, __) {
+          return showGrid ? buildGrid() : buildList();
+        });
   }
 
   Widget buildGrid() {
-    return GridView.builder(
-      itemCount: entities.length,
-      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 12),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 8,
-        crossAxisCount: 4,
-      ),
-      itemBuilder: (context, index) {
-        return GridEntity(
-          entity: entities[index],
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      children: entities.map((entity) {
+        return EntityGridTile(
+          entity: entity,
           onTap: () {
-            entities[index] is File
-                ? OpenFile.open(entities[index].path)
-                : AppController().openDirectory(entities[index]);
+            entity is File
+                ? OpenFile.open(entity.path)
+                : AppController().openDirectory(entity);
           },
         );
-      },
+      }).toList(),
     );
   }
 
@@ -43,7 +40,7 @@ class EntityViewer extends StatelessWidget {
     return ListView.builder(
         itemCount: entities.length,
         itemBuilder: (context, index) {
-          return ListEntity(
+          return EntityListTile(
             entity: entities[index],
             onTap: () {
               entities[index] is File

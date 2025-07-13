@@ -62,15 +62,13 @@ class _DirectoryPageState extends State<DirectoryPage> {
 
               ],
             ),
-            body: ValueListenableBuilder(
-                valueListenable: controller.showGrid,
-                builder: (_, showGrid, __) {
-                  return ValueListenableBuilder(
+            body:
+                   ValueListenableBuilder(
                       valueListenable: controller.fileSystemEntities,
                       builder: (_, entities, __) {
-                        return EntityViewer(entities: entities, showGrid: showGrid);
-                      });
-                }),
+                        return EntityViewer(entities: entities);
+                      }),
+
             // adding the floatingActionButton -MG
             //floatingActionButton: FloatingActionButton(onPressed: () {}, child: Icon(Icons.unfold_more),),
             // trying the speed dial -MG

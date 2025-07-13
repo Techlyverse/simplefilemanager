@@ -1,8 +1,6 @@
-import 'package:filemanager/custom.dart';
-import 'package:filemanager/features/directory/directory_page.dart';
-import 'package:filemanager/features/home/homepage.dart';
+import 'package:filemanager/features/main_screen.dart';
 import 'package:flutter/material.dart';
-
+import 'features/directory/directory_page.dart';
 import 'preferences/preferences.dart';
 import 'theme/dark_theme.dart';
 import 'theme/light_theme.dart';
@@ -22,8 +20,7 @@ class MyApp extends StatelessWidget {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: ThemeMode.system,
-      home: const DirectoryPage(),
-      //home: SomeWidget(),
+      home: const MainScreen(),
     );
   }
 }

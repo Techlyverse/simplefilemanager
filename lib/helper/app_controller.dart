@@ -11,13 +11,13 @@ class AppController {
   static final AppController _instance = AppController._();
   factory AppController() => _instance;
 
-
-  static final _initialDirectory = Directory(r'/home/manu/Downloads');
+  static final _initialDirectory = Directory(r'C:/');
   // a list that contains all the directories that we went through for the current directory -MG
   List<String> pathList = [_initialDirectory.toString()];
   ValueNotifier<bool> showGrid = ValueNotifier(Preferences.getViewType());
 
-  ValueNotifier<FileSystemEntity> fileSystemEntity = ValueNotifier(_initialDirectory);
+  ValueNotifier<FileSystemEntity> fileSystemEntity =
+      ValueNotifier(_initialDirectory);
   ValueNotifier<List<FileSystemEntity>> fileSystemEntities = ValueNotifier([]);
 
   Future<void> loadInitialFiles() async {
@@ -31,7 +31,7 @@ class AppController {
   void openDirectory(FileSystemEntity entity) async {
     fileSystemEntity.value = entity;
     // adding the directory to the list
-    if(entity is Directory) {
+    if (entity is Directory) {
       pathList.add(p.basename(entity.path));
     }
     fileSystemEntities.value = Directory(entity.path).listSync();
@@ -44,11 +44,8 @@ class AppController {
     }
   }
 
-
-
   void updateViewType() {
     Preferences.setViewType(!showGrid.value);
     showGrid.value = !showGrid.value;
-
   }
 }

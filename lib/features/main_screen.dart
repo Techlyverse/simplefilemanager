@@ -1,3 +1,5 @@
+import 'package:filemanager/helper/context_extension.dart';
+import 'package:filemanager/widgets/quick_access.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
@@ -8,12 +10,21 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [],
+      body: Row(
+        children: [
+          if (!context.isMobile) QuickAccess(),
+          Expanded(
+            child: Column(
+              children: [
+                if (context.isMobile) QuickAccess(),
+                Center(child: Text("hello"))
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
