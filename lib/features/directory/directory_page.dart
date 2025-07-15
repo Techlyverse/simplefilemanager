@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:io';
 import 'package:filemanager/helper/app_controller.dart';
+import 'package:filemanager/helper/context_extension.dart';
 import 'package:filemanager/helper/extension.dart';
 import 'package:filemanager/widgets/entity_viewer.dart';
+import 'package:filemanager/widgets/quick_access.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:path/path.dart' as p;
@@ -63,11 +65,25 @@ class _DirectoryPageState extends State<DirectoryPage> {
               ],
             ),
             body:
-                   ValueListenableBuilder(
-                      valueListenable: controller.fileSystemEntities,
-                      builder: (_, entities, __) {
-                        return EntityViewer(entities: entities);
-                      }),
+                   Row(
+                     children: [
+                       if (!context.isMobile) QuickAccess(),
+                       Expanded(
+                         child: Column(
+                           children: [
+                             if (context.isMobile) QuickAccess(),
+                             Expanded(
+                               child: ValueListenableBuilder(
+                                  valueListenable: controller.fileSystemEntities,
+                                  builder: (_, entities, __) {
+                                    return EntityViewer(entities: entities);
+                                  }),
+                             ),
+                           ],
+                         ),
+                       ),
+                     ],
+                   ),
 
             // adding the floatingActionButton -MG
             //floatingActionButton: FloatingActionButton(onPressed: () {}, child: Icon(Icons.unfold_more),),

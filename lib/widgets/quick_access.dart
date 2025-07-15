@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:filemanager/helper/context_extension.dart';
 import 'package:filemanager/model/quick_access_model.dart';
 import 'package:filemanager/widgets/quick_access_tile.dart';
@@ -9,26 +11,33 @@ class QuickAccess extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return !context.isMobile
-        ? SizedBox(
-            width: 250,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: directories.map((e) {
-                return QuickAccessTile(icon: e.image, title: e.title);
-              }).toList(),
-            ),
+        ?
+          Container(
+            color: context.colorScheme.onSecondary,
+            child: SizedBox(
+                width: (context.widthOfScreen / 3.0).clamp(220, 300),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: directories.map((e) {
+                    return QuickAccessTile(icon: e.image, title: e.title);
+                  }).toList(),
+                ),
+              ),
           )
-        : Wrap(
-            children: directories.map((e) {
-            return QuickAccessTile(icon: e.image, title: e.title);
-          }).toList());
+        : SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(// make this wrap later
+              children: directories.map((e) {
+              return QuickAccessTile(icon: e.image, title: e.title);
+            }).toList()),
+        );
   }
 }
 
 List<QuickAccessModel> directories = [
-  QuickAccessModel(image: "assets/downloads.png", title: "Downloads"),
+  QuickAccessModel(image: "assets/videos.png", title: "Downloads"),
   QuickAccessModel(image: "assets/videos.png", title: "Videos"),
-  QuickAccessModel(image: "assets/downloads.png", title: "Downloads"),
+  QuickAccessModel(image: "assets/videos.png", title: "Downloads"),
   QuickAccessModel(image: "assets/videos.png", title: "Videos"),
-  QuickAccessModel(image: "assets/downloads.png", title: "Downloads"),
+  QuickAccessModel(image: "assets/videos.png", title: "Downloads"),
 ];
