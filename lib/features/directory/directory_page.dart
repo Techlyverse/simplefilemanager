@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:filemanager/helper/app_controller.dart';
 import 'package:filemanager/helper/context_extension.dart';
 import 'package:filemanager/helper/extension.dart';
+import 'package:filemanager/helper/he.dart';
+import 'package:filemanager/widgets/currentDirPath.dart';
 import 'package:filemanager/widgets/entity_viewer.dart';
 import 'package:filemanager/widgets/quick_access.dart';
 import 'package:flutter/material.dart';
@@ -43,11 +45,19 @@ class _DirectoryPageState extends State<DirectoryPage> {
                 },
                 icon: Icon(Icons.arrow_back),
               ),
-              title: ValueListenableBuilder<FileSystemEntity>(
-                valueListenable: controller.fileSystemEntity,
-                builder: (_, entity, __) {
-                  return Text(entity.name, style: TextStyle(fontSize: size * 0.07),);
-                },
+              title: Row(
+                children: [
+                  ValueListenableBuilder<FileSystemEntity>(
+                    valueListenable: controller.fileSystemEntity,
+                    builder: (_, entity, __) {
+                      return Text(entity.name, style: TextStyle(fontSize: size * 0.07),);
+                    },
+                  ),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  if (!context.isMobile) const CurDirectoryPathBar(),
+                ],
               ),
               actions: [
                 ValueListenableBuilder(
