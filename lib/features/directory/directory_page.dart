@@ -50,7 +50,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
                   ValueListenableBuilder<FileSystemEntity>(
                     valueListenable: controller.fileSystemEntity,
                     builder: (_, entity, __) {
-                      return Text(entity.name, style: TextStyle(fontSize: size * 0.07),);
+                      return Text(entity.name, style: TextStyle(fontSize: (size * 0.07).clamp(20, 24)),);
                     },
                   ),
                   SizedBox(
@@ -81,7 +81,9 @@ class _DirectoryPageState extends State<DirectoryPage> {
                        Expanded(
                          child: Column(
                            children: [
-                             if (context.isMobile) QuickAccess(),
+                             if (context.isMobile) SizedBox(height: 50, child: CurDirectoryPathBar()),
+                             if (context.isMobile) SizedBox(height: 80,child: QuickAccess()),
+                             if (!context.isMobile) SizedBox(height: 10,),
                              Expanded(
                                child: ValueListenableBuilder(
                                   valueListenable: controller.fileSystemEntities,

@@ -20,19 +20,21 @@ class EntityViewer extends StatelessWidget {
   }
 
   Widget buildGrid() {
-    return Wrap(
-      spacing: 10,
-      runSpacing: 10,
-      children: entities.map((entity) {
-        return EntityGridTile(
-          entity: entity,
-          onTap: () {
-            entity is File
-                ? OpenFile.open(entity.path)
-                : AppController().openDirectory(entity);
-          },
-        );
-      }).toList(),
+    return SingleChildScrollView(
+      child: Wrap(
+        spacing: 10,
+        runSpacing: 10,
+        children: entities.map((entity) {
+          return EntityGridTile(
+            entity: entity,
+            onTap: () {
+              entity is File
+                  ? OpenFile.open(entity.path)
+                  : AppController().openDirectory(entity);
+            },
+          );
+        }).toList(),
+      ),
     );
   }
 

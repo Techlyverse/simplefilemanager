@@ -9,12 +9,15 @@ class QuickAccessTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final colorOfTile = isDarkMode? Colors.indigo.shade700 : Colors.indigo.shade100;
     return Container(
-      width: 200,
+      //width: 200,
+      width: (context.widthOfScreen / 3.1).clamp(210, 290),
       padding: const EdgeInsets.all(8.0),
       margin: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
-        color: Colors.blue.shade50,
+        color: colorOfTile,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -25,7 +28,7 @@ class QuickAccessTile extends StatelessWidget {
             height: context.isMobile ? 45 : 30,
           ),
           SizedBox(width: 20),
-          Text(title),
+          Text(title, style: TextStyle(color: context.colorScheme.onSurface),),
         ],
       ),
     );
