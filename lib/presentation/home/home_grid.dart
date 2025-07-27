@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import '../directory/directory_page.dart';
+
+import '../components/directory/directory_page.dart';
 
 class HomeGrid extends StatelessWidget {
   const HomeGrid({super.key, required this.directories});

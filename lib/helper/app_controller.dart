@@ -11,10 +11,12 @@ class AppController {
   static final AppController _instance = AppController._();
   factory AppController() => _instance;
 
-  static final _initialDirectory = Directory(r'C:/');
+  static final _initialDirectory = Directory(r'C:/Development');
   // a list that contains all the directories that we went through for the current directory -MG
   List<String> pathList = [_initialDirectory.toString()];
   ValueNotifier<bool> showGrid = ValueNotifier(Preferences.getViewType());
+
+  ValueNotifier<Directory> currentDirectory = ValueNotifier(Directory(r'C:/Development'));
 
   ValueNotifier<FileSystemEntity> fileSystemEntity =
       ValueNotifier(_initialDirectory);

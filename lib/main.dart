@@ -1,7 +1,6 @@
-import 'package:filemanager/features/main_screen.dart';
 import 'package:flutter/material.dart';
-import 'features/directory/directory_page.dart';
 import 'preferences/preferences.dart';
+import 'presentation/main_screen.dart';
 import 'theme/dark_theme.dart';
 import 'theme/light_theme.dart';
 
@@ -20,6 +19,7 @@ class MyApp extends StatelessWidget {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: ThemeMode.system,
+      debugShowCheckedModeBanner: false,
       home: const MainScreen(),
     );
   }
