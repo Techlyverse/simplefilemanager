@@ -20,4 +20,7 @@ final ThemeData lightTheme = ThemeData(
   ),
   appBarTheme: AppBarTheme(backgroundColor: Colors.indigo.shade100),
   scaffoldBackgroundColor: Colors.white,
+  iconButtonTheme: IconButtonThemeData(
+    style: IconButton.styleFrom(iconSize: 18),
+  ),
 );

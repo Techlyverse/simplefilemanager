@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:filemanager/preferences/preferences.dart';
 import 'package:flutter/cupertino.dart';

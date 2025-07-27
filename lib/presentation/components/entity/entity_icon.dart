@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:filemanager/globals.dart';
 import 'package:filemanager/helper/extension.dart';
 import 'package:flutter/material.dart';
-import '../data/media_icons.dart';
+import '../../../data/media_icons.dart';
 
 class EntityIcon extends StatelessWidget {
   const EntityIcon(this.entity, {super.key});

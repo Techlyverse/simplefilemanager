@@ -1,10 +1,11 @@
 import 'dart:io';
 
 import 'package:filemanager/helper/app_controller.dart';
-import 'package:filemanager/widgets/entity_grid_tile.dart';
-import 'package:filemanager/widgets/entity_list_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:open_file/open_file.dart';
+
+import 'entity_grid_tile.dart';
+import 'entity_list_tile.dart';
 
 class EntityViewer extends StatelessWidget {
   const EntityViewer({super.key, required this.entities});

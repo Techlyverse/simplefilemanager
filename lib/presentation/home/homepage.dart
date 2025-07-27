@@ -1,9 +1,9 @@
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:filemanager/features/directory/directory_page.dart';
 import 'package:filemanager/preferences/preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../helper/app_controller.dart';
+import '../components/directory/directory_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -18,8 +18,6 @@ class _HomePageState extends State<HomePage> {
 
   List<Permission> permissions = [];
   bool isPermissionGranted = false;
-
-
 
   //TODO: create a helper class for this
   Future<int> getAndroidSdkVersion() async {

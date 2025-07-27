@@ -8,7 +8,7 @@ final ThemeData darkTheme = ThemeData(
     seedColor: Colors.indigo,
     brightness: Brightness.dark,
   ),
-    textTheme: GoogleFonts.poppinsTextTheme().copyWith(
+    textTheme: GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme).copyWith(
       bodyMedium: GoogleFonts.poppins(
         fontSize: isAndroid ? 14 : 18,
       ),

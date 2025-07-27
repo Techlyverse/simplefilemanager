@@ -1,7 +1,6 @@
 import 'dart:io';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import '../directory/directory_page.dart';
+import '../components/directory/directory_page.dart';
 
 class HomeList extends StatelessWidget {
   const HomeList({super.key, required this.directories});
