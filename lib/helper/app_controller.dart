@@ -1,24 +1,59 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:filemanager/preferences/preferences.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class AppController {
   AppController._();
   static final AppController _instance = AppController._();
   factory AppController() => _instance;
 
-  static final _initialDirectory = Directory(r'/home/manu/Downloads');
+  static final Directory _alternateDirectory = Directory(r'/home/manu/Downloads');
+  late Directory _initialDirectory;
+
+  //static final _initialDirectory = Directory(r'/home/manu/Downloads');
   // a list that contains all the directories that we went through for the current directory -MG
-  List<String> pathList = [_initialDirectory.toString()];
+  //List<String> pathList = [_initialDirectory.toString()];
+  late List<String> pathList;
   ValueNotifier<bool> showGrid = ValueNotifier(Preferences.getViewType());
 
-  ValueNotifier<FileSystemEntity> fileSystemEntity =
-      ValueNotifier(_initialDirectory);
+  //ValueNotifier<FileSystemEntity> fileSystemEntity =
+  //    ValueNotifier(_initialDirectory);
+  late ValueNotifier<FileSystemEntity> fileSystemEntity;
   ValueNotifier<List<FileSystemEntity>> fileSystemEntities = ValueNotifier([]);
+
+
+
+  Future<Directory> _getPlatformRootDirectory() async {
+    if(Platform.isAndroid){
+      final dir = await getExternalStorageDirectory();
+      if(dir != null){
+        String newPath = "";
+        List<String> folders = dir.path.split("/");
+        for (int i = 1; i < folders.length; i++){
+          if(folders[i] == "Android") break;
+          newPath += "/${folders[i]}";
+        }
+        return Directory(newPath);
+      }
+    }
+
+    return _alternateDirectory;
+  }
+
+  Future<void> init() async{
+    _initialDirectory = await _getPlatformRootDirectory();
+
+    pathList = [_initialDirectory.path];
+    fileSystemEntity = ValueNotifier<FileSystemEntity>(_initialDirectory);
+    await loadInitialFiles();
+  }
 
   Future<void> loadInitialFiles() async {
     try {
@@ -38,9 +73,15 @@ class AppController {
   }
 
   Future<void> navigateBack() async {
-    final bool isParentExists = await fileSystemEntity.value.parent.exists();
-    if (isParentExists) {
-      openDirectory(fileSystemEntity.value.parent);
+    // final bool isParentExists = await fileSystemEntity.value.parent.exists();
+    // if (isParentExists) {
+    //   openDirectory(fileSystemEntity.value.parent);
+    // }
+    final current = fileSystemEntity.value;
+    if(current == null) return;
+    final parent = current.parent;
+    if(await parent.exists()){
+      openDirectory(parent);
     }
   }
 
