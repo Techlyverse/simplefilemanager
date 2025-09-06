@@ -28,7 +28,10 @@ class QuickAccessTile extends StatelessWidget {
             height: context.isMobile ? 45 : 30,
           ),
           SizedBox(width: 20),
-          Text(title, style: TextStyle(color: context.colorScheme.onSurface),),
+          //Text(title, style: TextStyle(color: context.colorScheme.onSurface),),
+          Text(title, style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            color: Theme.of(context).colorScheme.onSurface
+          ),)
         ],
       ),
     );

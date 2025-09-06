@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:filemanager/globals.dart';
 import 'package:filemanager/helper/extension.dart';
 import 'package:flutter/material.dart';
 
@@ -19,8 +20,8 @@ class EntityGridTile extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return SizedBox(
-      width: 70,
-      height: 70,
+      width: isAndroid ? 90 : 70,
+      height: isAndroid? 90 : 70,
       child: TextButton(
         onPressed: onTap,
         style: TextButton.styleFrom(
@@ -39,7 +40,7 @@ class EntityGridTile extends StatelessWidget {
               maxLines: 1,
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 10),
+              style: TextStyle(fontSize: isAndroid ? 14 : 10),
             ),
           ],
         ),

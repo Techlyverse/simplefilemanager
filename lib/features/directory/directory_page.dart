@@ -50,7 +50,8 @@ class _DirectoryPageState extends State<DirectoryPage> {
                   ValueListenableBuilder<FileSystemEntity>(
                     valueListenable: controller.fileSystemEntity,
                     builder: (_, entity, __) {
-                      return Text(entity.name, style: TextStyle(fontSize: (size * 0.07).clamp(20, 24)),);
+                      //return Text(entity.name, style: TextStyle(fontSize: (size * 0.07).clamp(20, 24)),);
+                      return Text(entity.name, style:  Theme.of(context).textTheme.titleMedium ) ;
                     },
                   ),
                   SizedBox(
