@@ -27,6 +27,7 @@ class AppController {
   //    ValueNotifier(_initialDirectory);
   late ValueNotifier<FileSystemEntity> fileSystemEntity;
   ValueNotifier<List<FileSystemEntity>> fileSystemEntities = ValueNotifier([]);
+  ValueNotifier<List<Directory>> directoriesInRoot = ValueNotifier([]);
 
 
 
@@ -45,6 +46,17 @@ class AppController {
     }
 
     return _alternateDirectory;
+  }
+
+  Future<void> listOfDirectoriesInRoot() async{
+    final Directory root = await _getPlatformRootDirectory();
+    final listOfRootDir = root.listSync().whereType<Directory>().toList();
+    if (listOfRootDir != []) {
+      directoriesInRoot.value = listOfRootDir;
+    } else {
+      directoriesInRoot.value = [];
+    }
+
   }
 
   Future<void> init() async{

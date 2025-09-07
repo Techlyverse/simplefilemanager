@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:filemanager/globals.dart';
@@ -5,9 +6,14 @@ import 'package:filemanager/helper/context_extension.dart';
 import 'package:filemanager/model/quick_access_model.dart';
 import 'package:filemanager/widgets/quick_access_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
 
 class QuickAccess extends StatelessWidget {
-  const QuickAccess({super.key});
+  final List<Directory> dirInRoot;
+  const QuickAccess({
+    required this.dirInRoot,
+    super.key
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +26,14 @@ class QuickAccess extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: (isAndroid ? directoriesMobile : directoriesNotMobile).map((e) {
-                    return QuickAccessTile(icon: e.image, title: e.title);
+                    final exists = dirInRoot.any(
+                        (dir) => p.basename(dir.path).toLowerCase() == e.title.toLowerCase()
+                    );
+                    if (exists){
+                      return QuickAccessTile(icon: e.image, title: e.title);
+                    } else {
+                      return const SizedBox.shrink();
+                    }
                   }).toList(),
                 ),
               ),
@@ -29,15 +42,22 @@ class QuickAccess extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           child: Row(// make this wrap later
               children: (isAndroid ? directoriesMobile : directoriesNotMobile).map((e) {
-              return QuickAccessTile(icon: e.image, title: e.title);
-            }).toList()),
+                final exists = dirInRoot.any(
+                        (dir) => p.basename(dir.path).toLowerCase() == e.title.toLowerCase()
+                );
+                if (exists){
+                  return QuickAccessTile(icon: e.image, title: e.title);
+                } else {
+                  return const SizedBox.shrink();
+                }
+              }).toList()),
         );
   }
 }
 
 List<QuickAccessModel> directoriesMobile = [
-  QuickAccessModel(image: "assets/videos.png", title: "Downloads"),
-  QuickAccessModel(image: "assets/videos.png", title: "Images"),
+  QuickAccessModel(image: "assets/videos.png", title: "Download"),
+  QuickAccessModel(image: "assets/videos.png", title: "Pictures"),
   QuickAccessModel(image: "assets/videos.png", title: "Videos"),
   QuickAccessModel(image: "assets/videos.png", title: "Audio"),
   QuickAccessModel(image: "assets/videos.png", title: "Documents"),

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ffi';
 import 'dart:io';
+import 'package:filemanager/globals.dart';
 import 'package:filemanager/helper/app_controller.dart';
 import 'package:filemanager/helper/context_extension.dart';
 import 'package:filemanager/helper/extension.dart';
@@ -27,6 +28,8 @@ class _DirectoryPageState extends State<DirectoryPage> {
   void initState() {
     /// Open the given directory
     controller.loadInitialFiles();
+    controller.listOfDirectoriesInRoot();
+
     super.initState();
   }
 
@@ -78,12 +81,28 @@ class _DirectoryPageState extends State<DirectoryPage> {
             body:
                    Row(
                      children: [
-                       if (!context.isMobile) QuickAccess(),
+                       if (!context.isMobile)
+                         //QuickAccess(dirInRoot: controller.directoriesInRoot.value,),
+                         ValueListenableBuilder(
+                             valueListenable: controller.directoriesInRoot,
+                             builder: (_, dirs, __){
+                               return QuickAccess(dirInRoot: dirs);
+                             }
+                         ),
                        Expanded(
                          child: Column(
                            children: [
                              if (context.isMobile) SizedBox(height: 50, child: CurDirectoryPathBar()),
-                             if (context.isMobile) SizedBox(height: 80,child: QuickAccess()),
+                             if (context.isMobile) SizedBox(
+                                 height: 80,
+                                 //child: QuickAccess(dirInRoot: controller.directoriesInRoot.value,)
+                                 child: ValueListenableBuilder(
+                                     valueListenable: controller.directoriesInRoot,
+                                     builder: (_, dirs, __){
+                                       return QuickAccess(dirInRoot: dirs);
+                                     }
+                                 ),
+                             ),
                              if (!context.isMobile) SizedBox(height: 10,),
                              Expanded(
                                child: ValueListenableBuilder(
