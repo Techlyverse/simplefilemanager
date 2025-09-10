@@ -1,8 +1,8 @@
-import 'package:filemanager/data/view_type.dart';
 import 'package:filemanager/helper/context_extension.dart';
 import 'package:filemanager/model/quick_access_model.dart';
 import 'package:flutter/material.dart';
 
+import '../../../data/enums.dart';
 import 'quick_access_tile.dart';
 
 class QuickAccess extends StatelessWidget {

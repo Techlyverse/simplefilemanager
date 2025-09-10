@@ -30,129 +30,11 @@ class _DirectoryPageState extends State<DirectoryPage> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-      double size = constraints.biggest.shortestSide * 0.5;
-      return Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          //backgroundColor: Colors.cyan.shade100,
-          leading: IconButton(
-            onPressed: () {
-              controller.navigateBack();
-            },
-            icon: Icon(Icons.arrow_back),
-          ),
-          title: ValueListenableBuilder<FileSystemEntity>(
-            valueListenable: controller.fileSystemEntity,
-            builder: (_, entity, __) {
-              return Text(
-                entity.name,
-                style: TextStyle(fontSize: size * 0.07),
-              );
-            },
-          ),
-          actions: [
-
-          ],
-        ),
-        body: ValueListenableBuilder(
-            valueListenable: controller.fileSystemEntities,
-            builder: (_, entities, __) {
-              return EntityViewer(entities: entities);
-            }),
-
-        // adding the floatingActionButton -MG
-        //floatingActionButton: FloatingActionButton(onPressed: () {}, child: Icon(Icons.unfold_more),),
-        // trying the speed dial -MG
-        floatingActionButton: SpeedDial(
-          //overlayColor: Colors.transparent,
-          overlayOpacity: 0.2,
-          animatedIcon: AnimatedIcons.menu_close,
-          children: [
-            SpeedDialChild(
-              child: Icon(Icons.insert_drive_file),
-              label: 'Rename Folder',
-              labelStyle: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-              onTap: () async {
-                final folderNamesFromUser = await showTwoTextFieldsDialog(
-                    context,
-                    "Rename Folder",
-                    "Enter the folder you want to rename",
-                    "Enter new folder name",
-                    "Rename");
-                if (folderNamesFromUser![1].isNotEmpty) {
-                  final oldName = folderNamesFromUser[0];
-                  final newName = folderNamesFromUser[1];
-                  final currentDir =
-                      controller.fileSystemEntity.value as Directory;
-                  final oldFolder = Directory(p.join(currentDir.path, oldName));
-                  if (await oldFolder.exists()) {
-                    await renameCurrentFolder(newName, oldFolder);
-                  } else {
-                    await showTimedDialog(context,
-                        "The folder you want to rename does not exist.");
-                  }
-                  controller.fileSystemEntities.value =
-                      (controller.fileSystemEntity.value as Directory)
-                          .listSync();
-                } else {
-                  await showTimedDialog(context,
-                      "Either the folder you want to rename does not exist or you did not fill the data required, please retry.");
-                }
-              },
-            ),
-            SpeedDialChild(
-              child: Icon(Icons.create_new_folder),
-              label: 'Create Folder',
-              labelStyle: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-              onTap: () async {
-                final currentDirPath = controller.fileSystemEntity.value.path;
-                final folderNameFromUser = await showEditingFolderDialog(
-                    context,
-                    "Create Folder",
-                    "Enter new folder name",
-                    "Create");
-                if (folderNameFromUser != null &&
-                    folderNameFromUser.isNotEmpty) {
-                  await createNewFolderInCurrentDir(
-                      folderNameFromUser!, currentDirPath);
-                  controller.fileSystemEntities.value =
-                      (controller.fileSystemEntity.value as Directory)
-                          .listSync();
-                }
-              },
-            ),
-            SpeedDialChild(
-              child: Icon(Icons.delete),
-              label: 'Delete',
-              labelStyle: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-              onTap: () async {
-                final currentDirPath = controller.fileSystemEntity.value.path;
-                final folderToBeDeletedFromUser = await showEditingFolderDialog(
-                    context,
-                    "Delete Folder",
-                    "Enter the name of folder to be deleted",
-                    "Delete");
-                final isUserSure = await showChoiceDialog(context,
-                    "Are you sure you want to delete ${folderToBeDeletedFromUser} folder?");
-                if (folderToBeDeletedFromUser != null &&
-                    folderToBeDeletedFromUser.isNotEmpty &&
-                    isUserSure == true) {
-                  await deleteFolder(folderToBeDeletedFromUser, currentDirPath);
-                  controller.fileSystemEntities.value =
-                      (controller.fileSystemEntity.value as Directory)
-                          .listSync();
-                }
-              },
-            )
-          ],
-        ),
-      );
+      return ValueListenableBuilder(
+          valueListenable: controller.fileSystemEntities,
+          builder: (_, entities, __) {
+            return EntityViewer(entities: entities);
+          });
     });
   }
 
@@ -336,3 +218,116 @@ class _DirectoryPageState extends State<DirectoryPage> {
     }
   }
 }
+
+// appBar: AppBar(
+//   elevation: 0,
+//   //backgroundColor: Colors.cyan.shade100,
+//   leading: IconButton(
+//     onPressed: () {
+//       controller.navigateBack();
+//     },
+//     icon: Icon(Icons.arrow_back),
+//   ),
+//   title: ValueListenableBuilder<FileSystemEntity>(
+//     valueListenable: controller.fileSystemEntity,
+//     builder: (_, entity, __) {
+//       return Text(
+//         entity.name,
+//         style: TextStyle(fontSize: size * 0.07),
+//       );
+//     },
+//   ),
+//   actions: [],
+// ),
+
+/*
+floatingActionButton: SpeedDial(
+          //overlayColor: Colors.transparent,
+          overlayOpacity: 0.2,
+          animatedIcon: AnimatedIcons.menu_close,
+          children: [
+            SpeedDialChild(
+              child: Icon(Icons.insert_drive_file),
+              label: 'Rename Folder',
+              labelStyle: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+              onTap: () async {
+                final folderNamesFromUser = await showTwoTextFieldsDialog(
+                    context,
+                    "Rename Folder",
+                    "Enter the folder you want to rename",
+                    "Enter new folder name",
+                    "Rename");
+                if (folderNamesFromUser![1].isNotEmpty) {
+                  final oldName = folderNamesFromUser[0];
+                  final newName = folderNamesFromUser[1];
+                  final currentDir =
+                      controller.fileSystemEntity.value as Directory;
+                  final oldFolder = Directory(p.join(currentDir.path, oldName));
+                  if (await oldFolder.exists()) {
+                    await renameCurrentFolder(newName, oldFolder);
+                  } else {
+                    await showTimedDialog(context,
+                        "The folder you want to rename does not exist.");
+                  }
+                  controller.fileSystemEntities.value =
+                      (controller.fileSystemEntity.value as Directory)
+                          .listSync();
+                } else {
+                  await showTimedDialog(context,
+                      "Either the folder you want to rename does not exist or you did not fill the data required, please retry.");
+                }
+              },
+            ),
+            SpeedDialChild(
+              child: Icon(Icons.create_new_folder),
+              label: 'Create Folder',
+              labelStyle: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+              onTap: () async {
+                final currentDirPath = controller.fileSystemEntity.value.path;
+                final folderNameFromUser = await showEditingFolderDialog(
+                    context,
+                    "Create Folder",
+                    "Enter new folder name",
+                    "Create");
+                if (folderNameFromUser != null &&
+                    folderNameFromUser.isNotEmpty) {
+                  await createNewFolderInCurrentDir(
+                      folderNameFromUser!, currentDirPath);
+                  controller.fileSystemEntities.value =
+                      (controller.fileSystemEntity.value as Directory)
+                          .listSync();
+                }
+              },
+            ),
+            SpeedDialChild(
+              child: Icon(Icons.delete),
+              label: 'Delete',
+              labelStyle: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+              onTap: () async {
+                final currentDirPath = controller.fileSystemEntity.value.path;
+                final folderToBeDeletedFromUser = await showEditingFolderDialog(
+                    context,
+                    "Delete Folder",
+                    "Enter the name of folder to be deleted",
+                    "Delete");
+                final isUserSure = await showChoiceDialog(context,
+                    "Are you sure you want to delete ${folderToBeDeletedFromUser} folder?");
+                if (folderToBeDeletedFromUser != null &&
+                    folderToBeDeletedFromUser.isNotEmpty &&
+                    isUserSure == true) {
+                  await deleteFolder(folderToBeDeletedFromUser, currentDirPath);
+                  controller.fileSystemEntities.value =
+                      (controller.fileSystemEntity.value as Directory)
+                          .listSync();
+                }
+              },
+            )
+          ],
+        ),
+ */
