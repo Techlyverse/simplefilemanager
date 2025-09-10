@@ -15,8 +15,9 @@ class EntityViewer extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
         valueListenable: AppController().showGrid,
-        builder: (_, showGrid, __) {
-          return showGrid ? buildGrid() : buildList();
+        builder: (_, isGrid, __) {
+          // TODO: replace bool with EntityViewType for more view options
+          return isGrid ? buildGrid() : buildList();
         });
   }
 
