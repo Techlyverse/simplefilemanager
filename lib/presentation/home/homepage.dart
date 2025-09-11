@@ -72,7 +72,7 @@ class _HomePageState extends State<HomePage> {
           title: const Text('My Files'),
           actions: [
             ValueListenableBuilder(
-                valueListenable: controller.showGrid,
+                valueListenable: controller.entityViewTypeNotifier,
                 builder: (_, showGrid, __) {
                   return IconButton(
                     onPressed: () {

@@ -6,6 +6,7 @@ class Preferences {
   static late final SharedPreferences _prefs;
   static const _keyViewType = 'viewType';
   static const _keyAndroidSdk = 'androidSdk';
+  static const _keyRootDirPaths = 'rootDirPaths';
 
   static Future<void> initPreferences() async {
     _prefs = await SharedPreferences.getInstance();
@@ -16,4 +17,7 @@ class Preferences {
 
   static Future<void> setAndroidVersion(int sdk) async => await _prefs.setInt(_keyAndroidSdk, sdk);
   static int? getAndroidVersion() => _prefs.getInt(_keyAndroidSdk);
+
+  static Future<void> setRootDirPaths(List<String> paths) async => await _prefs.setStringList(_keyRootDirPaths, paths);
+  static List<String>? getRootDirPaths() => _prefs.getStringList(_keyRootDirPaths);
 }

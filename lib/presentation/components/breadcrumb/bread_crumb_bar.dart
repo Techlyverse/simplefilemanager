@@ -10,7 +10,7 @@ class BreadCrumbBar extends StatelessWidget {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: ValueListenableBuilder<Directory>(
-        valueListenable: AppController().currentDirectory,
+        valueListenable: AppController().currentDirNotifier,
         builder: (_, dir, __) {
           return Row(
             children: dir.uri.pathSegments

@@ -14,7 +14,7 @@ class EntityViewer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-        valueListenable: AppController().showGrid,
+        valueListenable: AppController().entityViewTypeNotifier,
         builder: (_, isGrid, __) {
           // TODO: replace bool with EntityViewType for more view options
           return isGrid ? buildGrid() : buildList();
