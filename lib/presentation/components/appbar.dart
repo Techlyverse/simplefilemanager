@@ -26,7 +26,7 @@ AppBar appBar(BuildContext context) {
         icon: Icon(Icons.arrow_back),
       ),
       title: ValueListenableBuilder<FileSystemEntity>(
-        valueListenable: controller.fileSystemEntity,
+        valueListenable: controller.fileSystemEntityNotifier,
         builder: (_, entity, __) => Text(entity.name),
       ),
       actions: [],
@@ -54,7 +54,7 @@ AppBar appBar(BuildContext context) {
         : SizedBox(),
     actions: [
       ValueListenableBuilder(
-          valueListenable: controller.showGrid,
+          valueListenable: controller.entityViewTypeNotifier,
           builder: (_, showGrid, __) {
             return IconButton(
               onPressed: () {

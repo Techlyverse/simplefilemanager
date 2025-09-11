@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:path_provider/path_provider.dart';
 import 'package:filemanager/preferences/preferences.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -13,6 +13,15 @@ class AppController {
   static final AppController _instance = AppController._();
   factory AppController() => _instance;
 
+  static late final Directory _directory;
+  static late final Directory _tempDirectory;
+
+
+  final ValueNotifier<bool> entityViewTypeNotifier = ValueNotifier(Preferences.getViewType());
+  final ValueNotifier<Directory> currentDirNotifier = ValueNotifier(Directory(r'C:/Development'));
+  final ValueNotifier<FileSystemEntity> fileSystemEntityNotifier = ValueNotifier(_directory);
+  final ValueNotifier<List<FileSystemEntity>> fileSystemEntities = ValueNotifier([]);
+
   static final Directory _alternateDirectory = Directory(r'/home/manu/Downloads');
   late Directory _initialDirectory;
 
@@ -21,6 +30,14 @@ class AppController {
   //List<String> pathList = [_initialDirectory.toString()];
   late List<String> pathList;
   ValueNotifier<bool> showGrid = ValueNotifier(Preferences.getViewType());
+  List<String> pathList = [_directory.toString()];
+
+  Future<void> initController() async {
+    _directory =
+    _tempDirectory = await getApplicationDocumentsDirectory();
+
+  }
+
 
   //ValueNotifier<FileSystemEntity> fileSystemEntity =
   //    ValueNotifier(_initialDirectory);
@@ -101,14 +118,14 @@ class AppController {
 
   Future<void> loadInitialFiles() async {
     try {
-      fileSystemEntities.value = _initialDirectory.listSync();
+      fileSystemEntities.value = _directory.listSync();
     } catch (e) {
-      fileSystemEntity.value = _initialDirectory;
+      fileSystemEntityNotifier.value = _directory;
     }
   }
 
   void openDirectory(FileSystemEntity entity) async {
-    fileSystemEntity.value = entity;
+    fileSystemEntityNotifier.value = entity;
     // adding the directory to the list
     if (entity is Directory) {
       pathList.add(p.basename(entity.path));
@@ -126,11 +143,21 @@ class AppController {
     final parent = current.parent;
     if(await parent.exists()){
       openDirectory(parent);
+    final bool isParentExists = await fileSystemEntityNotifier.value.parent.exists();
+    if (isParentExists) {
+      openDirectory(fileSystemEntityNotifier.value.parent);
     }
   }
 
   void updateViewType() {
-    Preferences.setViewType(!showGrid.value);
-    showGrid.value = !showGrid.value;
+    Preferences.setViewType(!entityViewTypeNotifier.value);
+    entityViewTypeNotifier.value = !entityViewTypeNotifier.value;
   }
+
+
+
+
+
+
+  Future<Directory> _getRootDirectory()async{}
 }
