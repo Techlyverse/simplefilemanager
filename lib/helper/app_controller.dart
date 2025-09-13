@@ -1,137 +1,69 @@
 import 'dart:io';
-import 'dart:ui';
-
+import 'package:filemanager/helper/directory_helper.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:filemanager/preferences/preferences.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class AppController {
   AppController._();
   static final AppController _instance = AppController._();
   factory AppController() => _instance;
 
-  static final Directory _alternateDirectory = Directory(r'/home/manu/Downloads');
-  late Directory _initialDirectory;
+  late final List<Directory> rootDirs;
+  static late final Directory _tempDir;
 
-  //static final _initialDirectory = Directory(r'/home/manu/Downloads');
-  // a list that contains all the directories that we went through for the current directory -MG
-  //List<String> pathList = [_initialDirectory.toString()];
-  late List<String> pathList;
-  ValueNotifier<bool> showGrid = ValueNotifier(Preferences.getViewType());
-
-  //ValueNotifier<FileSystemEntity> fileSystemEntity =
-  //    ValueNotifier(_initialDirectory);
-  late ValueNotifier<FileSystemEntity> fileSystemEntity;
-  ValueNotifier<List<FileSystemEntity>> fileSystemEntities = ValueNotifier([]);
-  ValueNotifier<List<Directory>> directoriesInRoot = ValueNotifier([]);
+  final ValueNotifier<bool> viewType = ValueNotifier(Preferences.getViewType());
+  final ValueNotifier<FileSystemEntity?> currentEntity = ValueNotifier(null);
   // for long press on icons
   ValueNotifier<FileSystemEntity?> selectedEntity = ValueNotifier(null);
 
+  //final ValueNotifier<List<FileSystemEntity>> entities = ValueNotifier([]);
+  //late final ValueNotifier<Directory> currentDir;
 
+  // a list that contains all the directories that we went through for the current directory -MG
+  List<String> pathList = [];
 
-  Future<Directory> _getPlatformRootDirectory() async {
-    if(Platform.isAndroid){
-      final dir = await getExternalStorageDirectory();
-      if(dir != null){
-        String newPath = "";
-        List<String> folders = dir.path.split("/");
-        for (int i = 1; i < folders.length; i++){
-          if(folders[i] == "Android") break;
-          newPath += "/${folders[i]}";
-        }
-        return Directory(newPath);
-      }
-    }
-
-    Directory? startingDir;
-    String? userPath;
-
-    if (Platform.isLinux || Platform.isMacOS){
-      userPath = Platform.environment['HOME'];
-      startingDir = await getApplicationDocumentsDirectory();
-    } else if (Platform.isWindows){
-      userPath = Platform.environment['USERPROFILE'];
-      startingDir = await getApplicationDocumentsDirectory();
-    }
-
-    if (startingDir == null){
-      return _alternateDirectory;
-    }
-
-    if(userPath != null){
-      Directory current = startingDir;
-      while (current.path != userPath && current.parent.path != current.path) {
-        current = current.parent;
-      }
-
-      return current;
-    }
-
-    Directory root = startingDir;
-    while (root.parent.path != root.path){
-      root = root.parent;
-    }
-
-    return root;
-
-    //return _alternateDirectory;
+  /// Fetch root directories of current platform
+  Future<void> init() async {
+    rootDirs = await DirectoryHelper().getRootDirectories();
+    _tempDir = await getApplicationDocumentsDirectory();
   }
 
-  Future<void> listOfDirectoriesInRoot() async{
-    final Directory root = await _getPlatformRootDirectory();
-    final listOfRootDir = root.listSync().whereType<Directory>().toList();
-    if (listOfRootDir != []) {
-      directoriesInRoot.value = listOfRootDir;
-    } else {
-      directoriesInRoot.value = [];
-    }
-
-  }
-
-  Future<void> init() async{
-    _initialDirectory = await _getPlatformRootDirectory();
-
-    pathList = [_initialDirectory.path];
-    fileSystemEntity = ValueNotifier<FileSystemEntity>(_initialDirectory);
-    await loadInitialFiles();
-  }
-
-  Future<void> loadInitialFiles() async {
-    try {
-      fileSystemEntities.value = _initialDirectory.listSync();
-    } catch (e) {
-      fileSystemEntity.value = _initialDirectory;
-    }
-  }
+  // Future<void> loadInitialFiles() async {
+  //   if (_currentDir != null) {
+  //     entities.value = _currentDir!.listSync();
+  //   } else {
+  //     if (_rootDirs.isNotEmpty) {
+  //       entities.value = _rootDirs;
+  //     } else {
+  //       entities.value = [_tempDir];
+  //     }
+  //   }
+  // }
 
   void openDirectory(FileSystemEntity entity) async {
-    fileSystemEntity.value = entity;
+    currentEntity.value = entity;
     // adding the directory to the list
     if (entity is Directory) {
       pathList.add(p.basename(entity.path));
     }
-    fileSystemEntities.value = Directory(entity.path).listSync();
+    //entities.value = Directory(entity.path).listSync();
   }
 
   Future<void> navigateBack() async {
-    // final bool isParentExists = await fileSystemEntity.value.parent.exists();
-    // if (isParentExists) {
-    //   openDirectory(fileSystemEntity.value.parent);
-    // }
-    final current = fileSystemEntity.value;
-    if(current == null) return;
-    final parent = current.parent;
-    if(await parent.exists()){
-      openDirectory(parent);
+    if (currentEntity.value != null) {
+      final bool isParentExists = await currentEntity.value!.parent.exists();
+      if (isParentExists) {
+        openDirectory(currentEntity.value!.parent);
+      }
     }
   }
 
   void updateViewType() {
-    Preferences.setViewType(!showGrid.value);
-    showGrid.value = !showGrid.value;
+    viewType.value = !viewType.value;
+    Preferences.setViewType(!viewType.value);
   }
 }

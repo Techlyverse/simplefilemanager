@@ -4,11 +4,12 @@ import 'package:google_fonts/google_fonts.dart';
 import '../globals.dart';
 
 final ThemeData darkTheme = ThemeData(
-  colorScheme: ColorScheme.fromSeed(
-    seedColor: Colors.indigo,
-    brightness: Brightness.dark,
-  ),
-    textTheme: GoogleFonts.poppinsTextTheme().copyWith(
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Colors.indigo,
+      brightness: Brightness.dark,
+    ),
+    textTheme:
+        GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme).copyWith(
       bodyMedium: GoogleFonts.poppins(
         fontSize: isAndroid ? 14 : 18,
       ),
@@ -22,7 +23,4 @@ final ThemeData darkTheme = ThemeData(
         fontSize: isAndroid ? 22 : 26,
       ),
     ),
-  appBarTheme: AppBarTheme(
-    backgroundColor: Colors.indigo.shade700
-  )
-);
+    appBarTheme: AppBarTheme(backgroundColor: Colors.indigo.shade700));
