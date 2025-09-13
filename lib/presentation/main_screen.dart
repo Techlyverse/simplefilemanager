@@ -14,21 +14,21 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ViewType viewType = context.viewType;
+    final LayoutType viewType = context.viewType;
 
     return Scaffold(
       appBar: appBar(context),
       body: Row(
         children: [
-          if (viewType != ViewType.mobile) QuickAccess(),
+          if (viewType != LayoutType.mobile) QuickAccess(),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (viewType != ViewType.desktop) BreadCrumbBar(),
+                if (viewType != LayoutType.desktop) BreadCrumbBar(),
                 // TODO: add bool flag to check isRootDirectory/Homepage or directory page
-                /// show quick access only in homepage
-                if (viewType == ViewType.mobile) QuickAccess(),
+                /// show quick access at top only in mobile view in homepage
+                if (viewType == LayoutType.mobile) QuickAccess(),
                 Expanded(child: const DirectoryPage()),
               ],
             ),

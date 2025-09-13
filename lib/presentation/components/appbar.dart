@@ -9,7 +9,7 @@ import '../../data/enums.dart';
 import 'breadcrumb/bread_crumb_bar.dart';
 
 AppBar appBar(BuildContext context) {
-  final ViewType viewType = context.viewType;
+  final LayoutType viewType = context.viewType;
   // TODO: your logic for selected items
   bool isSelected = true;
 
@@ -25,10 +25,10 @@ AppBar appBar(BuildContext context) {
         },
         icon: Icon(Icons.arrow_back),
       ),
-      title: ValueListenableBuilder<FileSystemEntity>(
-        valueListenable: controller.fileSystemEntityNotifier,
-        builder: (_, entity, __) => Text(entity.name),
-      ),
+      // title: controller.currentEntity.value != null ? ValueListenableBuilder<FileSystemEntity>(
+      //   valueListenable: controller.currentEntity,
+      //   builder: (_, entity, __) => Text(entity.name),
+      // ) : Text("Home"),
       actions: [],
     );
   }
@@ -48,13 +48,13 @@ AppBar appBar(BuildContext context) {
                 onPressed: () {},
                 icon: Icon(Icons.refresh),
               ),
-              if (viewType == ViewType.desktop) BreadCrumbBar(),
+              if (viewType == LayoutType.desktop) BreadCrumbBar(),
             ],
           )
         : SizedBox(),
     actions: [
       ValueListenableBuilder(
-          valueListenable: controller.entityViewTypeNotifier,
+          valueListenable: controller.viewType,
           builder: (_, showGrid, __) {
             return IconButton(
               onPressed: () {

@@ -9,11 +9,12 @@ class BreadCrumbBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      child: ValueListenableBuilder<Directory>(
-        valueListenable: AppController().currentDirNotifier,
-        builder: (_, dir, __) {
+      child: ValueListenableBuilder<FileSystemEntity?>(
+        valueListenable: AppController().currentEntity,
+        builder: (_, entity, __) {
+          if (entity == null) return SizedBox();
           return Row(
-            children: dir.uri.pathSegments
+            children: entity.uri.pathSegments
                 .where((e) => e.isNotEmpty)
                 .map((e) => TextButton.icon(
                       onPressed: () {},

@@ -10,14 +10,14 @@ class QuickAccess extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ViewType viewType = context.viewType;
+    final LayoutType layoutType = context.viewType;
 
-    switch (viewType) {
-      case ViewType.mobile:
+    switch (layoutType) {
+      case LayoutType.mobile:
         return _mobileView();
-      case ViewType.tablet:
+      case LayoutType.tablet:
         return _tabletView();
-      case ViewType.desktop:
+      case LayoutType.desktop:
         return _desktopView();
     }
   }

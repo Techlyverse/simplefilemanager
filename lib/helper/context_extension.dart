@@ -10,14 +10,14 @@ extension ContextExtension on BuildContext {
 
   bool get isDesktopView => MediaQuery.sizeOf(this).width > mobileMaxWidth;
 
-  ViewType get viewType {
+  LayoutType get viewType {
     final width = MediaQuery.sizeOf(this).width;
     if (width <= mobileMaxWidth) {
-      return ViewType.mobile;
+      return LayoutType.mobile;
     } else if (width <= tabletMaxWidth) {
-      return ViewType.tablet;
+      return LayoutType.tablet;
     } else {
-      return ViewType.desktop;
+      return LayoutType.desktop;
     }
   }
   bool get isMobile => MediaQuery.of(this).size.width <= 480;

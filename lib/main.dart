@@ -1,3 +1,4 @@
+import 'package:filemanager/helper/app_controller.dart';
 import 'dart:io';
 import 'package:filemanager/features/main_screen.dart';
 import 'package:filemanager/globals.dart';
@@ -17,6 +18,7 @@ Future<void> main() async {
   }
   await AppController().init();
   checkPlatform();
+  await AppController().init();
   runApp(const MyApp());
 }
 
