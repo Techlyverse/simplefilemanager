@@ -20,29 +20,226 @@ class _DirectoryPageState extends State<DirectoryPage> {
   final AppController controller = AppController();
 
   @override
-  void initState() {
-    /// Open the given directory
-    //controller.loadInitialFiles();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-      return ValueListenableBuilder<FileSystemEntity?>(
-          valueListenable: controller.currentEntity,
-          builder: (_, entity, __) {
-            if (entity == null) {
-              return EntityViewer(entities: controller.rootDirs);
-            }
-            if (entity is Directory) {
-              return EntityViewer(entities: entity.listSync());
-            } else {
-              return SizedBox();
-            }
-          });
-    });
+          return ValueListenableBuilder<FileSystemEntity?>(
+              valueListenable: controller.currentEntity,
+              builder: (_, entity, __) {
+                if (entity == null) {
+                  return EntityViewer(entities: controller.rootDirs);
+                }
+                if (entity is Directory) {
+                  return EntityViewer(entities: entity.listSync());
+                } else {
+                  return SizedBox();
+                }
+              });
+        });
+
+
+    /*
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          double size = constraints.biggest.shortestSide * 0.5;
+          return Scaffold(
+            appBar: AppBar(
+              elevation: 0,
+              //backgroundColor: Colors.cyan.shade100,
+              backgroundColor: controller.selectedEntity.value != null ? Colors.redAccent : null,
+              leading: ValueListenableBuilder<FileSystemEntity?>(
+                valueListenable: controller.selectedEntity,
+                builder: (context, selectedValue, _) {
+                  if (selectedValue == null) {
+                    return IconButton(
+                      onPressed: () {
+                        controller.navigateBack();
+                      },
+                      icon: Icon(Icons.arrow_back),
+                    );
+                  } else {
+                    return IconButton(
+                        onPressed: () {
+                          controller.selectedEntity.value = null;
+                        },
+                        icon: Icon(Icons.close)
+                    );
+                  }
+                }
+              ),
+              title: ValueListenableBuilder<FileSystemEntity?>(
+                valueListenable: controller.selectedEntity,
+                builder: (context, selectedValue, _) {
+                  if (selectedValue == null) {
+                    return Row(
+                      children: [
+                        ValueListenableBuilder<FileSystemEntity>(
+                          valueListenable: controller.fileSystemEntity,
+                          builder: (_, entity, __) {
+                            //return Text(entity.name, style: TextStyle(fontSize: (size * 0.07).clamp(20, 24)),);
+                            return Text(entity.name, style:  Theme.of(context).textTheme.titleMedium ) ;
+                          },
+                        ),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        if (!context.isMobile) const CurDirectoryPathBar(),
+                      ],
+                    );
+                  } else {
+                    return Text (
+                      selectedValue is File ? p.basenameWithoutExtension(selectedValue.path) : p.basename(selectedValue.path),
+                      style: Theme.of(context).textTheme.titleMedium,
+                    );
+                  }
+                }
+              ),
+              actions: [
+                ValueListenableBuilder<FileSystemEntity?>(
+                  valueListenable: controller.selectedEntity,
+                  builder: (context, selectedValue, _) {
+                    if (selectedValue == null) {
+                      return ValueListenableBuilder(
+                          valueListenable: controller.showGrid,
+                          builder: (_, showGrid, __) {
+                            return IconButton(
+                              onPressed: () {
+                                controller.updateViewType();
+                              },
+                              icon: Icon(showGrid ? Icons.list : Icons.grid_view),
+                            );
+                          });
+                    } else {
+                      return PopupMenuButton<String>(
+                          onSelected: (value){
+                            if (value == "rename"){
+                              //todo
+                            } else if (value == "delete") {
+                              // todo
+                            }
+                            controller.selectedEntity.value = null;
+                          },
+                          itemBuilder: (context) => [
+                            PopupMenuItem(value: 'rename', child: Text("Rename")),
+                            PopupMenuItem(value: 'delete', child: Text("Delete"))
+                          ]
+                      );
+                    }
+                  }
+                ),
+
+
+              ],
+            ),
+            body: Row(
+                     children: [
+                       if (!context.isMobile)
+                         //QuickAccess(dirInRoot: controller.directoriesInRoot.value,),
+                         ValueListenableBuilder(
+                             valueListenable: controller.directoriesInRoot,
+                             builder: (_, dirs, __){
+                               return QuickAccess(dirInRoot: dirs);
+                             }
+                         ),
+                       Expanded(
+                         child: Column(
+                           children: [
+                             if (context.isMobile) SizedBox(height: 50, child: CurDirectoryPathBar()),
+                             if (context.isMobile) SizedBox(
+                                 height: 80,
+                                 //child: QuickAccess(dirInRoot: controller.directoriesInRoot.value,)
+                                 child: ValueListenableBuilder(
+                                     valueListenable: controller.directoriesInRoot,
+                                     builder: (_, dirs, __){
+                                       return QuickAccess(dirInRoot: dirs);
+                                     }
+                                 ),
+                             ),
+                             if (!context.isMobile) SizedBox(height: 10,),
+                             Expanded(
+                               child: ValueListenableBuilder(
+                                  valueListenable: controller.fileSystemEntities,
+                                  builder: (_, entities, __) {
+                                    return EntityViewer(entities: entities);
+                                  }),
+                             ),
+                           ],
+                         ),
+                       ),
+                     ],
+                   ),
+
+            // adding the floatingActionButton -MG
+            //floatingActionButton: FloatingActionButton(onPressed: () {}, child: Icon(Icons.unfold_more),),
+            // trying the speed dial -MG
+            floatingActionButton: SpeedDial(
+              //overlayColor: Colors.transparent,
+              overlayOpacity: 0.2,
+              animatedIcon: AnimatedIcons.menu_close,
+              children: [
+                SpeedDialChild(
+                  child: Icon(Icons.insert_drive_file),
+                  label: 'Rename Folder',
+                  labelStyle: TextStyle(
+                    color:  Theme.of(context).colorScheme.onSurface,
+                  ),
+                  onTap: () async {
+                    final folderNamesFromUser = await showTwoTextFieldsDialog(context, "Rename Folder", "Enter the folder you want to rename", "Enter new folder name", "Rename");
+                    if ( folderNamesFromUser![1].isNotEmpty){
+                      final oldName = folderNamesFromUser[0];
+                      final newName = folderNamesFromUser[1];
+                      final currentDir = controller.fileSystemEntity.value as Directory;
+                      final oldFolder = Directory(p.join(currentDir.path, oldName));
+                      if (await oldFolder.exists()){
+                        await renameCurrentFolder(newName, oldFolder);
+                      } else {
+                        await showTimedDialog(context, "The folder you want to rename does not exist.");
+                      }
+                      controller.fileSystemEntities.value = (controller.fileSystemEntity.value as Directory).listSync();
+
+                    } else {
+                      await showTimedDialog(context, "Either the folder you want to rename does not exist or you did not fill the data required, please retry.");
+                    }
+
+                  },
+                ),
+                SpeedDialChild(
+                  child: Icon(Icons.create_new_folder),
+                  label: 'Create Folder',
+                  labelStyle: TextStyle(
+                    color:  Theme.of(context).colorScheme.onSurface,
+                  ),
+                  onTap: () async {
+                    final currentDirPath = controller.fileSystemEntity.value.path;
+                    final folderNameFromUser = await showEditingFolderDialog(context, "Create Folder", "Enter new folder name", "Create");
+                    if(folderNameFromUser != null && folderNameFromUser.isNotEmpty){
+                      await createNewFolderInCurrentDir(folderNameFromUser!, currentDirPath);
+                      controller.fileSystemEntities.value = (controller.fileSystemEntity.value as Directory).listSync();
+                    }
+                  },
+                ),
+                SpeedDialChild(
+                  child: Icon(Icons.delete),
+                  label: 'Delete',
+                  labelStyle: TextStyle(
+                    color:  Theme.of(context).colorScheme.onSurface,
+                  ),
+                  onTap: () async {
+                    final currentDirPath = controller.fileSystemEntity.value.path;
+                    final folderToBeDeletedFromUser = await showEditingFolderDialog(context, "Delete Folder", "Enter the name of folder to be deleted", "Delete");
+                    final isUserSure = await showChoiceDialog(context, "Are you sure you want to delete ${folderToBeDeletedFromUser} folder?");
+                    if (folderToBeDeletedFromUser != null && folderToBeDeletedFromUser.isNotEmpty && isUserSure == true){
+                      await deleteFolder(folderToBeDeletedFromUser, currentDirPath);
+                      controller.fileSystemEntities.value = (controller.fileSystemEntity.value as Directory).listSync();
+                    }
+                  },
+                )
+              ],
+            ),
+          );
+        }
+    );
+     */
   }
 
   // function to show dialog prompt for editing buttons -MG
@@ -214,11 +411,11 @@ class _DirectoryPageState extends State<DirectoryPage> {
         context: context,
         //barrierDismissible: false,
         builder: (context) => AlertDialog(
-              content: Text(content,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                  )),
-            ));
+          content: Text(content,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+              )),
+        ));
     await Future.delayed(duration);
     if (Navigator.canPop(context)) {
       Navigator.pop(context);
