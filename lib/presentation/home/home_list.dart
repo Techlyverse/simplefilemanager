@@ -27,7 +27,7 @@ class HomeList extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) => DirectoryPage(
-                                entity: directories![index],
+                                currentEntity: directories![index],
                               )));
                     },
                     style: ElevatedButton.styleFrom(

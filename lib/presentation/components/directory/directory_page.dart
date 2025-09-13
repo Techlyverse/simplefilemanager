@@ -6,35 +6,23 @@ import 'package:path/path.dart' as p;
 
 import '../entity/entity_viewer.dart';
 
-class DirectoryPage extends StatefulWidget {
-  const DirectoryPage({super.key, this.entity});
-  final FileSystemEntity? entity;
+class DirectoryPage extends StatelessWidget {
+  const DirectoryPage({super.key, this.currentEntity});
+  final FileSystemEntity? currentEntity;
 
-  @override
-  State<DirectoryPage> createState() => _DirectoryPageState();
-}
-
-class _DirectoryPageState extends State<DirectoryPage> {
-  final AppController controller = AppController();
+  static final AppController controller = AppController();
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          return ValueListenableBuilder<FileSystemEntity?>(
-              valueListenable: controller.currentEntity,
-              builder: (_, entity, __) {
-                if (entity == null) {
-                  return EntityViewer(entities: controller.rootDirs);
-                }
-                if (entity is Directory) {
-                  return EntityViewer(entities: entity.listSync());
-                } else {
-                  return SizedBox();
-                }
-              });
-        });
-
+    if (currentEntity == null) {
+      return EntityViewer(entities: controller.rootDirs);
+    }
+    if (currentEntity is Directory) {
+      final directory = currentEntity as Directory;
+      return EntityViewer(entities: directory.listSync());
+    } else {
+      return SizedBox();
+    }
 
     /*
     return LayoutBuilder(
@@ -368,7 +356,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
   }
 
   Future<void> createNewFolderInCurrentDir(
-      String folderName, pathOfCurDir) async {
+      BuildContext context, String folderName, pathOfCurDir) async {
     final newFolderPath = p.join(pathOfCurDir, folderName);
     final newFolder = Directory(newFolderPath);
     if (!(await newFolder.exists())) {
@@ -379,8 +367,8 @@ class _DirectoryPageState extends State<DirectoryPage> {
     }
   }
 
-  Future<void> renameCurrentFolder(
-      String newFolderName, Directory folderWeWantToRename) async {
+  Future<void> renameCurrentFolder(BuildContext context, String newFolderName,
+      Directory folderWeWantToRename) async {
     final parentDir = folderWeWantToRename.parent;
     final newPath = p.join(parentDir.path, newFolderName);
 
@@ -392,7 +380,8 @@ class _DirectoryPageState extends State<DirectoryPage> {
     }
   }
 
-  Future<void> deleteFolder(String folderToBeDeletedName, pathOfCurDir) async {
+  Future<void> deleteFolder(
+      BuildContext context, String folderToBeDeletedName, pathOfCurDir) async {
     final folderToBeDeletedPath = p.join(pathOfCurDir, folderToBeDeletedName);
     final folderToBeDeleted = Directory(folderToBeDeletedPath);
     if (await folderToBeDeleted.exists()) {
@@ -409,11 +398,11 @@ class _DirectoryPageState extends State<DirectoryPage> {
         context: context,
         //barrierDismissible: false,
         builder: (context) => AlertDialog(
-          content: Text(content,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface,
-              )),
-        ));
+              content: Text(content,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  )),
+            ));
     await Future.delayed(duration);
     if (Navigator.canPop(context)) {
       Navigator.pop(context);
