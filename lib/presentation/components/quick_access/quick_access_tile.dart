@@ -8,7 +8,6 @@ class QuickAccessTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.sizeOf(context);
     return Container(
       width: double.maxFinite,
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6),

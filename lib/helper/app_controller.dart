@@ -17,6 +17,8 @@ class AppController {
 
   final ValueNotifier<bool> viewType = ValueNotifier(Preferences.getViewType());
   final ValueNotifier<FileSystemEntity?> currentEntity = ValueNotifier(null);
+  // for long press on icons
+  ValueNotifier<FileSystemEntity?> selectedEntity = ValueNotifier(null);
 
   //final ValueNotifier<List<FileSystemEntity>> entities = ValueNotifier([]);
   //late final ValueNotifier<Directory> currentDir;

@@ -71,3 +71,22 @@ List<QuickAccessModel> directories = [
   QuickAccessModel(image: "assets/videos.png", title: "Videos"),
   QuickAccessModel(image: "assets/downloads.png", title: "Downloads"),
 ];
+List<QuickAccessModel> directoriesMobile = [
+  QuickAccessModel(image: "assets/videos.png", title: "Download"),
+  QuickAccessModel(image: "assets/videos.png", title: "Pictures"),
+  QuickAccessModel(image: "assets/videos.png", title: "Videos"),
+  QuickAccessModel(image: "assets/videos.png", title: "Audio"),
+  QuickAccessModel(image: "assets/videos.png", title: "Documents"),
+  QuickAccessModel(image: "assets/videos.png", title: "Apps")
+];
+
+List<QuickAccessModel> directoriesNotMobile = [
+  QuickAccessModel(image: "assets/videos.png", title: "Recent"),
+  QuickAccessModel(image: "assets/videos.png", title: "Home"),
+  QuickAccessModel(image: "assets/videos.png", title: "Documents"),
+  QuickAccessModel(image: "assets/videos.png", title: "Downloads"),
+  QuickAccessModel(image: "assets/videos.png", title: "Music"),
+  QuickAccessModel(image: "assets/videos.png", title: "Picture"),
+  QuickAccessModel(image: "assets/videos.png", title: "Videos"),
+  QuickAccessModel(image: "assets/videos.png", title: "Trash")
+];

@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:filemanager/globals.dart';
 import 'package:filemanager/helper/extension.dart';
 import 'package:flutter/material.dart';
+
 import '../../../data/media_icons.dart';
 
 class EntityIcon extends StatelessWidget {
@@ -12,12 +14,12 @@ class EntityIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return entity is File
         ? Image.asset(
-            mediaIcons[entity.extension] ?? 'assets/unknown.png',
-            height: 35,
-          )
+      mediaIcons[entity.extension] ?? 'assets/unknown.png',
+      height: isAndroid ? 50 : 35,
+    )
         : Image.asset(
-            mediaIcons[entity.extension] ?? 'assets/folder.png',
-            height: 35,
-          );
+      mediaIcons[entity.extension] ?? 'assets/folder.png',
+      height: isAndroid ? 50 : 35,
+    );
   }
 }
