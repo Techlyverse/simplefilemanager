@@ -36,9 +36,8 @@ class _MainScreenState extends State<MainScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (viewType != LayoutType.desktop) BreadCrumbBar(),
-                // TODO: add bool flag to check isRootDirectory/Homepage or directory page
                 /// show quick access at top only in mobile view in homepage
-                if (viewType == LayoutType.mobile) QuickAccess(),
+                if (viewType == LayoutType.mobile ) QuickAccess(),
                 Expanded(child: const DirectoryPage()),
               ],
             ),

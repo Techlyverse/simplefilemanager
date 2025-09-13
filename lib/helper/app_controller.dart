@@ -12,13 +12,12 @@ class AppController {
   static final AppController _instance = AppController._();
   factory AppController() => _instance;
 
-  late final List<Directory> rootDirs;
-  static late final Directory _tempDir;
+  late final List<Directory> rootDirs = [];
+  static late Directory _tempDir;
 
   final ValueNotifier<bool> viewType = ValueNotifier(Preferences.getViewType());
   final ValueNotifier<FileSystemEntity?> currentEntity = ValueNotifier(null);
-  // for long press on icons
-  ValueNotifier<FileSystemEntity?> selectedEntity = ValueNotifier(null);
+  ValueNotifier<List<FileSystemEntity>> selectedEntities = ValueNotifier([]);
 
   //final ValueNotifier<List<FileSystemEntity>> entities = ValueNotifier([]);
   //late final ValueNotifier<Directory> currentDir;
@@ -28,8 +27,11 @@ class AppController {
 
   /// Fetch root directories of current platform
   Future<void> init() async {
-    rootDirs = await DirectoryHelper().getRootDirectories();
-    _tempDir = await getApplicationDocumentsDirectory();
+    if (rootDirs.isEmpty) {
+      final dirs = await DirectoryHelper().getRootDirectories();
+      rootDirs.addAll(dirs);
+      _tempDir = await getApplicationDocumentsDirectory();
+    }
   }
 
   // Future<void> loadInitialFiles() async {
@@ -54,11 +56,13 @@ class AppController {
   }
 
   Future<void> navigateBack() async {
+    //TODO: add conditions to make current entity null if can not go back
     if (currentEntity.value != null) {
       final bool isParentExists = await currentEntity.value!.parent.exists();
       if (isParentExists) {
         openDirectory(currentEntity.value!.parent);
       }
+      currentEntity.value = null;
     }
   }
 

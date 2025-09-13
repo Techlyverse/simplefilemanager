@@ -52,22 +52,6 @@ class PermissionHelper {
     isPermissionGranted = !status.contains(false);
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   Future<bool> requestStoragePermission() async {
     if (!Platform.isAndroid) return true;
 

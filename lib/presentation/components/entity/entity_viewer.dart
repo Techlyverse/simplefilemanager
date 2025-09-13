@@ -34,7 +34,9 @@ class EntityViewer extends StatelessWidget {
                 : AppController().openDirectory(entity);
           },
           onLongPress: () {
-            AppController().selectedEntity.value = entity;
+            AppController().selectedEntities.value.contains(entity)
+                ? AppController().selectedEntities.value.remove(entity)
+                : AppController().selectedEntities.value.add(entity);
           },
         );
       }).toList(),
@@ -53,7 +55,9 @@ class EntityViewer extends StatelessWidget {
                   : AppController().openDirectory(entities[index]);
             },
             onLongPress: () {
-              AppController().selectedEntity.value = entities[index];
+              AppController().selectedEntities.value.contains(entities[index])
+                  ? AppController().selectedEntities.value.remove(entities[index])
+                  : AppController().selectedEntities.value.add(entities[index]);
             },
           );
         });

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:filemanager/data/extensions/filesystementity_ext.dart';
 import 'package:filemanager/helper/app_controller.dart';
 import 'package:filemanager/data/extensions/context_extension.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,7 @@ AppBar appBar(BuildContext context) {
 
   final controller = AppController();
 
-  if (!isSelected) {
+  if (isSelected) {
     return AppBar(
       elevation: 0,
       //backgroundColor: Colors.cyan.shade100,
@@ -24,10 +25,10 @@ AppBar appBar(BuildContext context) {
         },
         icon: Icon(Icons.arrow_back),
       ),
-      // title: controller.currentEntity.value != null ? ValueListenableBuilder<FileSystemEntity>(
-      //   valueListenable: controller.currentEntity,
-      //   builder: (_, entity, __) => Text(entity.name),
-      // ) : Text("Home"),
+      title: ValueListenableBuilder<FileSystemEntity?>(
+        valueListenable: controller.currentEntity,
+        builder: (_, entity, __) => Text(entity?.name ?? ""),
+      ),
       actions: [],
     );
   }
