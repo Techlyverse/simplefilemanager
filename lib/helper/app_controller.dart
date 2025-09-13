@@ -28,6 +28,8 @@ class AppController {
   late ValueNotifier<FileSystemEntity> fileSystemEntity;
   ValueNotifier<List<FileSystemEntity>> fileSystemEntities = ValueNotifier([]);
   ValueNotifier<List<Directory>> directoriesInRoot = ValueNotifier([]);
+  // for long press on icons
+  ValueNotifier<FileSystemEntity?> selectedEntity = ValueNotifier(null);
 
 
 
@@ -45,7 +47,38 @@ class AppController {
       }
     }
 
-    return _alternateDirectory;
+    Directory? startingDir;
+    String? userPath;
+
+    if (Platform.isLinux || Platform.isMacOS){
+      userPath = Platform.environment['HOME'];
+      startingDir = await getApplicationDocumentsDirectory();
+    } else if (Platform.isWindows){
+      userPath = Platform.environment['USERPROFILE'];
+      startingDir = await getApplicationDocumentsDirectory();
+    }
+
+    if (startingDir == null){
+      return _alternateDirectory;
+    }
+
+    if(userPath != null){
+      Directory current = startingDir;
+      while (current.path != userPath && current.parent.path != current.path) {
+        current = current.parent;
+      }
+
+      return current;
+    }
+
+    Directory root = startingDir;
+    while (root.parent.path != root.path){
+      root = root.parent;
+    }
+
+    return root;
+
+    //return _alternateDirectory;
   }
 
   Future<void> listOfDirectoriesInRoot() async{

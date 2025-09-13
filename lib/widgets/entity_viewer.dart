@@ -32,6 +32,9 @@ class EntityViewer extends StatelessWidget {
                   ? OpenFile.open(entity.path)
                   : AppController().openDirectory(entity);
             },
+            onLongPress: () {
+              AppController().selectedEntity.value = entity;
+            },
           );
         }).toList(),
       ),
@@ -48,6 +51,9 @@ class EntityViewer extends StatelessWidget {
               entities[index] is File
                   ? OpenFile.open(entities[index].path)
                   : AppController().openDirectory(entities[index]);
+            },
+            onLongPress: () {
+              AppController().selectedEntity.value = entities[index];
             },
           );
         });

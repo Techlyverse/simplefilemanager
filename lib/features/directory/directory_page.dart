@@ -42,38 +42,87 @@ class _DirectoryPageState extends State<DirectoryPage> {
             appBar: AppBar(
               elevation: 0,
               //backgroundColor: Colors.cyan.shade100,
-              leading: IconButton(
-                onPressed: () {
-                  controller.navigateBack();
-                },
-                icon: Icon(Icons.arrow_back),
+              backgroundColor: controller.selectedEntity.value != null ? Colors.redAccent : null,
+              leading: ValueListenableBuilder<FileSystemEntity?>(
+                valueListenable: controller.selectedEntity,
+                builder: (context, selectedValue, _) {
+                  if (selectedValue == null) {
+                    return IconButton(
+                      onPressed: () {
+                        controller.navigateBack();
+                      },
+                      icon: Icon(Icons.arrow_back),
+                    );
+                  } else {
+                    return IconButton(
+                        onPressed: () {
+                          controller.selectedEntity.value = null;
+                        },
+                        icon: Icon(Icons.close)
+                    );
+                  }
+                }
               ),
-              title: Row(
-                children: [
-                  ValueListenableBuilder<FileSystemEntity>(
-                    valueListenable: controller.fileSystemEntity,
-                    builder: (_, entity, __) {
-                      //return Text(entity.name, style: TextStyle(fontSize: (size * 0.07).clamp(20, 24)),);
-                      return Text(entity.name, style:  Theme.of(context).textTheme.titleMedium ) ;
-                    },
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  if (!context.isMobile) const CurDirectoryPathBar(),
-                ],
+              title: ValueListenableBuilder<FileSystemEntity?>(
+                valueListenable: controller.selectedEntity,
+                builder: (context, selectedValue, _) {
+                  if (selectedValue == null) {
+                    return Row(
+                      children: [
+                        ValueListenableBuilder<FileSystemEntity>(
+                          valueListenable: controller.fileSystemEntity,
+                          builder: (_, entity, __) {
+                            //return Text(entity.name, style: TextStyle(fontSize: (size * 0.07).clamp(20, 24)),);
+                            return Text(entity.name, style:  Theme.of(context).textTheme.titleMedium ) ;
+                          },
+                        ),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        if (!context.isMobile) const CurDirectoryPathBar(),
+                      ],
+                    );
+                  } else {
+                    return Text (
+                      selectedValue is File ? p.basenameWithoutExtension(selectedValue.path) : p.basename(selectedValue.path),
+                      style: Theme.of(context).textTheme.titleMedium,
+                    );
+                  }
+                }
               ),
               actions: [
-                ValueListenableBuilder(
-                    valueListenable: controller.showGrid,
-                    builder: (_, showGrid, __) {
-                      return IconButton(
-                        onPressed: () {
-                          controller.updateViewType();
-                        },
-                        icon: Icon(showGrid ? Icons.list : Icons.grid_view),
+                ValueListenableBuilder<FileSystemEntity?>(
+                  valueListenable: controller.selectedEntity,
+                  builder: (context, selectedValue, _) {
+                    if (selectedValue == null) {
+                      return ValueListenableBuilder(
+                          valueListenable: controller.showGrid,
+                          builder: (_, showGrid, __) {
+                            return IconButton(
+                              onPressed: () {
+                                controller.updateViewType();
+                              },
+                              icon: Icon(showGrid ? Icons.list : Icons.grid_view),
+                            );
+                          });
+                    } else {
+                      return PopupMenuButton<String>(
+                          onSelected: (value){
+                            if (value == "rename"){
+                              //todo
+                            } else if (value == "delete") {
+                              // todo
+                            }
+                            controller.selectedEntity.value = null;
+                          },
+                          itemBuilder: (context) => [
+                            PopupMenuItem(value: 'rename', child: Text("Rename")),
+                            PopupMenuItem(value: 'delete', child: Text("Delete"))
+                          ]
                       );
-                    }),
+                    }
+                  }
+                ),
 
 
               ],
