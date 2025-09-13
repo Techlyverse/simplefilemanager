@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:filemanager/helper/directory_helper.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:filemanager/preferences/preferences.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,59 +12,56 @@ class AppController {
   static final AppController _instance = AppController._();
   factory AppController() => _instance;
 
-  static late final Directory _directory;
-  static late final Directory _tempDirectory;
+  late final List<Directory> rootDirs;
+  static late final Directory _tempDir;
 
+  final ValueNotifier<bool> viewType = ValueNotifier(Preferences.getViewType());
+  final ValueNotifier<FileSystemEntity?> currentEntity = ValueNotifier(null);
 
-  final ValueNotifier<bool> entityViewTypeNotifier = ValueNotifier(Preferences.getViewType());
-  final ValueNotifier<Directory> currentDirNotifier = ValueNotifier(Directory(r'C:/Development'));
-  final ValueNotifier<FileSystemEntity> fileSystemEntityNotifier = ValueNotifier(_directory);
-  final ValueNotifier<List<FileSystemEntity>> fileSystemEntities = ValueNotifier([]);
+  //final ValueNotifier<List<FileSystemEntity>> entities = ValueNotifier([]);
+  //late final ValueNotifier<Directory> currentDir;
 
   // a list that contains all the directories that we went through for the current directory -MG
-  List<String> pathList = [_directory.toString()];
+  List<String> pathList = [];
 
-  Future<void> initController() async {
-    _directory =
-    _tempDirectory = await getApplicationDocumentsDirectory();
-
+  /// Fetch root directories of current platform
+  Future<void> init() async {
+    rootDirs = await DirectoryHelper().getRootDirectories();
+    _tempDir = await getApplicationDocumentsDirectory();
   }
 
-
-
-  Future<void> loadInitialFiles() async {
-    try {
-      fileSystemEntities.value = _directory.listSync();
-    } catch (e) {
-      fileSystemEntityNotifier.value = _directory;
-    }
-  }
+  // Future<void> loadInitialFiles() async {
+  //   if (_currentDir != null) {
+  //     entities.value = _currentDir!.listSync();
+  //   } else {
+  //     if (_rootDirs.isNotEmpty) {
+  //       entities.value = _rootDirs;
+  //     } else {
+  //       entities.value = [_tempDir];
+  //     }
+  //   }
+  // }
 
   void openDirectory(FileSystemEntity entity) async {
-    fileSystemEntityNotifier.value = entity;
+    currentEntity.value = entity;
     // adding the directory to the list
     if (entity is Directory) {
       pathList.add(p.basename(entity.path));
     }
-    fileSystemEntities.value = Directory(entity.path).listSync();
+    //entities.value = Directory(entity.path).listSync();
   }
 
   Future<void> navigateBack() async {
-    final bool isParentExists = await fileSystemEntityNotifier.value.parent.exists();
-    if (isParentExists) {
-      openDirectory(fileSystemEntityNotifier.value.parent);
+    if (currentEntity.value != null) {
+      final bool isParentExists = await currentEntity.value!.parent.exists();
+      if (isParentExists) {
+        openDirectory(currentEntity.value!.parent);
+      }
     }
   }
 
   void updateViewType() {
-    Preferences.setViewType(!entityViewTypeNotifier.value);
-    entityViewTypeNotifier.value = !entityViewTypeNotifier.value;
+    viewType.value = !viewType.value;
+    Preferences.setViewType(!viewType.value);
   }
-
-
-
-
-
-
-  Future<Directory> _getRootDirectory()async{}
 }

@@ -22,7 +22,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
   @override
   void initState() {
     /// Open the given directory
-    controller.loadInitialFiles();
+    //controller.loadInitialFiles();
     super.initState();
   }
 
@@ -30,10 +30,17 @@ class _DirectoryPageState extends State<DirectoryPage> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-      return ValueListenableBuilder(
-          valueListenable: controller.fileSystemEntities,
-          builder: (_, entities, __) {
-            return EntityViewer(entities: entities);
+      return ValueListenableBuilder<FileSystemEntity?>(
+          valueListenable: controller.currentEntity,
+          builder: (_, entity, __) {
+            if (entity == null) {
+              return EntityViewer(entities: controller.rootDirs);
+            }
+            if (entity is Directory) {
+              return EntityViewer(entities: entity.listSync());
+            } else {
+              return SizedBox();
+            }
           });
     });
   }

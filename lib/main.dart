@@ -1,3 +1,4 @@
+import 'package:filemanager/helper/app_controller.dart';
 import 'package:flutter/material.dart';
 import 'preferences/preferences.dart';
 import 'presentation/main_screen.dart';
@@ -7,6 +8,7 @@ import 'theme/light_theme.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Preferences.initPreferences();
+  await AppController().init();
   runApp(const MyApp());
 }
 

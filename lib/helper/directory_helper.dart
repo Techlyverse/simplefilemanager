@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:path_provider/path_provider.dart';
 import 'package:filemanager/preferences/preferences.dart';
 
 class DirectoryHelper {
@@ -8,9 +8,7 @@ class DirectoryHelper {
   factory DirectoryHelper() => _instance;
 
   // TODO: write functions to save and get root paths from shared preferences
-  final List<Directory> _rootDirectories = [];
-
-  //TODO: write functions to fetch root directories
+  static final List<Directory> _rootDirectories = [];
 
   Future<List<Directory>> getRootDirectories() async {
     if (_rootDirectories.isNotEmpty) return _rootDirectories;
@@ -23,16 +21,34 @@ class DirectoryHelper {
       }
       return _rootDirectories;
     } else {
+      /// clear list to avoid duplicate directory issues
+      _rootDirectories.clear();
       //TODO: complete below functions
       if (Platform.isAndroid) {
+        _getAndroidRootDirectories();
       } else if (Platform.isIOS) {
+        throw Exception("Implementation not found");
       } else if (Platform.isLinux) {
+        throw Exception("Implementation not found");
       } else if (Platform.isMacOS) {
+        throw Exception("Implementation not found");
       } else if (Platform.isWindows) {
+        throw Exception("Implementation not found");
       } else {
         throw Exception("OS not supported");
       }
+
+      /// Cache root directory path
+      final List<String> paths = _rootDirectories.map((e) => e.path).toList();
+      Preferences.setRootDirPaths(paths);
+
       return _rootDirectories;
     }
+  }
+
+  /// Get internal and external storage directories of android
+  static Future<void> _getAndroidRootDirectories() async {
+    _rootDirectories.add(Directory("/storage/emulated/0"));
+    _rootDirectories.addAll((await getExternalStorageDirectories()) ?? []);
   }
 }
