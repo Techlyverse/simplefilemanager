@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:filemanager/globals.dart';
-import 'package:filemanager/helper/extension.dart';
+import 'package:filemanager/data/extensions/filesystementity_ext.dart';
 import 'package:flutter/material.dart';
 
 import '../../../data/media_icons.dart';

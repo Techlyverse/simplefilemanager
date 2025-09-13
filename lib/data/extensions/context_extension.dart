@@ -1,7 +1,7 @@
 import 'package:filemanager/data/constants.dart';
 import 'package:flutter/material.dart';
 
-import '../data/enums.dart';
+import '../enums.dart';
 
 extension ContextExtension on BuildContext {
   ColorScheme get colorScheme => Theme.of(this).colorScheme;

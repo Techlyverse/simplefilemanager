@@ -1,4 +1,4 @@
-import 'package:filemanager/helper/context_extension.dart';
+import 'package:filemanager/data/extensions/context_extension.dart';
 import 'package:flutter/material.dart';
 
 class QuickAccessTile extends StatelessWidget {

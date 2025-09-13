@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:filemanager/helper/app_controller.dart';
-import 'package:filemanager/helper/extension.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:path/path.dart' as p;
 
 import '../entity/entity_viewer.dart';

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:filemanager/helper/app_controller.dart';
-import 'package:filemanager/helper/context_extension.dart';
+import 'package:filemanager/data/extensions/context_extension.dart';
 import 'package:filemanager/presentation/components/appbar.dart';
 import 'package:filemanager/presentation/components/breadcrumb/bread_crumb_bar.dart';
 import 'package:flutter/material.dart';
@@ -70,8 +70,7 @@ class _MainScreenState extends State<MainScreen> {
               if (folderNamesFromUser![1].isNotEmpty) {
                 final oldName = folderNamesFromUser[0];
                 final newName = folderNamesFromUser[1];
-                final currentDir =
-                    controller.currentEntity.value as Directory;
+                final currentDir = controller.currentEntity.value as Directory;
                 final oldFolder = Directory(p.join(currentDir.path, oldName));
                 if (await oldFolder.exists()) {
                   await renameCurrentFolder(newName, oldFolder);

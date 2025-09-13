@@ -1,8 +1,7 @@
 import 'dart:io';
 
 import 'package:filemanager/helper/app_controller.dart';
-import 'package:filemanager/helper/context_extension.dart';
-import 'package:filemanager/helper/extension.dart';
+import 'package:filemanager/data/extensions/context_extension.dart';
 import 'package:flutter/material.dart';
 
 import '../../data/enums.dart';
