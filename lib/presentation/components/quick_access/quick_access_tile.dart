@@ -1,4 +1,5 @@
 import 'package:filemanager/helper/context_extension.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class QuickAccessTile extends StatelessWidget {
@@ -8,8 +9,10 @@ class QuickAccessTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final colorOfTile = isDarkMode? Colors.indigo.shade700 : Colors.indigo.shade100;
     return Container(
-      width: double.maxFinite,
+      width: (context.widthOfScreen / 3.1).clamp(210, 290),
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6),
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
       decoration: BoxDecoration(
@@ -22,14 +25,10 @@ class QuickAccessTile extends StatelessWidget {
         children: [
           Image.asset(
             icon,
-            height: 28,
+            height: context.isMobile ? 45 : 30,
           ),
-          SizedBox(width: 12),
-          Text(
-            title,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 12),
-          ),
+          SizedBox(width: 20),
+          Text(title,overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyLarge?,),
         ],
       ),
     );

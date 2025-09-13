@@ -18,4 +18,6 @@ extension ContextExtension on BuildContext {
       return LayoutType.desktop;
     }
   }
+  bool get isMobile => MediaQuery.of(this).size.width <= 480;
+  double get widthOfScreen => MediaQuery.of(this).size.width;
 }
