@@ -5,8 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class AppController {
   AppController._();
@@ -24,13 +22,14 @@ class AppController {
 
   static final Directory _alternateDirectory = Directory(r'/home/manu/Downloads');
   late Directory _initialDirectory;
+  late Directory rootDirectory;
 
   //static final _initialDirectory = Directory(r'/home/manu/Downloads');
   // a list that contains all the directories that we went through for the current directory -MG
   //List<String> pathList = [_initialDirectory.toString()];
   late List<String> pathList;
   ValueNotifier<bool> showGrid = ValueNotifier(Preferences.getViewType());
-  List<String> pathList = [_directory.toString()];
+  //List<String> pathList = [_directory.toString()];
 
   Future<void> initController() async {
     _directory =
@@ -42,7 +41,7 @@ class AppController {
   //ValueNotifier<FileSystemEntity> fileSystemEntity =
   //    ValueNotifier(_initialDirectory);
   late ValueNotifier<FileSystemEntity> fileSystemEntity;
-  ValueNotifier<List<FileSystemEntity>> fileSystemEntities = ValueNotifier([]);
+  //ValueNotifier<List<FileSystemEntity>> fileSystemEntities = ValueNotifier([]);
   ValueNotifier<List<Directory>> directoriesInRoot = ValueNotifier([]);
   // for long press on icons
   ValueNotifier<FileSystemEntity?> selectedEntity = ValueNotifier(null);
@@ -141,12 +140,13 @@ class AppController {
     final current = fileSystemEntity.value;
     if(current == null) return;
     final parent = current.parent;
-    if(await parent.exists()){
+    if(await parent.exists()) {
       openDirectory(parent);
-    final bool isParentExists = await fileSystemEntityNotifier.value.parent.exists();
-    if (isParentExists) {
-      openDirectory(fileSystemEntityNotifier.value.parent);
     }
+    // final bool isParentExists = await fileSystemEntityNotifier.value.parent.exists();
+    // if (isParentExists) {
+    //   openDirectory(fileSystemEntityNotifier.value.parent);
+    // }
   }
 
   void updateViewType() {
@@ -159,5 +159,5 @@ class AppController {
 
 
 
-  Future<Directory> _getRootDirectory()async{}
+  //Future<Directory> _getRootDirectory()async{}
 }

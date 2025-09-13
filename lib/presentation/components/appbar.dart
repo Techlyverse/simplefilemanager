@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:filemanager/helper/app_controller.dart';
 import 'package:filemanager/helper/context_extension.dart';
-import 'package:filemanager/helper/extension.dart';
 import 'package:flutter/material.dart';
 
 import '../../data/enums.dart';
@@ -54,7 +53,8 @@ AppBar appBar(BuildContext context) {
         : SizedBox(),
     actions: [
       ValueListenableBuilder(
-          valueListenable: controller.viewType,
+          //valueListenable: controller.viewType,
+          valueListenable: controller.entityViewTypeNotifier,
           builder: (_, showGrid, __) {
             return IconButton(
               onPressed: () {

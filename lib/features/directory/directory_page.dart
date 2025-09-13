@@ -1,13 +1,10 @@
 import 'dart:async';
-import 'dart:ffi';
 import 'dart:io';
-import 'package:filemanager/globals.dart';
 import 'package:filemanager/helper/app_controller.dart';
 import 'package:filemanager/helper/context_extension.dart';
 import 'package:filemanager/helper/extension.dart';
-import 'package:filemanager/helper/he.dart';
-import 'package:filemanager/widgets/currentDirPath.dart';
-import 'package:filemanager/widgets/entity_viewer.dart';
+import 'package:filemanager/presentation/components/entity/currentDirPath.dart';
+import 'package:filemanager/presentation/components/entity/entity_viewer.dart';
 import 'package:filemanager/widgets/quick_access.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -37,7 +34,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-          double size = constraints.biggest.shortestSide * 0.5;
+          //double size = constraints.biggest.shortestSide * 0.5;
           return Scaffold(
             appBar: AppBar(
               elevation: 0,
@@ -210,7 +207,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
                     final currentDirPath = controller.fileSystemEntity.value.path;
                     final folderNameFromUser = await showEditingFolderDialog(context, "Create Folder", "Enter new folder name", "Create");
                     if(folderNameFromUser != null && folderNameFromUser.isNotEmpty){
-                      await createNewFolderInCurrentDir(folderNameFromUser!, currentDirPath);
+                      await createNewFolderInCurrentDir(folderNameFromUser, currentDirPath);
                       controller.fileSystemEntities.value = (controller.fileSystemEntity.value as Directory).listSync();
                     }
                   },
@@ -224,7 +221,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
                   onTap: () async {
                     final currentDirPath = controller.fileSystemEntity.value.path;
                     final folderToBeDeletedFromUser = await showEditingFolderDialog(context, "Delete Folder", "Enter the name of folder to be deleted", "Delete");
-                    final isUserSure = await showChoiceDialog(context, "Are you sure you want to delete ${folderToBeDeletedFromUser} folder?");
+                    final isUserSure = await showChoiceDialog(context, "Are you sure you want to delete $folderToBeDeletedFromUser folder?");
                     if (folderToBeDeletedFromUser != null && folderToBeDeletedFromUser.isNotEmpty && isUserSure == true){
                       await deleteFolder(folderToBeDeletedFromUser, currentDirPath);
                       controller.fileSystemEntities.value = (controller.fileSystemEntity.value as Directory).listSync();

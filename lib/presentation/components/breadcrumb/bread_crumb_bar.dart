@@ -10,7 +10,8 @@ class BreadCrumbBar extends StatelessWidget {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: ValueListenableBuilder<FileSystemEntity?>(
-        valueListenable: AppController().currentEntity,
+        //valueListenable: AppController().currentEntity,
+        valueListenable: AppController().fileSystemEntityNotifier,
         builder: (_, entity, __) {
           if (entity == null) return SizedBox();
           return Row(

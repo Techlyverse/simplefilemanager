@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:filemanager/globals.dart';
 import 'package:filemanager/helper/context_extension.dart';

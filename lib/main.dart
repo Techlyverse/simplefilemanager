@@ -2,11 +2,10 @@ import 'package:filemanager/helper/app_controller.dart';
 import 'dart:io';
 import 'package:filemanager/features/main_screen.dart';
 import 'package:filemanager/globals.dart';
-import 'package:filemanager/helper/app_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'preferences/preferences.dart';
-import 'presentation/main_screen.dart';
+//import 'presentation/main_screen.dart';
 import 'theme/dark_theme.dart';
 import 'theme/light_theme.dart';
 

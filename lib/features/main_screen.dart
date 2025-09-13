@@ -1,6 +1,4 @@
 import 'package:filemanager/features/directory/directory_page.dart';
-import 'package:filemanager/helper/context_extension.dart';
-import 'package:filemanager/widgets/quick_access.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
