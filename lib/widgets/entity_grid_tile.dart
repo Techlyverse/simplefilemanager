@@ -11,9 +11,11 @@ class EntityGridTile extends StatelessWidget {
     super.key,
     required this.entity,
     required this.onTap,
+    this.onLongPress,
   });
   final FileSystemEntity entity;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +26,7 @@ class EntityGridTile extends StatelessWidget {
       height: isAndroid? 90 : 70,
       child: TextButton(
         onPressed: onTap,
+        onLongPress: onLongPress,
         style: TextButton.styleFrom(
           backgroundColor: colorScheme.surfaceContainerLowest,
           foregroundColor: colorScheme.onSurface,
