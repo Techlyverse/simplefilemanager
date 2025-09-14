@@ -14,12 +14,12 @@ class EntityIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return entity is File
         ? Image.asset(
-      mediaIcons[entity.extension] ?? 'assets/unknown.png',
-      height: isAndroid ? 50 : 35,
-    )
+            mediaIcons[entity.extension] ?? 'assets/unknown.png',
+            height: isAndroid ? 50 : 35,
+          )
         : Image.asset(
-      mediaIcons[entity.extension] ?? 'assets/folder.png',
-      height: isAndroid ? 50 : 35,
-    );
+            mediaIcons[entity.extension] ?? 'assets/folder.png',
+            height: isAndroid ? 50 : 35,
+          );
   }
 }
