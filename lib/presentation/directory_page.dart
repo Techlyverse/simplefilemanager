@@ -1,28 +1,35 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:filemanager/data/extensions/context_extension.dart';
 import 'package:filemanager/helper/app_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 
-import '../entity/entity_viewer.dart';
+import '../data/enums.dart';
+import 'components/breadcrumb/bread_crumb_bar.dart';
+import 'components/entity/entity_viewer.dart';
 
 class DirectoryPage extends StatelessWidget {
-  const DirectoryPage({super.key, this.currentEntity});
+  const DirectoryPage({super.key, required this.currentEntity});
   final FileSystemEntity? currentEntity;
 
   static final AppController controller = AppController();
 
   @override
   Widget build(BuildContext context) {
-    if (currentEntity == null) {
-      return EntityViewer(entities: controller.rootDirs);
-    }
-    if (currentEntity is Directory) {
+    if (currentEntity != null && currentEntity is Directory) {
       final directory = currentEntity as Directory;
-      return EntityViewer(entities: directory.listSync());
-    } else {
-      return SizedBox();
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (context.layoutType != LayoutType.desktop)
+            BreadCrumbBar(currentEntity: currentEntity),
+          Expanded(child: EntityViewer(entities: directory.listSync())),
+        ],
+      );
     }
+    return Center(child: Text("Directory not found"));
 
     /*
     return LayoutBuilder(

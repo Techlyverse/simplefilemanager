@@ -23,7 +23,7 @@ class EntityGridTile extends StatelessWidget {
 
     return SizedBox(
       width: isAndroid ? 90 : 70,
-      height: isAndroid? 90 : 70,
+      height: isAndroid ? 90 : 70,
       child: TextButton(
         onPressed: onTap,
         onLongPress: onLongPress,

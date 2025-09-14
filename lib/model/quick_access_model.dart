@@ -1,11 +1,13 @@
+import 'dart:io';
+
 class QuickAccessModel {
   final String image;
   final String title;
-  final String? directory;
+  final Directory directory;
 
   QuickAccessModel({
     required this.image,
     required this.title,
-    this.directory,
+    required this.directory,
   });
 }

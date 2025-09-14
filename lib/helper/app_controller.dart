@@ -19,9 +19,6 @@ class AppController {
   final ValueNotifier<FileSystemEntity?> currentEntity = ValueNotifier(null);
   ValueNotifier<List<FileSystemEntity>> selectedEntities = ValueNotifier([]);
 
-  //final ValueNotifier<List<FileSystemEntity>> entities = ValueNotifier([]);
-  //late final ValueNotifier<Directory> currentDir;
-
   // a list that contains all the directories that we went through for the current directory -MG
   List<String> pathList = [];
 
@@ -34,18 +31,6 @@ class AppController {
     }
   }
 
-  // Future<void> loadInitialFiles() async {
-  //   if (_currentDir != null) {
-  //     entities.value = _currentDir!.listSync();
-  //   } else {
-  //     if (_rootDirs.isNotEmpty) {
-  //       entities.value = _rootDirs;
-  //     } else {
-  //       entities.value = [_tempDir];
-  //     }
-  //   }
-  // }
-
   void openDirectory(FileSystemEntity entity) async {
     currentEntity.value = entity;
     // adding the directory to the list
@@ -56,13 +41,17 @@ class AppController {
   }
 
   Future<void> navigateBack() async {
-    //TODO: add conditions to make current entity null if can not go back
     if (currentEntity.value != null) {
+      /// if root directory contains parent directory then make currentDirectory null to show homepage
+      final bool showRootDir = rootDirs
+          .map((e) => e.path)
+          .contains(currentEntity.value!.parent.path);
       final bool isParentExists = await currentEntity.value!.parent.exists();
-      if (isParentExists) {
+      if (isParentExists && !showRootDir) {
         openDirectory(currentEntity.value!.parent);
+      } else {
+        currentEntity.value = null;
       }
-      currentEntity.value = null;
     }
   }
 

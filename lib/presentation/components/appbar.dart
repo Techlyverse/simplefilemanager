@@ -13,7 +13,7 @@ AppBar appBar(
   FileSystemEntity? currentEntity,
   List<FileSystemEntity> selectedEntities,
 ) {
-  final LayoutType viewType = context.viewType;
+  final LayoutType viewType = context.layoutType;
 
   final controller = AppController();
 

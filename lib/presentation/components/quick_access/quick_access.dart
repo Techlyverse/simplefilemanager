@@ -1,4 +1,5 @@
 import 'package:filemanager/data/extensions/context_extension.dart';
+import 'package:filemanager/helper/quick_access_helper.dart';
 import 'package:filemanager/model/quick_access_model.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +11,7 @@ class QuickAccess extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final LayoutType layoutType = context.viewType;
+    final LayoutType layoutType = context.layoutType;
 
     /*
     return !context.isMobile
@@ -49,18 +50,24 @@ class QuickAccess extends StatelessWidget {
               }).toList()),
         );
      */
-
-    switch (layoutType) {
-      case LayoutType.mobile:
-        return _mobileView();
-      case LayoutType.tablet:
-        return _tabletView();
-      case LayoutType.desktop:
-        return _desktopView();
-    }
+    return FutureBuilder<List<QuickAccessModel>>(
+        future: QuickAccessHelper().getDirectories(),
+        builder: (_, snap) {
+          if (snap.data != null && snap.data!.isNotEmpty) {
+            if (layoutType == LayoutType.mobile) {
+              return _mobileView(snap.data!);
+            } else if (layoutType == LayoutType.tablet) {
+              return _tabletView(snap.data!);
+            } else {
+              return _desktopView(snap.data!);
+            }
+          } else {
+            return SizedBox();
+          }
+        });
   }
 
-  Widget _mobileView() {
+  Widget _mobileView(List<QuickAccessModel> directories) {
     return GridView.builder(
       itemCount: directories.length,
       shrinkWrap: true,
@@ -69,39 +76,37 @@ class QuickAccess extends StatelessWidget {
         childAspectRatio: 4,
       ),
       itemBuilder: (_, index) {
-        return QuickAccessTile(
-          icon: directories[index].image,
-          title: directories[index].title,
-        );
+        return QuickAccessTile(quickAccessModel: directories[index]);
       },
     );
   }
 
-  Widget _tabletView() {
+  Widget _tabletView(List<QuickAccessModel> directories) {
     return SizedBox(
       width: 160,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: directories.map((e) {
-          return QuickAccessTile(icon: e.image, title: e.title);
+          return QuickAccessTile(quickAccessModel: e);
         }).toList(),
       ),
     );
   }
 
-  Widget _desktopView() {
+  Widget _desktopView(List<QuickAccessModel> directories) {
     return SizedBox(
       width: 200,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: directories.map((e) {
-          return QuickAccessTile(icon: e.image, title: e.title);
+          return QuickAccessTile(quickAccessModel: e);
         }).toList(),
       ),
     );
   }
 }
 
+/*
 List<QuickAccessModel> directories = [
   QuickAccessModel(image: "assets/downloads.png", title: "Downloads"),
   QuickAccessModel(image: "assets/videos.png", title: "Videos"),
@@ -128,3 +133,4 @@ List<QuickAccessModel> directoriesNotMobile = [
   QuickAccessModel(image: "assets/videos.png", title: "Videos"),
   QuickAccessModel(image: "assets/videos.png", title: "Trash")
 ];
+ */

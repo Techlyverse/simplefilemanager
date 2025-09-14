@@ -7,7 +7,6 @@ class DirectoryHelper {
   static final _instance = DirectoryHelper._();
   factory DirectoryHelper() => _instance;
 
-  // TODO: write functions to save and get root paths from shared preferences
   static final List<Directory> _rootDirectories = [];
 
   Future<List<Directory>> getRootDirectories() async {

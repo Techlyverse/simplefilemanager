@@ -3,14 +3,15 @@ import 'dart:io';
 import 'package:filemanager/helper/app_controller.dart';
 import 'package:filemanager/data/extensions/context_extension.dart';
 import 'package:filemanager/presentation/components/appbar.dart';
-import 'package:filemanager/presentation/components/breadcrumb/bread_crumb_bar.dart';
+import 'package:filemanager/presentation/homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 import '../data/enums.dart';
-import 'components/directory/directory_page.dart';
 import 'components/quick_access/quick_access.dart';
 import 'package:path/path.dart' as p;
+
+import 'directory_page.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -24,7 +25,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final LayoutType viewType = context.viewType;
+    final LayoutType viewType = context.layoutType;
 
     return ValueListenableBuilder<FileSystemEntity?>(
       valueListenable: controller.currentEntity,
@@ -36,18 +37,12 @@ class _MainScreenState extends State<MainScreen> {
                 appBar: appBar(context, entity, selectedEntities),
                 body: Row(
                   children: [
+                    // do not show sidebar on mobile view
                     if (viewType != LayoutType.mobile) QuickAccess(),
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (viewType != LayoutType.desktop)
-                            BreadCrumbBar(currentEntity: entity),
-                          if (viewType == LayoutType.mobile && entity == null)
-                            QuickAccess(),
-                          Expanded(child: DirectoryPage(currentEntity: entity)),
-                        ],
-                      ),
+                      child: entity == null
+                          ? HomePage()
+                          : DirectoryPage(currentEntity: entity),
                     )
                   ],
                 ),
@@ -332,5 +327,42 @@ class _MainScreenState extends State<MainScreen> {
     if (Navigator.canPop(context)) {
       Navigator.pop(context);
     }
+  }
+
+  Widget buildPermissionButton() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: Column(
+        children: [
+          const SizedBox(height: 80),
+          const Text(
+            "Read and write permission is required to show files",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 20),
+          ),
+          const SizedBox(height: 100),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25.0),
+            child: SizedBox(
+              height: 55,
+              width: double.maxFinite,
+              child: ElevatedButton(
+                onPressed: () {
+                  //  requestAndCheckPermissions();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.amber.shade700,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text(
+                  "Allow Files Permission",
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
   }
 }
