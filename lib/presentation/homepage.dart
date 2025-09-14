@@ -100,13 +100,15 @@ class HomePage extends StatelessWidget {
   Widget _gridView(BuildContext context) {
     final AppController controller = AppController();
     List<Directory> directories = controller.rootDirs;
+    print("root dirs are: ${directories}");
+    final count = (context.widthOfScreen / 180).toInt();
     return Padding(
       padding: EdgeInsets.all(16),
       child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: 0,
             crossAxisSpacing: 0,
-            crossAxisCount: 2,
+            crossAxisCount: count,
           ),
           shrinkWrap: true,
           itemCount: directories.length,

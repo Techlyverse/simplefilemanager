@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:external_path/external_path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:filemanager/preferences/preferences.dart';
 
@@ -47,12 +48,10 @@ class DirectoryHelper {
 
   /// Get internal and external storage directories of android
   static Future<void> _getAndroidRootDirectories() async {
-    _rootDirectories.add(Directory("/storage/emulated/0"));
-    _rootDirectories.addAll((await getExternalStorageDirectories()) ?? []);
+    final paths = (await ExternalPath.getExternalStorageDirectories()) ??
+        ["/storage/emulated/0"];
+    _rootDirectories.addAll(paths.map((e) => Directory(e)));
   }
-
-
-
 
   /*
   Future<Directory> _getPlatformRootDirectory() async {
