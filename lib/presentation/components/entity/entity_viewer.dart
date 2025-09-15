@@ -22,22 +22,26 @@ class EntityViewer extends StatelessWidget {
   }
 
   Widget buildGrid() {
-    return Wrap(
-      spacing: 10,
-      runSpacing: 10,
-      children: entities.map((entity) {
-        return EntityGridTile(
-          entity: entity,
-          onTap: () {
-            entity is File
-                ? OpenFile.open(entity.path)
-                : AppController().openDirectory(entity);
-          },
-          onLongPress: () {
-            AppController().selectedEntity.value = entity;
-          },
-        );
-      }).toList(),
+    return SingleChildScrollView(
+      child: Wrap(
+        spacing: 10,
+        runSpacing: 10,
+        children: entities.map((entity) {
+          return EntityGridTile(
+            entity: entity,
+            onTap: () {
+              entity is File
+                  ? OpenFile.open(entity.path)
+                  : AppController().openDirectory(entity);
+            },
+            onLongPress: () {
+              AppController().selectedEntities.value.contains(entity)
+                  ? AppController().selectedEntities.value.remove(entity)
+                  : AppController().selectedEntities.value.add(entity);
+            },
+          );
+        }).toList(),
+      ),
     );
   }
 
@@ -53,7 +57,12 @@ class EntityViewer extends StatelessWidget {
                   : AppController().openDirectory(entities[index]);
             },
             onLongPress: () {
-              AppController().selectedEntity.value = entities[index];
+              AppController().selectedEntities.value.contains(entities[index])
+                  ? AppController()
+                      .selectedEntities
+                      .value
+                      .remove(entities[index])
+                  : AppController().selectedEntities.value.add(entities[index]);
             },
           );
         });

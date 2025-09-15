@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:external_path/external_path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:filemanager/preferences/preferences.dart';
 
@@ -7,7 +8,6 @@ class DirectoryHelper {
   static final _instance = DirectoryHelper._();
   factory DirectoryHelper() => _instance;
 
-  // TODO: write functions to save and get root paths from shared preferences
   static final List<Directory> _rootDirectories = [];
 
   Future<List<Directory>> getRootDirectories() async {
@@ -48,10 +48,10 @@ class DirectoryHelper {
 
   /// Get internal and external storage directories of android
   static Future<void> _getAndroidRootDirectories() async {
-    _rootDirectories.add(Directory("/storage/emulated/0"));
-    _rootDirectories.addAll((await getExternalStorageDirectories()) ?? []);
+    final paths = (await ExternalPath.getExternalStorageDirectories()) ??
+        ["/storage/emulated/0"];
+    _rootDirectories.addAll(paths.map((e) => Directory(e)));
   }
-
 
   /*
   Future<Directory> _getPlatformRootDirectory() async {

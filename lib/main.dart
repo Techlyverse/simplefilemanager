@@ -12,7 +12,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Preferences.initPreferences();
   await AppController().init();
-  if(Platform.isAndroid){
+  if (Platform.isAndroid) {
     await _requestStoragePermission();
   }
   await AppController().init();
@@ -21,12 +21,13 @@ Future<void> main() async {
 }
 
 Future<void> _requestStoragePermission() async {
-  if(await Permission.manageExternalStorage.isGranted || await Permission.storage.isGranted){
+  if (await Permission.manageExternalStorage.isGranted ||
+      await Permission.storage.isGranted) {
     return;
   }
   final status1 = await Permission.manageExternalStorage.request();
   final status2 = await Permission.storage.request();
-  if (status2.isPermanentlyDenied || status1.isPermanentlyDenied){
+  if (status2.isPermanentlyDenied || status1.isPermanentlyDenied) {
     await openAppSettings();
   }
 }

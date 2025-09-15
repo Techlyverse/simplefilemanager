@@ -12,37 +12,24 @@ class AppController {
   static final AppController _instance = AppController._();
   factory AppController() => _instance;
 
-  late final List<Directory> rootDirs;
-  static late final Directory _tempDir;
+  late final List<Directory> rootDirs = [];
+  static late Directory _tempDir;
 
   final ValueNotifier<bool> viewType = ValueNotifier(Preferences.getViewType());
   final ValueNotifier<FileSystemEntity?> currentEntity = ValueNotifier(null);
-  // for long press on icons
-  ValueNotifier<FileSystemEntity?> selectedEntity = ValueNotifier(null);
-
-  //final ValueNotifier<List<FileSystemEntity>> entities = ValueNotifier([]);
-  //late final ValueNotifier<Directory> currentDir;
+  ValueNotifier<List<FileSystemEntity>> selectedEntities = ValueNotifier([]);
 
   // a list that contains all the directories that we went through for the current directory -MG
   List<String> pathList = [];
 
   /// Fetch root directories of current platform
   Future<void> init() async {
-    rootDirs = await DirectoryHelper().getRootDirectories();
-    _tempDir = await getApplicationDocumentsDirectory();
+    if (rootDirs.isEmpty) {
+      final dirs = await DirectoryHelper().getRootDirectories();
+      rootDirs.addAll(dirs);
+      _tempDir = await getApplicationDocumentsDirectory();
+    }
   }
-
-  // Future<void> loadInitialFiles() async {
-  //   if (_currentDir != null) {
-  //     entities.value = _currentDir!.listSync();
-  //   } else {
-  //     if (_rootDirs.isNotEmpty) {
-  //       entities.value = _rootDirs;
-  //     } else {
-  //       entities.value = [_tempDir];
-  //     }
-  //   }
-  // }
 
   void openDirectory(FileSystemEntity entity) async {
     currentEntity.value = entity;
@@ -55,9 +42,15 @@ class AppController {
 
   Future<void> navigateBack() async {
     if (currentEntity.value != null) {
+      /// if root directory contains parent directory then make currentDirectory null to show homepage
+      final bool showRootDir = rootDirs
+          .map((e) => e.path)
+          .contains(currentEntity.value!.parent.path);
       final bool isParentExists = await currentEntity.value!.parent.exists();
-      if (isParentExists) {
+      if (isParentExists && !showRootDir) {
         openDirectory(currentEntity.value!.parent);
+      } else {
+        currentEntity.value = null;
       }
     }
   }

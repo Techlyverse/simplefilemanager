@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:filemanager/helper/extension.dart';
+import 'package:filemanager/data/extensions/filesystementity_ext.dart';
 
 import 'entity_icon.dart';
 

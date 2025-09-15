@@ -1,4 +1,4 @@
-import 'package:filemanager/helper/context_extension.dart';
+import 'package:filemanager/data/extensions/context_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -7,8 +7,10 @@ class CurDirectoryPathBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final EdgeInsetsGeometry myMargin = context.isMobile ? EdgeInsets.symmetric(horizontal: 6.0, vertical: 6.0) : EdgeInsets.zero;
-    final double heightOfWidget = context.isMobile ? 50: 40;
+    final EdgeInsetsGeometry myMargin = context.isMobile
+        ? EdgeInsets.symmetric(horizontal: 6.0, vertical: 6.0)
+        : EdgeInsets.zero;
+    final double heightOfWidget = context.isMobile ? 50 : 40;
     return Flexible(
       child: Container(
         margin: myMargin,
@@ -32,23 +34,21 @@ class CurDirectoryPathBar extends StatelessWidget {
               ),
               Expanded(
                 child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Text(
-                      "Current Directory Path will be displayed here",
-                      maxLines: 1, overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                          fontSize: (context.widthOfScreen/ 75).clamp(15, 20),
-                          color: context.colorScheme.onSurface
-                      ),
-                    ),
+                  scrollDirection: Axis.horizontal,
+                  child: Text(
+                    "Current Directory Path will be displayed here",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        fontSize: (context.widthOfScreen / 75).clamp(15, 20),
+                        color: context.colorScheme.onSurface),
+                  ),
                 ),
               ),
               SizedBox(
                 width: 8,
               ),
               Icon(Icons.more_vert)
-
-
             ],
           ),
         ),
