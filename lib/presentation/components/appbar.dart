@@ -26,7 +26,19 @@ AppBar appBar(
         },
         icon: Icon(Icons.arrow_back),
       ),
-      title: Text(currentEntity?.name ?? ""),
+      title: Text(currentEntity?.path == "/storage/emulated/0" ? "Home": currentEntity?.name ?? ""),
+      actions: [
+        ValueListenableBuilder(
+            valueListenable: controller.viewType,
+            builder: (_, showGrid, __) {
+              return IconButton(
+                onPressed: () {
+                  controller.updateViewType();
+                },
+                icon: Icon(showGrid ? Icons.list : Icons.grid_view),
+              );
+            }),
+      ],
     );
   } else {
     return AppBar(
@@ -61,26 +73,26 @@ AppBar appBar(
                 icon: Icon(showGrid ? Icons.list : Icons.grid_view),
               );
             }),
-        IconButton(
-          onPressed: () {},
-          icon: Icon(Icons.cut),
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: Icon(Icons.copy),
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: Icon(Icons.paste),
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: Icon(Icons.drive_file_rename_outline),
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: Icon(Icons.delete_outline),
-        ),
+        // IconButton(
+        //   onPressed: () {},
+        //   icon: Icon(Icons.cut),
+        // ),
+        // IconButton(
+        //   onPressed: () {},
+        //   icon: Icon(Icons.copy),
+        // ),
+        // IconButton(
+        //   onPressed: () {},
+        //   icon: Icon(Icons.paste),
+        // ),
+        // IconButton(
+        //   onPressed: () {},
+        //   icon: Icon(Icons.drive_file_rename_outline),
+        // ),
+        // IconButton(
+        //   onPressed: () {},
+        //   icon: Icon(Icons.delete_outline),
+        // ),
       ],
     );
   }
