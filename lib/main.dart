@@ -11,7 +11,6 @@ import 'theme/light_theme.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Preferences.initPreferences();
-  await AppController().init();
   if (Platform.isAndroid) {
     await _requestStoragePermission();
   }

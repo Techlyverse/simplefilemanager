@@ -50,6 +50,7 @@ class QuickAccess extends StatelessWidget {
               }).toList()),
         );
      */
+
     return FutureBuilder<List<QuickAccessModel>>(
         future: QuickAccessHelper().getDirectories(),
         builder: (_, snap) {

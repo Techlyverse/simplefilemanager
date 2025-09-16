@@ -20,13 +20,19 @@ AppBar appBar(
   if (selectedEntities.isEmpty) {
     return AppBar(
       elevation: 0,
-      leading: IconButton(
-        onPressed: () {
-          controller.navigateBack();
-        },
-        icon: Icon(Icons.arrow_back),
+      leading: currentEntity == null
+          ? null
+          : IconButton(
+              onPressed: () {
+                controller.navigateBack();
+              },
+              icon: Icon(Icons.arrow_back),
+            ),
+      title: Text(
+        currentEntity?.path == "/storage/emulated/0"
+            ? "Home"
+            : currentEntity?.name ?? "File Manager",
       ),
-      title: Text(currentEntity?.path == "/storage/emulated/0" ? "Home": currentEntity?.name ?? ""),
       actions: [
         ValueListenableBuilder(
             valueListenable: controller.viewType,

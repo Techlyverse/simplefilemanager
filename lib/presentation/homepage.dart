@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import '../data/enums.dart';
 import '../helper/app_controller.dart';
 import 'components/quick_access/quick_access.dart';
-import 'directory_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -22,9 +21,7 @@ class HomePage extends StatelessWidget {
         ValueListenableBuilder(
           valueListenable: controller.viewType,
           builder: (_, showGrid, __) {
-            return LayoutBuilder(builder: (context, constraints) {
-              return showGrid ? _gridView(context) : _listView(context);
-            });
+            return showGrid ? _gridView(context) : _listView(context);
           },
         ),
       ],
@@ -100,7 +97,6 @@ class HomePage extends StatelessWidget {
   Widget _gridView(BuildContext context) {
     final AppController controller = AppController();
     List<Directory> directories = controller.rootDirs;
-    print("root dirs are: ${directories}");
     final count = (context.widthOfScreen / 180).toInt();
     return Padding(
       padding: EdgeInsets.all(16),

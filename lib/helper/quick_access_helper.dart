@@ -12,6 +12,7 @@ class QuickAccessHelper {
   Future<List<QuickAccessModel>> getDirectories() async {
     if (_quickAccessDirs.isNotEmpty) return _quickAccessDirs;
 
+    _quickAccessDirs.clear();
     //TODO: complete below functions
     if (Platform.isAndroid) {
       _getAndroidDirectories();

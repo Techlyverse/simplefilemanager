@@ -5,7 +5,6 @@ import 'package:filemanager/preferences/preferences.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart' as p;
 
 class AppController {
   AppController._();
@@ -33,19 +32,17 @@ class AppController {
 
   void openDirectory(FileSystemEntity entity) async {
     currentEntity.value = entity;
-    // adding the directory to the list
+    // adding the directory path to the list
     if (entity is Directory) {
-      pathList.add(p.basename(entity.path));
+      pathList.add(entity.path);
     }
-    //entities.value = Directory(entity.path).listSync();
   }
 
   Future<void> navigateBack() async {
     if (currentEntity.value != null) {
       /// if root directory contains parent directory then make currentDirectory null to show homepage
-      final bool showRootDir = rootDirs
-          .map((e) => e.path)
-          .contains(currentEntity.value!.parent.path);
+      final bool showRootDir =
+          rootDirs.map((e) => e.path).contains(currentEntity.value!.path);
       final bool isParentExists = await currentEntity.value!.parent.exists();
       if (isParentExists && !showRootDir) {
         openDirectory(currentEntity.value!.parent);
