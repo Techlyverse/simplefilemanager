@@ -29,7 +29,7 @@ android {
 
     defaultConfig {
         applicationId = "com.raghv042.filemanager"
-        minSdk = flutter.minSdkVersion
+        minSdk = 21
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:external_path/external_path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:filemanager/preferences/preferences.dart';
 
@@ -8,52 +7,35 @@ class DirectoryHelper {
   static final _instance = DirectoryHelper._();
   factory DirectoryHelper() => _instance;
 
-  static final List<Directory> _rootDirectories = [];
-
   Future<List<Directory>> getRootDirectories() async {
-    if (_rootDirectories.isNotEmpty) return _rootDirectories;
-
-    final List<String> rootDirPaths = Preferences.getRootDirPaths() ?? [];
-    if (rootDirPaths.isNotEmpty) {
-      for (String path in rootDirPaths) {
-        final Directory dir = Directory(path);
-        if (await dir.exists()) _rootDirectories.add(dir);
-      }
-      return _rootDirectories;
+    //TODO: complete below functions
+    if (Platform.isAndroid) {
+      return _getAndroidRootDirectories();
+    } else if (Platform.isIOS) {
+      throw Exception("Implementation not found");
+    } else if (Platform.isLinux) {
+      throw Exception("Implementation not found");
+    } else if (Platform.isMacOS) {
+      throw Exception("Implementation not found");
+    } else if (Platform.isWindows) {
+      throw Exception("Implementation not found");
     } else {
-      /// clear list to avoid duplicate directory issues
-      _rootDirectories.clear();
-      //TODO: complete below functions
-      if (Platform.isAndroid) {
-        _getAndroidRootDirectories();
-      } else if (Platform.isIOS) {
-        throw Exception("Implementation not found");
-      } else if (Platform.isLinux) {
-        throw Exception("Implementation not found");
-      } else if (Platform.isMacOS) {
-        throw Exception("Implementation not found");
-      } else if (Platform.isWindows) {
-        throw Exception("Implementation not found");
-      } else {
-        throw Exception("OS not supported");
-      }
-
-      /// Cache root directory path
-      final List<String> paths = _rootDirectories.map((e) => e.path).toList();
-      Preferences.setRootDirPaths(paths);
-
-      return _rootDirectories;
+      throw Exception("OS not supported");
     }
   }
+}
 
-  /// Get internal and external storage directories of android
-  static Future<void> _getAndroidRootDirectories() async {
-    final paths = (await ExternalPath.getExternalStorageDirectories()) ??
-        ["/storage/emulated/0"];
-    _rootDirectories.addAll(paths.map((e) => Directory(e)));
-  }
+/// Get internal and external storage directories of android
+Future<List<Directory>> _getAndroidRootDirectories() async {
+  final extDirs = await getExternalStorageDirectories();
+  if (extDirs == null) return [Directory("/storage/emulated/0")];
 
-  /*
+  final dirs = extDirs.map((e) => Directory(e.path.split("/Android").first));
+  return dirs.toList();
+}
+
+
+/*
   Future<Directory> _getPlatformRootDirectory() async {
     if(Platform.isAndroid){
       final dir = await getExternalStorageDirectory();
@@ -113,4 +95,3 @@ class DirectoryHelper {
 
   }
    */
-}

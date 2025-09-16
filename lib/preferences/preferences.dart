@@ -19,9 +19,9 @@ class Preferences {
   static Future<void> setAndroidVersion(int sdk) async => await _prefs.setInt(_keyAndroidSdk, sdk);
   static int? getAndroidVersion() => _prefs.getInt(_keyAndroidSdk);
 
-  static Future<void> setRootDirPaths(List<String> paths) async => await _prefs.setStringList(_keyRootDirPaths, paths);
-  static List<String>? getRootDirPaths() => _prefs.getStringList(_keyRootDirPaths);
-
-  static Future<void> setQuickAccessDirPaths(List<String> paths) async => await _prefs.setStringList(_keyQuickAccessDirPaths, paths);
-  static List<String>? getQuickAccessDirPaths() => _prefs.getStringList(_keyQuickAccessDirPaths);
+  // static Future<void> setRootDirPaths(List<String> paths) async => await _prefs.setStringList(_keyRootDirPaths, paths);
+  // static List<String>? getRootDirPaths() => _prefs.getStringList(_keyRootDirPaths);
+  //
+  // static Future<void> setQuickAccessDirPaths(List<String> paths) async => await _prefs.setStringList(_keyQuickAccessDirPaths, paths);
+  // static List<String>? getQuickAccessDirPaths() => _prefs.getStringList(_keyQuickAccessDirPaths);
 }
