@@ -17,7 +17,29 @@ class HomePage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16),
+          child: Text(
+            "Quick Access",
+            style: TextStyle(
+              fontSize: 16,
+              color: context.colorScheme.primary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
         if (layoutType == LayoutType.mobile) QuickAccess(),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Text(
+            "Storage",
+            style: TextStyle(
+              fontSize: 16,
+              color: context.colorScheme.primary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
         ValueListenableBuilder(
           valueListenable: controller.viewType,
           builder: (_, showGrid, __) {
@@ -55,17 +77,18 @@ class HomePage extends StatelessWidget {
         itemBuilder: (_, index) {
           final bool sdCard = directories[index].path.split('/').last != '0';
           return Padding(
-            padding: EdgeInsets.all(12),
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             child: ElevatedButton(
               onPressed: () {
                 controller.openDirectory(directories[index]);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xfff5f5f5),
-                //foregroundColor: Color(0xffeeeee),
+                backgroundColor: context.colorScheme.primaryContainer,
+                foregroundColor: context.colorScheme.onPrimaryContainer,
                 padding: EdgeInsets.all(12),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -82,9 +105,9 @@ class HomePage extends StatelessWidget {
                   Text(
                     sdCard ? 'SD Card' : 'Internal Storage',
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 16,
                       color: Colors.black,
-                      fontWeight: FontWeight.w400,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],
@@ -102,8 +125,8 @@ class HomePage extends StatelessWidget {
       padding: EdgeInsets.all(16),
       child: GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            mainAxisSpacing: 0,
-            crossAxisSpacing: 0,
+            mainAxisSpacing: 15,
+            crossAxisSpacing: 15,
             crossAxisCount: count,
           ),
           shrinkWrap: true,
@@ -117,20 +140,21 @@ class HomePage extends StatelessWidget {
                   controller.openDirectory(directories[index]);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xfff5f5f5),
-                  //foregroundColor: Color(0xffeeeee),
+                  backgroundColor: context.colorScheme.primaryContainer,
+                  foregroundColor: context.colorScheme.onPrimaryContainer,
                   padding: EdgeInsets.all(12),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Icon(
-                      sdCard ? Icons.sd_card : Icons.phone_android,
-                      size: 100,
-                      color: sdCard ? Colors.green[600] : Colors.blue[600],
+                      sdCard ? Icons.sd_card_outlined : Icons.phone_android,
+                      size: 80,
+                      color: sdCard ? Colors.amber[700] : Colors.blue[600],
                     ),
                     SizedBox(height: 12),
                     Text(

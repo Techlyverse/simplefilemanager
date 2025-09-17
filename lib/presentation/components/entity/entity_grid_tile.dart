@@ -35,7 +35,7 @@ class EntityGridTile extends StatelessWidget {
           ),
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             EntityIcon(entity),
             Text(

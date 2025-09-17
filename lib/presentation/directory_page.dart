@@ -25,7 +25,7 @@ class DirectoryPage extends StatelessWidget {
         children: [
           if (context.layoutType != LayoutType.desktop)
             BreadCrumbBar(currentEntity: currentEntity),
-          Expanded(child: EntityViewer(entities: directory.listSync())),
+          Expanded(child: EntityViewer(dir: directory)),
         ],
       );
     }

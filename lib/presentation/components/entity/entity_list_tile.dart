@@ -5,7 +5,8 @@ import 'package:filemanager/data/extensions/filesystementity_ext.dart';
 import 'entity_icon.dart';
 
 class EntityListTile extends StatelessWidget {
-  const EntityListTile({super.key, this.onTap, required this.entity, this.onLongPress});
+  const EntityListTile(
+      {super.key, this.onTap, required this.entity, this.onLongPress});
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
   final FileSystemEntity entity;
@@ -14,7 +15,6 @@ class EntityListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       onTap: onTap,
-      // for pop up menu on long press
       onLongPress: onLongPress,
       title: Text(entity.name),
       leading: EntityIcon(entity),
