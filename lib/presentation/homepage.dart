@@ -14,6 +14,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final layoutType = context.layoutType;
+    //print(layoutType);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -158,7 +159,8 @@ class HomePage extends StatelessWidget {
                     ),
                     SizedBox(height: 12),
                     Text(
-                      sdCard ? 'SD Card' : 'Device',
+                      sdCard ? 'SD Card' : 'Internal Storage',
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 20,
                         color: Colors.black,
