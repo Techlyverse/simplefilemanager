@@ -1,17 +1,17 @@
 import 'dart:io';
-import 'package:filemanager/features/main_screen.dart';
 import 'package:filemanager/globals.dart';
 import 'package:filemanager/helper/app_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'preferences/preferences.dart';
+import 'presentation/main_screen.dart';
 import 'theme/dark_theme.dart';
 import 'theme/light_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Preferences.initPreferences();
-  if(Platform.isAndroid){
+  if (Platform.isAndroid) {
     await _requestStoragePermission();
   }
   await AppController().init();
@@ -20,12 +20,13 @@ Future<void> main() async {
 }
 
 Future<void> _requestStoragePermission() async {
-  if(await Permission.manageExternalStorage.isGranted || await Permission.storage.isGranted){
+  if (await Permission.manageExternalStorage.isGranted ||
+      await Permission.storage.isGranted) {
     return;
   }
   final status1 = await Permission.manageExternalStorage.request();
   final status2 = await Permission.storage.request();
-  if (status2.isPermanentlyDenied || status1.isPermanentlyDenied){
+  if (status2.isPermanentlyDenied || status1.isPermanentlyDenied) {
     await openAppSettings();
   }
 }

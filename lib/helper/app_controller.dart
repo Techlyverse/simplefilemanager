@@ -1,137 +1,88 @@
 import 'dart:io';
-import 'dart:ui';
-
+import 'package:filemanager/helper/directory_helper.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:filemanager/preferences/preferences.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class AppController {
   AppController._();
   static final AppController _instance = AppController._();
   factory AppController() => _instance;
 
-  static final Directory _alternateDirectory = Directory(r'/home/manu/Downloads');
-  late Directory _initialDirectory;
+  late final List<Directory> rootDirs = [];
+  static late Directory _tempDir;
 
-  //static final _initialDirectory = Directory(r'/home/manu/Downloads');
+  final ValueNotifier<bool> viewType = ValueNotifier(Preferences.getViewType());
+  final ValueNotifier<bool> updateUi = ValueNotifier(true);
+  final ValueNotifier<FileSystemEntity?> currentEntity = ValueNotifier(null);
+  final List<FileSystemEntity> selectedEntities = [];
+
   // a list that contains all the directories that we went through for the current directory -MG
-  //List<String> pathList = [_initialDirectory.toString()];
-  late List<String> pathList;
-  ValueNotifier<bool> showGrid = ValueNotifier(Preferences.getViewType());
+  List<String> pathList = [];
 
-  //ValueNotifier<FileSystemEntity> fileSystemEntity =
-  //    ValueNotifier(_initialDirectory);
-  late ValueNotifier<FileSystemEntity> fileSystemEntity;
-  ValueNotifier<List<FileSystemEntity>> fileSystemEntities = ValueNotifier([]);
-  ValueNotifier<List<Directory>> directoriesInRoot = ValueNotifier([]);
-  // for long press on icons
-  ValueNotifier<FileSystemEntity?> selectedEntity = ValueNotifier(null);
-
-
-
-  Future<Directory> _getPlatformRootDirectory() async {
-    if(Platform.isAndroid){
-      final dir = await getExternalStorageDirectory();
-      if(dir != null){
-        String newPath = "";
-        List<String> folders = dir.path.split("/");
-        for (int i = 1; i < folders.length; i++){
-          if(folders[i] == "Android") break;
-          newPath += "/${folders[i]}";
-        }
-        return Directory(newPath);
-      }
-    }
-
-    Directory? startingDir;
-    String? userPath;
-
-    if (Platform.isLinux || Platform.isMacOS){
-      userPath = Platform.environment['HOME'];
-      startingDir = await getApplicationDocumentsDirectory();
-    } else if (Platform.isWindows){
-      userPath = Platform.environment['USERPROFILE'];
-      startingDir = await getApplicationDocumentsDirectory();
-    }
-
-    if (startingDir == null){
-      return _alternateDirectory;
-    }
-
-    if(userPath != null){
-      Directory current = startingDir;
-      while (current.path != userPath && current.parent.path != current.path) {
-        current = current.parent;
-      }
-
-      return current;
-    }
-
-    Directory root = startingDir;
-    while (root.parent.path != root.path){
-      root = root.parent;
-    }
-
-    return root;
-
-    //return _alternateDirectory;
-  }
-
-  Future<void> listOfDirectoriesInRoot() async{
-    final Directory root = await _getPlatformRootDirectory();
-    final listOfRootDir = root.listSync().whereType<Directory>().toList();
-    if (listOfRootDir != []) {
-      directoriesInRoot.value = listOfRootDir;
-    } else {
-      directoriesInRoot.value = [];
-    }
-
-  }
-
-  Future<void> init() async{
-    _initialDirectory = await _getPlatformRootDirectory();
-
-    pathList = [_initialDirectory.path];
-    fileSystemEntity = ValueNotifier<FileSystemEntity>(_initialDirectory);
-    await loadInitialFiles();
-  }
-
-  Future<void> loadInitialFiles() async {
-    try {
-      fileSystemEntities.value = _initialDirectory.listSync();
-    } catch (e) {
-      fileSystemEntity.value = _initialDirectory;
+  /// Fetch root directories of current platform
+  Future<void> init() async {
+    if (rootDirs.isEmpty) {
+      final dirs = await DirectoryHelper().getRootDirectories();
+      rootDirs.addAll(dirs);
+      _tempDir = await getApplicationDocumentsDirectory();
     }
   }
 
   void openDirectory(FileSystemEntity entity) async {
-    fileSystemEntity.value = entity;
-    // adding the directory to the list
+    currentEntity.value = entity;
+    // adding the directory path to the list
     if (entity is Directory) {
-      pathList.add(p.basename(entity.path));
+      pathList.add(entity.path);
     }
-    fileSystemEntities.value = Directory(entity.path).listSync();
   }
 
   Future<void> navigateBack() async {
-    // final bool isParentExists = await fileSystemEntity.value.parent.exists();
-    // if (isParentExists) {
-    //   openDirectory(fileSystemEntity.value.parent);
-    // }
-    final current = fileSystemEntity.value;
-    if(current == null) return;
-    final parent = current.parent;
-    if(await parent.exists()){
-      openDirectory(parent);
+    if (currentEntity.value != null) {
+      /// if root directory contains parent directory then make currentDirectory null to show homepage
+      final bool showRootDir =
+          rootDirs.map((e) => e.path).contains(currentEntity.value!.path);
+      final bool isParentExists = await currentEntity.value!.parent.exists();
+      if (isParentExists && !showRootDir) {
+        openDirectory(currentEntity.value!.parent);
+      } else {
+        currentEntity.value = null;
+      }
     }
   }
 
   void updateViewType() {
-    Preferences.setViewType(!showGrid.value);
-    showGrid.value = !showGrid.value;
+    viewType.value = !viewType.value;
+    Preferences.setViewType(!viewType.value);
+  }
+
+  bool isCurrentEntitySelected(FileSystemEntity entity) {
+    return selectedEntities.where((e) => e.path == entity.path).isNotEmpty;
+  }
+
+  void _selectEntity(FileSystemEntity entity) {
+    isCurrentEntitySelected(entity)
+        ? selectedEntities.removeWhere((e) => e.path == entity.path)
+        : selectedEntities.add(entity);
+    updateUi.value = !updateUi.value;
+  }
+
+  void onTapEntity(FileSystemEntity entity) {
+    if (selectedEntities.isNotEmpty) {
+      _selectEntity(entity);
+    } else {
+      if (entity is File) {
+        OpenFile.open(entity.path);
+      } else {
+        openDirectory(entity);
+      }
+    }
+  }
+
+  void onLongPressEntity(FileSystemEntity entity) {
+    _selectEntity(entity);
   }
 }
