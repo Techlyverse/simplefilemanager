@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:filemanager/helper/directory_helper.dart';
+import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:filemanager/preferences/preferences.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,8 +16,9 @@ class AppController {
   static late Directory _tempDir;
 
   final ValueNotifier<bool> viewType = ValueNotifier(Preferences.getViewType());
+  final ValueNotifier<bool> updateUi = ValueNotifier(true);
   final ValueNotifier<FileSystemEntity?> currentEntity = ValueNotifier(null);
-  ValueNotifier<List<FileSystemEntity>> selectedEntities = ValueNotifier([]);
+  final List<FileSystemEntity> selectedEntities = [];
 
   // a list that contains all the directories that we went through for the current directory -MG
   List<String> pathList = [];
@@ -55,5 +57,32 @@ class AppController {
   void updateViewType() {
     viewType.value = !viewType.value;
     Preferences.setViewType(!viewType.value);
+  }
+
+  bool isCurrentEntitySelected(FileSystemEntity entity) {
+    return selectedEntities.where((e) => e.path == entity.path).isNotEmpty;
+  }
+
+  void _selectEntity(FileSystemEntity entity) {
+    isCurrentEntitySelected(entity)
+        ? selectedEntities.removeWhere((e) => e.path == entity.path)
+        : selectedEntities.add(entity);
+    updateUi.value = !updateUi.value;
+  }
+
+  void onTapEntity(FileSystemEntity entity) {
+    if (selectedEntities.isNotEmpty) {
+      _selectEntity(entity);
+    } else {
+      if (entity is File) {
+        OpenFile.open(entity.path);
+      } else {
+        openDirectory(entity);
+      }
+    }
+  }
+
+  void onLongPressEntity(FileSystemEntity entity) {
+    _selectEntity(entity);
   }
 }

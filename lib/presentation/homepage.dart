@@ -50,24 +50,6 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  // Widget buildFileManagerHome() {
-  //   return FileManager(
-  //     controller: fmc,
-  //     builder: (context, listFileSystemEntity) {
-  //       return FutureBuilder<List<Directory>>(
-  //           future: FileManager.getStorageList(),
-  //           builder: (context, snapshot) {
-  //             if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-  //               return fmc.showGrid.value
-  //                   ? HomeGrid(directories: snapshot.data)
-  //                   : HomeList(directories: snapshot.data);
-  //             }
-  //             return SizedBox();
-  //           });
-  //     },
-  //   );
-  // }
-
   Widget _listView(BuildContext context) {
     final AppController controller = AppController();
     List<Directory> directories = controller.rootDirs;

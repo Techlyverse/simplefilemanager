@@ -4,18 +4,13 @@ import 'package:filemanager/data/extensions/filesystementity_ext.dart';
 import 'package:filemanager/globals.dart';
 import 'package:flutter/material.dart';
 
+import '../../../helper/app_controller.dart';
 import 'entity_icon.dart';
 
 class EntityGridTile extends StatelessWidget {
-  const EntityGridTile({
-    super.key,
-    required this.entity,
-    required this.onTap,
-    this.onLongPress,
-  });
+  const EntityGridTile({super.key, required this.entity});
   final FileSystemEntity entity;
-  final VoidCallback? onTap;
-  final VoidCallback? onLongPress;
+  static final AppController controller = AppController();
 
   @override
   Widget build(BuildContext context) {
@@ -25,10 +20,16 @@ class EntityGridTile extends StatelessWidget {
       width: isAndroid ? 90 : 70,
       height: isAndroid ? 90 : 70,
       child: TextButton(
-        onPressed: onTap,
-        onLongPress: onLongPress,
+        onPressed: () {
+          controller.onTapEntity(entity);
+        },
+        onLongPress: () {
+          controller.onLongPressEntity(entity);
+        },
         style: TextButton.styleFrom(
-          backgroundColor: colorScheme.surfaceContainerLowest,
+          backgroundColor: controller.isCurrentEntitySelected(entity)
+              ? colorScheme.surfaceContainerHighest
+              : null,
           foregroundColor: colorScheme.onSurface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
