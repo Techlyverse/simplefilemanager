@@ -1,9 +1,7 @@
 import 'dart:io';
 
 import 'package:filemanager/helper/app_controller.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:open_file/open_file.dart';
 
 import 'entity_grid_tile.dart';
 import 'entity_list_tile.dart';
@@ -38,28 +36,17 @@ class EntityViewer extends StatelessWidget {
             final List<FileSystemEntity> entities = snapshot.data!;
 
             return SingleChildScrollView(
-              child: Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: entities.map((entity) {
-                  return EntityGridTile(
-                    entity: entity,
-                    onTap: () {
-                      entity is File
-                          ? OpenFile.open(entity.path)
-                          : AppController().openDirectory(entity);
-                    },
-                    onLongPress: () {
-                      AppController().selectedEntities.value.contains(entity)
-                          ? AppController()
-                              .selectedEntities
-                              .value
-                              .remove(entity)
-                          : AppController().selectedEntities.value.add(entity);
-                    },
-                  );
-                }).toList(),
-              ),
+              child: ValueListenableBuilder(
+                  valueListenable: AppController().updateUi,
+                  builder: (context, value, child) {
+                    return Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: entities.map((entity) {
+                        return EntityGridTile(entity: entity);
+                      }).toList(),
+                    );
+                  }),
             );
           }
           return SizedBox();
@@ -81,31 +68,14 @@ class EntityViewer extends StatelessWidget {
           } else if (snapshot.data != null && snapshot.data!.isNotEmpty) {
             final List<FileSystemEntity> entities = snapshot.data!;
 
-            return ListView.builder(
-                itemCount: entities.length,
-                itemBuilder: (context, index) {
-                  return EntityListTile(
-                    entity: entities[index],
-                    onTap: () {
-                      entities[index] is File
-                          ? OpenFile.open(entities[index].path)
-                          : AppController().openDirectory(entities[index]);
-                    },
-                    onLongPress: () {
-                      AppController()
-                              .selectedEntities
-                              .value
-                              .contains(entities[index])
-                          ? AppController()
-                              .selectedEntities
-                              .value
-                              .remove(entities[index])
-                          : AppController()
-                              .selectedEntities
-                              .value
-                              .add(entities[index]);
-                    },
-                  );
+            return ValueListenableBuilder(
+                valueListenable: AppController().updateUi,
+                builder: (context, value, child) {
+                  return ListView.builder(
+                      itemCount: entities.length,
+                      itemBuilder: (context, index) {
+                        return EntityListTile(entity: entities[index]);
+                      });
                 });
           }
           return SizedBox();

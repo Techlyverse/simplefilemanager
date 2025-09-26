@@ -8,98 +8,106 @@ import 'package:flutter/material.dart';
 import '../../data/enums.dart';
 import 'breadcrumb/bread_crumb_bar.dart';
 
-AppBar appBar(
-  BuildContext context,
-  FileSystemEntity? currentEntity,
-  List<FileSystemEntity> selectedEntities,
-) {
-  final LayoutType viewType = context.layoutType;
+class ToolBar extends StatelessWidget implements PreferredSizeWidget {
+  const ToolBar({super.key, required this.currentEntity});
+  final FileSystemEntity? currentEntity;
 
-  final controller = AppController();
+  static final controller = AppController();
 
-  if (selectedEntities.isEmpty) {
-    return AppBar(
-      elevation: 0,
-      leading: currentEntity == null
-          ? null
-          : IconButton(
-              onPressed: () {
-                controller.navigateBack();
-              },
-              icon: Icon(Icons.arrow_back),
-            ),
-      title: Text(
-        currentEntity?.path == "/storage/emulated/0"
-            ? "Home"
-            : currentEntity?.name ?? "File Manager",
-      ),
-      actions: [
-        ValueListenableBuilder(
-            valueListenable: controller.viewType,
-            builder: (_, showGrid, __) {
-              return IconButton(
-                onPressed: () {
-                  controller.updateViewType();
-                },
-                icon: Icon(showGrid ? Icons.list : Icons.grid_view),
-              );
-            }),
-      ],
-    );
-  } else {
-    return AppBar(
-      title: !Platform.isAndroid && !Platform.isIOS
-          ? Row(
-              children: [
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.arrow_back),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.arrow_forward),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.refresh),
-                ),
-                if (viewType == LayoutType.desktop)
-                  BreadCrumbBar(currentEntity: currentEntity),
+  @override
+  Widget build(BuildContext context) {
+    final LayoutType viewType = context.layoutType;
+    return ValueListenableBuilder(
+        valueListenable: controller.updateUi,
+        builder: (_, __, ___) {
+          if (AppController().selectedEntities.isEmpty) {
+            return AppBar(
+              elevation: 0,
+              leading: currentEntity == null
+                  ? null
+                  : IconButton(
+                      onPressed: () {
+                        controller.navigateBack();
+                      },
+                      icon: Icon(Icons.arrow_back),
+                    ),
+              title: Text(
+                currentEntity?.path == "/storage/emulated/0"
+                    ? "Home"
+                    : currentEntity?.name ?? "File Manager",
+              ),
+              actions: [
+                ValueListenableBuilder(
+                    valueListenable: controller.viewType,
+                    builder: (_, showGrid, __) {
+                      return IconButton(
+                        onPressed: () {
+                          controller.updateViewType();
+                        },
+                        icon: Icon(showGrid ? Icons.list : Icons.grid_view),
+                      );
+                    }),
               ],
-            )
-          : SizedBox(),
-      actions: [
-        ValueListenableBuilder(
-            valueListenable: controller.viewType,
-            builder: (_, showGrid, __) {
-              return IconButton(
-                onPressed: () {
-                  controller.updateViewType();
-                },
-                icon: Icon(showGrid ? Icons.list : Icons.grid_view),
-              );
-            }),
-        // IconButton(
-        //   onPressed: () {},
-        //   icon: Icon(Icons.cut),
-        // ),
-        // IconButton(
-        //   onPressed: () {},
-        //   icon: Icon(Icons.copy),
-        // ),
-        // IconButton(
-        //   onPressed: () {},
-        //   icon: Icon(Icons.paste),
-        // ),
-        // IconButton(
-        //   onPressed: () {},
-        //   icon: Icon(Icons.drive_file_rename_outline),
-        // ),
-        // IconButton(
-        //   onPressed: () {},
-        //   icon: Icon(Icons.delete_outline),
-        // ),
-      ],
-    );
+            );
+          } else {
+            return AppBar(
+              title: !Platform.isAndroid && !Platform.isIOS
+                  ? Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.arrow_back),
+                        ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.arrow_forward),
+                        ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.refresh),
+                        ),
+                        if (viewType == LayoutType.desktop)
+                          BreadCrumbBar(currentEntity: currentEntity),
+                      ],
+                    )
+                  : SizedBox(),
+              actions: [
+                ValueListenableBuilder(
+                    valueListenable: controller.viewType,
+                    builder: (_, showGrid, __) {
+                      return IconButton(
+                        onPressed: () {
+                          controller.updateViewType();
+                        },
+                        icon: Icon(showGrid ? Icons.list : Icons.grid_view),
+                      );
+                    }),
+                // IconButton(
+                //   onPressed: () {},
+                //   icon: Icon(Icons.cut),
+                // ),
+                // IconButton(
+                //   onPressed: () {},
+                //   icon: Icon(Icons.copy),
+                // ),
+                // IconButton(
+                //   onPressed: () {},
+                //   icon: Icon(Icons.paste),
+                // ),
+                // IconButton(
+                //   onPressed: () {},
+                //   icon: Icon(Icons.drive_file_rename_outline),
+                // ),
+                // IconButton(
+                //   onPressed: () {},
+                //   icon: Icon(Icons.delete_outline),
+                // ),
+              ],
+            );
+          }
+        });
   }
+
+  @override
+  Size get preferredSize => AppBar().preferredSize;
 }

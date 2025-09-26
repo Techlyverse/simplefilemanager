@@ -10,7 +10,7 @@ class QuickAccessTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         AppController().openDirectory(quickAccessModel.directory);
       },
       child: Container(
@@ -18,7 +18,7 @@ class QuickAccessTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6),
         margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
         decoration: BoxDecoration(
-          color: Colors.blue.shade50,
+          color: context.colorScheme.secondaryContainer,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
