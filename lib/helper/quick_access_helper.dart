@@ -15,7 +15,7 @@ class QuickAccessHelper {
     _quickAccessDirs.clear();
     //TODO: complete below functions
     if (Platform.isAndroid) {
-      _getAndroidDirectories();
+     await  _getAndroidDirectories(); // added await cause the quick access was not displayed on first install
     } else if (Platform.isIOS) {
       throw Exception("Implementation not found");
     } else if (Platform.isLinux) {
@@ -40,7 +40,7 @@ class QuickAccessHelper {
       "/storage/emulated/0/DCIM",
     ];
 
-    _getAndroidQA(paths);
+    await _getAndroidQA(paths); // added await because the quick access was not displayed on the first install
   }
 
   static Future<void> _getAndroidQA(List<String> paths) async {
