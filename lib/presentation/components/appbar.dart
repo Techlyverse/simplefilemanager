@@ -41,11 +41,30 @@ class ToolBar extends StatelessWidget implements PreferredSizeWidget {
                 ValueListenableBuilder(
                     valueListenable: controller.viewType,
                     builder: (_, showGrid, __) {
-                      return IconButton(
-                        onPressed: () {
-                          controller.updateViewType();
-                        },
-                        icon: Icon(showGrid ? Icons.list : Icons.grid_view),
+                      return Row(
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              controller.updateViewType();
+                            },
+                            icon: Icon(showGrid ? Icons.list : Icons.grid_view),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.add),
+                            onPressed: () async {
+                              final currentDirPath = controller.currentEntity.value?.path;
+                              final folderNameFromUser = await showTwoTextFieldsDialog(context, "Create Folder", "Enter new folder name", "Create");
+                              if (folderNameFromUser != null && folderNameFromUser.isNotEmpty) {
+                                await createNewFolderInCurrentDir(context, folderNameFromUser, currentDirPath!);
+                              }
+                              // refresh ui
+                              if(controller.currentEntity.value is Directory){
+                                final dir = controller.currentEntity.value as Directory;
+                                controller.currentEntity.value = Directory(dir.path);
+                              }
+                            }
+                          ),
+                        ],
                       );
                     }),
               ],
@@ -73,6 +92,14 @@ class ToolBar extends StatelessWidget implements PreferredSizeWidget {
                     )
                   : Row(
                       children: [
+                        IconButton(
+                          icon: Icon(Icons.close),
+                          onPressed: () {
+                            // clear selection
+                            controller.selectedEntities.clear();
+                            controller.updateUi.value = !controller.updateUi.value;
+                          },
+                        ),
                         Text(
                           'Selected ${controller.selectedEntities.length} ${controller.selectedEntities.length == 1 ? "item" : "items"}'
                         )
@@ -103,6 +130,13 @@ class ToolBar extends StatelessWidget implements PreferredSizeWidget {
                 // ),
                 IconButton(
                   onPressed: () async{
+                    if (controller.selectedEntities.length > 1) {
+                      await showTimedDialog(
+                        context,
+                        "Please select only one item to use rename function.",
+                      );
+                      return;
+                    }
                     final folderNamesFromUser = controller.selectedEntities.first.name;
                     final newFolderName = await showTwoTextFieldsDialog(
                     context,
@@ -140,21 +174,31 @@ class ToolBar extends StatelessWidget implements PreferredSizeWidget {
                   onPressed: () async{
                     final currentDirPath =
                         controller.currentEntity.value?.path;
-                    final folderToBeDeletedFromUser = controller.selectedEntities.first.name;
-                    final isUserSure = await showChoiceDialog(context,
-                        "Are you sure you want to delete ${folderToBeDeletedFromUser} folder?");
-                    if (folderToBeDeletedFromUser != null &&
-                        folderToBeDeletedFromUser.isNotEmpty &&
-                        isUserSure == true) {
-                      await deleteFolder(
-                          context,folderToBeDeletedFromUser, currentDirPath);
-
-                    // refresh ui
-                    if(controller.currentEntity.value is Directory){
-                      final dir = controller.currentEntity.value as Directory;
-                      controller.currentEntity.value = Directory(dir.path);
+                    bool? isUserSure;
+                    if(controller.selectedEntities.length > 1){
+                      isUserSure = await showChoiceDialog(context,
+                          "Are you sure you want to delete the selected folders?");
+                    } else {
+                      isUserSure = await showChoiceDialog(context,
+                          "Are you sure you want to delete ${controller.selectedEntities.first.name} folder?");
                     }
-                    // clear selection
+
+                    final foldersToBeDeleted = List<FileSystemEntity>.from(controller.selectedEntities);
+                    for (final entity  in foldersToBeDeleted){
+                      final folderToBeDeletedFromUser = entity.name;
+                      if (folderToBeDeletedFromUser.isNotEmpty &&
+                          isUserSure == true) {
+                        await deleteFolder(
+                            context,folderToBeDeletedFromUser, currentDirPath);
+
+
+                    }
+                      // refresh ui
+                      if(controller.currentEntity.value is Directory){
+                        final dir = controller.currentEntity.value as Directory;
+                        controller.currentEntity.value = Directory(dir.path);
+                      }
+                      // clear selection
                       controller.selectedEntities.clear();
                     }
 
@@ -180,6 +224,18 @@ class ToolBar extends StatelessWidget implements PreferredSizeWidget {
     }
   }
 
+  Future<void> createNewFolderInCurrentDir( BuildContext context,
+      String folderName, pathOfCurDir) async {
+    final newFolderPath = p.join(pathOfCurDir, folderName);
+    final newFolder = Directory(newFolderPath);
+    if (!(await newFolder.exists())) {
+      await newFolder.create();
+      await showTimedDialog(context, "New folder created.");
+    } else {
+      await showTimedDialog(context, "Folder with this name already exists.");
+    }
+  }
+
   Future<void> renameCurrentFolder(
       BuildContext context, String newFolderName, Directory folderWeWantToRename) async {
     final parentDir = folderWeWantToRename.parent;
@@ -194,7 +250,7 @@ class ToolBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   Future<void> showTimedDialog(BuildContext context, content,
-      {Duration duration = const Duration(seconds: 6)}) async {
+      {Duration duration = const Duration(seconds: 3)}) async {
     showDialog(
         context: context,
         //barrierDismissible: false,
