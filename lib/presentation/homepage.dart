@@ -61,35 +61,42 @@ class HomePage extends StatelessWidget {
           final bool sdCard = directories[index].path.split('/').last != '0';
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            child: ElevatedButton(
+            child: OutlinedButton(
               onPressed: () {
                 controller.openDirectory(directories[index]);
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: context.colorScheme.primaryContainer,
-                foregroundColor: context.colorScheme.onPrimaryContainer,
-                padding: EdgeInsets.all(12),
+              style: OutlinedButton.styleFrom(
+                elevation: 0,
+                padding: EdgeInsets.all(16),
+                foregroundColor: context.colorScheme.onSurfaceVariant,
+                backgroundColor: context.colorScheme.surfaceContainerLowest,
+                side: BorderSide(
+                    color: context.colorScheme.surfaceContainerHighest),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
+                    borderRadius: BorderRadius.circular(12)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Icon(
-                    sdCard
-                        ? Icons.sd_card_outlined
-                        : Icons.phone_android_outlined,
-                    size: 40,
-                    color: sdCard ? Colors.amber[700] : Colors.blue[600],
+                  Image.asset(
+                    sdCard ? "assets/sd_card.png" : "assets/mobile.png",
+                    width: 38,
                   ),
+                  // Icon(
+                  //   sdCard
+                  //       ? Icons.sd_card_outlined
+                  //       : Icons.phone_android_outlined,
+                  //   size: 40,
+                  //   color: sdCard
+                  //       ? context.colorScheme.primary
+                  //       : context.colorScheme.tertiary,
+                  // ),
                   SizedBox(width: 20),
                   Text(
                     sdCard ? 'SD Card' : 'Internal Storage',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -107,57 +114,57 @@ class HomePage extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.all(16),
       child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            mainAxisSpacing: 15,
-            crossAxisSpacing: 15,
-            crossAxisCount: count,
-          ),
-          shrinkWrap: true,
-          itemCount: directories.length,
-          itemBuilder: (_, index) {
-            if (directories.isNotEmpty) {
-              final bool sdCard =
-                  directories[index].path.split('/').last != '0';
-              return ElevatedButton(
-                onPressed: () {
-                  controller.openDirectory(directories[index]);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: context.colorScheme.primaryContainer,
-                  foregroundColor: context.colorScheme.onPrimaryContainer,
-                  padding: EdgeInsets.all(12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          mainAxisSpacing: 15,
+          crossAxisSpacing: 15,
+          crossAxisCount: count,
+        ),
+        shrinkWrap: true,
+        itemCount: directories.length,
+        itemBuilder: (_, index) {
+          if (directories.isNotEmpty) {
+            final bool sdCard = directories[index].path.split('/').last != '0';
+            return OutlinedButton(
+              onPressed: () {
+                controller.openDirectory(directories[index]);
+              },
+              style: OutlinedButton.styleFrom(
+                elevation: 0,
+                padding: EdgeInsets.all(12),
+                foregroundColor: context.colorScheme.onSurfaceVariant,
+                backgroundColor: context.colorScheme.surfaceContainerLowest,
+                side: BorderSide(
+                    color: context.colorScheme.surfaceContainerHighest),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    sdCard ? "assets/sd_card.png" : "assets/mobile.png",
+                    width: 80,
                   ),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(
-                      sdCard ? Icons.sd_card_outlined : Icons.phone_android,
-                      size: 80,
-                      color: sdCard ? Colors.amber[700] : Colors.blue[600],
+                  SizedBox(height: 12),
+                  Text(
+                    sdCard ? 'SD Card' : 'Internal Storage',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
                     ),
-                    SizedBox(height: 12),
-                    Text(
-                      sdCard ? 'SD Card' : 'Internal Storage',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.black,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            } else {
-              return const Center(
-                child: Text("No directory found"),
-              );
-            }
-          }),
+                  ),
+                ],
+              ),
+            );
+          } else {
+            return const Center(
+              child: Text("No directory found"),
+            );
+          }
+        },
+      ),
     );
   }
 }

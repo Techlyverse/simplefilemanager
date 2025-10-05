@@ -74,7 +74,7 @@ class QuickAccess extends StatelessWidget {
       shrinkWrap: true,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 4,
+        childAspectRatio: 3.4,
       ),
       itemBuilder: (_, index) {
         return QuickAccessTile(quickAccessModel: directories[index]);

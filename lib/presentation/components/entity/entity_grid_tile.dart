@@ -15,6 +15,7 @@ class EntityGridTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    bool isSelected = controller.isCurrentEntitySelected(entity);
 
     return SizedBox(
       width: isAndroid ? 90 : 70,
@@ -27,9 +28,7 @@ class EntityGridTile extends StatelessWidget {
           controller.onLongPressEntity(entity);
         },
         style: TextButton.styleFrom(
-          backgroundColor: controller.isCurrentEntitySelected(entity)
-              ? colorScheme.surfaceContainerHighest
-              : null,
+          backgroundColor: isSelected ? colorScheme.primaryFixedDim : null,
           foregroundColor: colorScheme.onSurface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
@@ -44,7 +43,12 @@ class EntityGridTile extends StatelessWidget {
               maxLines: 1,
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: isAndroid ? 14 : 10),
+              style: isSelected
+                  ? TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                    )
+                  : null,
             ),
           ],
         ),

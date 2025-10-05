@@ -9,17 +9,20 @@ class QuickAccessTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        AppController().openDirectory(quickAccessModel.directory);
-      },
-      child: Container(
-        width: (context.widthOfScreen / 3.1).clamp(210, 290),
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6),
-        margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-        decoration: BoxDecoration(
-          color: context.colorScheme.secondaryContainer,
-          borderRadius: BorderRadius.circular(8),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      child: OutlinedButton(
+        onPressed: () {
+          AppController().openDirectory(quickAccessModel.directory);
+        },
+        style: OutlinedButton.styleFrom(
+          elevation: 0,
+          backgroundColor: context.colorScheme.surfaceContainerLowest,
+          foregroundColor: context.colorScheme.onSurfaceVariant,
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6),
+          alignment: Alignment.centerLeft,
+          side: BorderSide(color: context.colorScheme.surfaceContainerHighest),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -33,7 +36,10 @@ class QuickAccessTile extends StatelessWidget {
             Text(
               quickAccessModel.title,
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodyLarge!,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),
