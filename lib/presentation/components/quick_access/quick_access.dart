@@ -52,20 +52,21 @@ class QuickAccess extends StatelessWidget {
      */
 
     return FutureBuilder<List<QuickAccessModel>>(
-        future: QuickAccessHelper().getDirectories(),
-        builder: (_, snap) {
-          if (snap.data != null && snap.data!.isNotEmpty) {
-            if (layoutType == LayoutType.mobile) {
-              return _mobileView(snap.data!);
-            } else if (layoutType == LayoutType.tablet) {
-              return _tabletView(snap.data!);
-            } else {
-              return _desktopView(snap.data!);
-            }
+      future: QuickAccessHelper().getDirectories(),
+      builder: (_, snap) {
+        if (snap.data != null && snap.data!.isNotEmpty) {
+          if (layoutType == LayoutType.mobile) {
+            return _mobileView(snap.data!);
+          } else if (layoutType == LayoutType.tablet) {
+            return _tabletView(snap.data!);
           } else {
-            return SizedBox();
+            return _desktopView(snap.data!);
           }
-        });
+        } else {
+          return SizedBox();
+        }
+      },
+    );
   }
 
   Widget _mobileView(List<QuickAccessModel> directories) {
@@ -95,14 +96,26 @@ class QuickAccess extends StatelessWidget {
   }
 
   Widget _desktopView(List<QuickAccessModel> directories) {
-    return SizedBox(
-      width: 200,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: directories.map((e) {
-          return QuickAccessTile(quickAccessModel: e);
-        }).toList(),
-      ),
+    return Row(
+      children: [
+        SizedBox(
+          width: 200,
+          height: double.maxFinite,
+          child: SingleChildScrollView(
+            padding: EdgeInsets.only(bottom: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: directories.map((e) {
+                return SizedBox(
+                  height: 60,
+                  child: QuickAccessTile(quickAccessModel: e),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+        VerticalDivider(),
+      ],
     );
   }
 }

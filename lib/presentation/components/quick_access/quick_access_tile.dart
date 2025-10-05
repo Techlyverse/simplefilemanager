@@ -17,15 +17,15 @@ class QuickAccessTile extends StatelessWidget {
         },
         style: OutlinedButton.styleFrom(
           elevation: 0,
-          backgroundColor: context.colorScheme.surfaceContainerLowest,
-          foregroundColor: context.colorScheme.onSurfaceVariant,
-          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6),
           alignment: Alignment.centerLeft,
+          foregroundColor: context.colorScheme.onSurfaceVariant,
+          backgroundColor: context.colorScheme.surfaceContainerLowest,
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6),
           side: BorderSide(color: context.colorScheme.surfaceContainerHighest),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Image.asset(
@@ -36,10 +36,7 @@ class QuickAccessTile extends StatelessWidget {
             Text(
               quickAccessModel.title,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
           ],
         ),
