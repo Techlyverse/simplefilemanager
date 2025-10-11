@@ -19,11 +19,13 @@ class QuickAccessHelper {
     } else if (Platform.isIOS) {
       throw Exception("Implementation not found");
     } else if (Platform.isLinux) {
-      throw Exception("Implementation not found");
+      //throw Exception("Implementation not found");
+      await _getLinuxDirectories();
     } else if (Platform.isMacOS) {
       throw Exception("Implementation not found");
     } else if (Platform.isWindows) {
-      throw Exception("Implementation not found");
+      //throw Exception("Implementation not found");
+      await _getWindowsDirectories();
     } else {
       throw Exception("OS not supported");
     }
@@ -40,10 +42,34 @@ class QuickAccessHelper {
       "/storage/emulated/0/DCIM",
     ];
 
-    await _getAndroidQA(paths); // added await because the quick access was not displayed on the first install
+    await _getQA(paths); // added await because the quick access was not displayed on the first install
   }
 
-  static Future<void> _getAndroidQA(List<String> paths) async {
+  static Future<void> _getLinuxDirectories() async {
+    final home = Platform.environment['HOME'] ?? '/home';
+    List<String> paths = [
+      "$home/Downloads",
+      "$home/Documents",
+      "$home/Music",
+      "$home/Pictures",
+      "$home/Videos"
+    ];
+    await _getQA(paths);
+  }
+
+  static Future<void> _getWindowsDirectories() async {
+    final userDirectory = Platform.environment['USERPROFILE'] ?? r"C:\Users\Public";
+    List<String> paths = [
+      "$userDirectory\\Downloads",
+      "$userDirectory\\Documents",
+      "$userDirectory\\Videos",
+      "$userDirectory\\Music",
+      "$userDirectory\\Pictures"
+    ];
+    await _getQA(paths);
+  }
+
+  static Future<void> _getQA(List<String> paths) async {
     if (paths.isEmpty) return;
 
     for (String path in paths) {
@@ -77,6 +103,24 @@ class QuickAccessHelper {
           _quickAccessDirs.add(QuickAccessModel(
             image: "assets/image.png",
             title: "Images",
+            directory: dir,
+          ));
+        }  else if (path.contains('Downloads')) {
+          _quickAccessDirs.add(QuickAccessModel(
+            image: "assets/downloads.png",
+            title: "Downloads",
+            directory: dir,
+          ));
+        }  else if (path.contains('Videos')) {
+          _quickAccessDirs.add(QuickAccessModel(
+            image: "assets/videos.png",
+            title: "Videos",
+            directory: dir,
+          ));
+        }  else if (path.contains('Pictures')) {
+          _quickAccessDirs.add(QuickAccessModel(
+            image: "assets/image.png",
+            title: "Pictures",
             directory: dir,
           ));
         }

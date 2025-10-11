@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
@@ -13,11 +14,13 @@ class DirectoryHelper {
     } else if (Platform.isIOS) {
       throw Exception("Implementation not found");
     } else if (Platform.isLinux) {
-      throw Exception("Implementation not found");
+      //throw Exception("Implementation not found");
+      return _getLinuxRootDirectories();
     } else if (Platform.isMacOS) {
       throw Exception("Implementation not found");
     } else if (Platform.isWindows) {
-      throw Exception("Implementation not found");
+      //throw Exception("Implementation not found");
+      return _getWindowsRootDirectories();
     } else {
       throw Exception("OS not supported");
     }
@@ -31,6 +34,34 @@ Future<List<Directory>> _getAndroidRootDirectories() async {
 
   final dirs = extDirs.map((e) => Directory(e.path.split("/Android").first));
   return dirs.toList();
+}
+
+// get storage directories of linux os devices
+Future<List<Directory>> _getLinuxRootDirectories() async {
+  final homeDirectory = Platform.environment['HOME'];
+  if(homeDirectory != null) {
+    return [ Directory(homeDirectory), Directory('/')];
+  }
+  return [Directory('/')]; // alternate
+}
+
+// get storage directories of windows devices
+Future<List<Directory>> _getWindowsRootDirectories() async {
+  final userDirectory = Platform.environment['USERPROFILE'];
+  final driveList = <Directory>[];
+
+  if(userDirectory != null){
+    driveList.add(Directory(userDirectory));
+  }
+  // checking for available drives
+  for (var driveLetter = 'A'.codeUnitAt(0); driveLetter <= 'Z'.codeUnitAt(0); driveLetter++){
+    final drive = Directory('${String.fromCharCode(driveLetter)}:\\');
+    if(await drive.exists()){
+      driveList.add(drive);
+    }
+  }
+
+  return driveList;
 }
 
 

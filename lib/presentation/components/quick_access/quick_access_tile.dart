@@ -33,10 +33,12 @@ class QuickAccessTile extends StatelessWidget {
               height: context.isMobile ? 45 : 30,
             ),
             SizedBox(width: 20),
-            Text(
-              quickAccessModel.title,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            Flexible(
+              child: Text(
+                quickAccessModel.title,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         ),
