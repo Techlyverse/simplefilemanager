@@ -5,7 +5,7 @@ import 'package:filemanager/data/extensions/context_extension.dart';
 import 'package:filemanager/presentation/components/appbar.dart';
 import 'package:filemanager/presentation/homepage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+// import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 import '../data/enums.dart';
 import 'components/quick_access/quick_access.dart';
@@ -14,7 +14,7 @@ import 'package:path/path.dart' as p;
 import 'directory_page.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  const MainScreen({Key? key}) : super(key: key);
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -30,22 +30,30 @@ class _MainScreenState extends State<MainScreen> {
     return ValueListenableBuilder<FileSystemEntity?>(
       valueListenable: controller.currentEntity,
       builder: (_, entity, __) {
-        return PopScope(
-          canPop: entity == null,
-          onPopInvokedWithResult: (didPop, result) async {
-            if (entity != null) {
+        return WillPopScope(
+          onWillPop: () async {
+            if (entity == null) {
+              return true;
+            } else {
               await controller.navigateBack();
+              return false;
             }
           },
+          // canPop: entity == null,
+          // onPopInvokedWithResult: (didPop, result) async {
+          //   if (entity != null) {
+          //     await controller.navigateBack();
+          //   }
+          // },
           child: Scaffold(
             appBar: ToolBar(currentEntity: entity),
             body: Row(
               children: [
                 // do not show sidebar on mobile view
-                if (viewType != LayoutType.mobile) QuickAccess(),
+                if (viewType != LayoutType.mobile) const QuickAccess(),
                 Expanded(
                   child: entity == null
-                      ? HomePage()
+                      ? const HomePage()
                       : DirectoryPage(currentEntity: entity),
                 )
               ],
@@ -54,101 +62,101 @@ class _MainScreenState extends State<MainScreen> {
             // adding the floatingActionButton -MG
             //floatingActionButton: FloatingActionButton(onPressed: () {}, child: Icon(Icons.unfold_more),),
             // trying the speed dial -MG
-            floatingActionButton: true
-                ? null
-                : SpeedDial(
-                    //overlayColor: Colors.transparent,
-                    overlayOpacity: 0.2,
-                    animatedIcon: AnimatedIcons.menu_close,
-                    children: [
-                      SpeedDialChild(
-                        child: Icon(Icons.insert_drive_file),
-                        label: 'Rename Folder',
-                        labelStyle: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                        onTap: () async {
-                          final folderNamesFromUser =
-                              await showTwoTextFieldsDialog(
-                                  context,
-                                  "Rename Folder",
-                                  "Enter the folder you want to rename",
-                                  "Enter new folder name",
-                                  "Rename");
-                          if (folderNamesFromUser![1].isNotEmpty) {
-                            final oldName = folderNamesFromUser[0];
-                            final newName = folderNamesFromUser[1];
-                            final currentDir =
-                                controller.currentEntity.value as Directory;
-                            final oldFolder =
-                                Directory(p.join(currentDir.path, oldName));
-                            if (await oldFolder.exists()) {
-                              await renameCurrentFolder(newName, oldFolder);
-                            } else {
-                              await showTimedDialog(context,
-                                  "The folder you want to rename does not exist.");
-                            }
-                            // controller.fileSystemEntities.value =
-                            //     (controller.currentEntity.value as Directory).listSync();
-                          } else {
-                            await showTimedDialog(context,
-                                "Either the folder you want to rename does not exist or you did not fill the data required, please retry.");
-                          }
-                        },
-                      ),
-                      SpeedDialChild(
-                        child: Icon(Icons.create_new_folder),
-                        label: 'Create Folder',
-                        labelStyle: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                        onTap: () async {
-                          final currentDirPath =
-                              controller.currentEntity.value?.path;
-                          final folderNameFromUser =
-                              await showEditingFolderDialog(
-                                  context,
-                                  "Create Folder",
-                                  "Enter new folder name",
-                                  "Create");
-                          if (folderNameFromUser != null &&
-                              folderNameFromUser.isNotEmpty) {
-                            await createNewFolderInCurrentDir(
-                                folderNameFromUser!, currentDirPath);
-                            // controller.fileSystemEntities.value =
-                            //     (controller.currentEntity.value as Directory).listSync();
-                          }
-                        },
-                      ),
-                      SpeedDialChild(
-                        child: Icon(Icons.delete),
-                        label: 'Delete',
-                        labelStyle: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                        onTap: () async {
-                          final currentDirPath =
-                              controller.currentEntity.value?.path;
-                          final folderToBeDeletedFromUser =
-                              await showEditingFolderDialog(
-                                  context,
-                                  "Delete Folder",
-                                  "Enter the name of folder to be deleted",
-                                  "Delete");
-                          final isUserSure = await showChoiceDialog(context,
-                              "Are you sure you want to delete ${folderToBeDeletedFromUser} folder?");
-                          if (folderToBeDeletedFromUser != null &&
-                              folderToBeDeletedFromUser.isNotEmpty &&
-                              isUserSure == true) {
-                            await deleteFolder(
-                                folderToBeDeletedFromUser, currentDirPath);
-                            // controller.fileSystemEntities.value =
-                            //     (controller.currentEntity.value as Directory).listSync();
-                          }
-                        },
-                      )
-                    ],
-                  ),
+            // floatingActionButton: true
+            //     ? null
+            //     : SpeedDial(
+            //         //overlayColor: Colors.transparent,
+            //         overlayOpacity: 0.2,
+            //         animatedIcon: AnimatedIcons.menu_close,
+            //         children: [
+            //           SpeedDialChild(
+            //             child: Icon(Icons.insert_drive_file),
+            //             label: 'Rename Folder',
+            //             labelStyle: TextStyle(
+            //               color: Theme.of(context).colorScheme.onSurface,
+            //             ),
+            //             onTap: () async {
+            //               final folderNamesFromUser =
+            //                   await showTwoTextFieldsDialog(
+            //                       context,
+            //                       "Rename Folder",
+            //                       "Enter the folder you want to rename",
+            //                       "Enter new folder name",
+            //                       "Rename");
+            //               if (folderNamesFromUser![1].isNotEmpty) {
+            //                 final oldName = folderNamesFromUser[0];
+            //                 final newName = folderNamesFromUser[1];
+            //                 final currentDir =
+            //                     controller.currentEntity.value as Directory;
+            //                 final oldFolder =
+            //                     Directory(p.join(currentDir.path, oldName));
+            //                 if (await oldFolder.exists()) {
+            //                   await renameCurrentFolder(newName, oldFolder);
+            //                 } else {
+            //                   await showTimedDialog(context,
+            //                       "The folder you want to rename does not exist.");
+            //                 }
+            //                 // controller.fileSystemEntities.value =
+            //                 //     (controller.currentEntity.value as Directory).listSync();
+            //               } else {
+            //                 await showTimedDialog(context,
+            //                     "Either the folder you want to rename does not exist or you did not fill the data required, please retry.");
+            //               }
+            //             },
+            //           ),
+            //           SpeedDialChild(
+            //             child: Icon(Icons.create_new_folder),
+            //             label: 'Create Folder',
+            //             labelStyle: TextStyle(
+            //               color: Theme.of(context).colorScheme.onSurface,
+            //             ),
+            //             onTap: () async {
+            //               final currentDirPath =
+            //                   controller.currentEntity.value?.path;
+            //               final folderNameFromUser =
+            //                   await showEditingFolderDialog(
+            //                       context,
+            //                       "Create Folder",
+            //                       "Enter new folder name",
+            //                       "Create");
+            //               if (folderNameFromUser != null &&
+            //                   folderNameFromUser.isNotEmpty) {
+            //                 await createNewFolderInCurrentDir(
+            //                     folderNameFromUser!, currentDirPath);
+            //                 // controller.fileSystemEntities.value =
+            //                 //     (controller.currentEntity.value as Directory).listSync();
+            //               }
+            //             },
+            //           ),
+            //           SpeedDialChild(
+            //             child: Icon(Icons.delete),
+            //             label: 'Delete',
+            //             labelStyle: TextStyle(
+            //               color: Theme.of(context).colorScheme.onSurface,
+            //             ),
+            //             onTap: () async {
+            //               final currentDirPath =
+            //                   controller.currentEntity.value?.path;
+            //               final folderToBeDeletedFromUser =
+            //                   await showEditingFolderDialog(
+            //                       context,
+            //                       "Delete Folder",
+            //                       "Enter the name of folder to be deleted",
+            //                       "Delete");
+            //               final isUserSure = await showChoiceDialog(context,
+            //                   "Are you sure you want to delete ${folderToBeDeletedFromUser} folder?");
+            //               if (folderToBeDeletedFromUser != null &&
+            //                   folderToBeDeletedFromUser.isNotEmpty &&
+            //                   isUserSure == true) {
+            //                 await deleteFolder(
+            //                     folderToBeDeletedFromUser, currentDirPath);
+            //                 // controller.fileSystemEntities.value =
+            //                 //     (controller.currentEntity.value as Directory).listSync();
+            //               }
+            //             },
+            //           )
+            //         ],
+            //       ),
           ),
         );
       },
@@ -357,8 +365,8 @@ class _MainScreenState extends State<MainScreen> {
                   //  requestAndCheckPermissions();
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber.shade700,
-                  foregroundColor: Colors.white,
+                  primary: Colors.amber.shade700,
+                  onPrimary: Colors.white,
                 ),
                 child: const Text(
                   "Allow Files Permission",

@@ -11,7 +11,7 @@ import 'breadcrumb/bread_crumb_bar.dart';
 import 'package:path/path.dart' as p;
 
 class ToolBar extends StatelessWidget implements PreferredSizeWidget {
-  const ToolBar({super.key, required this.currentEntity});
+  const ToolBar({Key? key, required this.currentEntity}) : super(key: key);
   final FileSystemEntity? currentEntity;
 
   static final controller = AppController();
@@ -38,7 +38,7 @@ class ToolBar extends StatelessWidget implements PreferredSizeWidget {
                   : currentEntity?.name ?? "File Manager",
             ),
             actions: [
-              ValueListenableBuilder(
+              ValueListenableBuilder<bool>(
                 valueListenable: controller.viewType,
                 builder: (_, showGrid, __) {
                   return IconButton(
@@ -51,27 +51,29 @@ class ToolBar extends StatelessWidget implements PreferredSizeWidget {
                   );
                 },
               ),
-              PopupMenuButton(
-                color: context.colorScheme.surfaceContainerLowest,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                itemBuilder: (_) {
-                  return listPopupMenu.map((e) {
-                    return PopupMenuItem(
-                      onTap: e.onTap,
-                      value: e.label,
-                      child: Row(
-                        children: [
-                          Icon(e.icon, size: 20),
-                          SizedBox(width: 12),
-                          Text(e.label),
-                        ],
-                      ),
-                    );
-                  }).toList();
-                },
-              ),
+              // PopupMenuButton(
+              //   color: context.colorScheme.background,
+              //   shape: RoundedRectangleBorder(
+              //     borderRadius: BorderRadius.circular(12),
+              //   ),
+              //   itemBuilder: (_) {
+              //     return listPopupMenu.map((e) {
+              //       return PopupMenuItem(
+              //         value: e.label,
+              //         child: GestureDetector(
+              //           onTap: e.onTap,
+              //           child: Row(
+              //             children: [
+              //               Icon(e.icon, size: 20),
+              //               SizedBox(width: 12),
+              //               Text(e.label),
+              //             ],
+              //           ),
+              //         ),
+              //       );
+              //     }).toList();
+              //   },
+              // ),
               /*
               IconButton(
                         icon: Icon(Icons.add),

@@ -10,7 +10,8 @@ import 'components/breadcrumb/bread_crumb_bar.dart';
 import 'components/entity/entity_viewer.dart';
 
 class DirectoryPage extends StatelessWidget {
-  const DirectoryPage({super.key, required this.currentEntity});
+  const DirectoryPage({Key? key, required this.currentEntity})
+      : super(key: key);
   final FileSystemEntity? currentEntity;
 
   static final AppController controller = AppController();

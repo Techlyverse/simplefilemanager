@@ -8,7 +8,7 @@ import '../../../helper/app_controller.dart';
 import 'entity_icon.dart';
 
 class EntityGridTile extends StatelessWidget {
-  const EntityGridTile({super.key, required this.entity});
+  const EntityGridTile({Key? key, required this.entity}): super(key: key);
   final FileSystemEntity entity;
   static final AppController controller = AppController();
 
@@ -28,8 +28,8 @@ class EntityGridTile extends StatelessWidget {
           controller.onLongPressEntity(entity);
         },
         style: TextButton.styleFrom(
-          backgroundColor: isSelected ? colorScheme.primaryFixedDim : null,
-          foregroundColor: colorScheme.onSurface,
+          backgroundColor: isSelected ? colorScheme.background : null,
+          primary: colorScheme.onSurface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),

@@ -8,7 +8,7 @@ import '../helper/app_controller.dart';
 import 'components/quick_access/quick_access.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  const HomePage({Key? key}) : super(key: key);
 
   static final AppController controller = AppController();
 
@@ -23,7 +23,10 @@ class HomePage extends StatelessWidget {
           children: [
             if (layoutType == LayoutType.mobile)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20.0,
+                  vertical: 16,
+                ),
                 child: Text(
                   "Quick Access",
                   style: TextStyle(
@@ -33,7 +36,8 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
               ),
-            if (layoutType == LayoutType.mobile) QuickAccess(),
+            if (layoutType == LayoutType.mobile) const QuickAccess(),
+            if (layoutType == LayoutType.mobile) const SizedBox(height: 30),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Text(
@@ -45,10 +49,11 @@ class HomePage extends StatelessWidget {
                 ),
               ),
             ),
-            ValueListenableBuilder(
+            ValueListenableBuilder<bool>(
               valueListenable: controller.viewType,
               builder: (_, showGrid, __) {
-                return SingleChildScrollView(child: showGrid ? _gridView(context) : _listView(context));
+                return SingleChildScrollView(
+                    child: showGrid ? _gridView(context) : _listView(context));
               },
             ),
           ],
@@ -69,27 +74,29 @@ class HomePage extends StatelessWidget {
             ? directories[index].path.split('/').last != '0'
             : false;
         final String dirName;
-        if(isAndroid){
+        if (isAndroid) {
           dirName = sdCard ? 'SD Card' : 'Internal Storage';
-        } else if (isLinux){
-          dirName = directories[index].path.split('/').last.isNotEmpty? directories[index].path.split('/').last: directories[index].path;
+        } else if (isLinux) {
+          dirName = directories[index].path.split('/').last.isNotEmpty
+              ? directories[index].path.split('/').last
+              : directories[index].path;
         } else {
           dirName = directories[index].path;
         }
         return Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           child: OutlinedButton(
             onPressed: () {
               controller.openDirectory(directories[index]);
             },
             style: OutlinedButton.styleFrom(
               elevation: 0,
-              padding: EdgeInsets.all(16),
-              foregroundColor: context.colorScheme.onSurfaceVariant,
-              backgroundColor: context.colorScheme.surfaceContainerLowest,
-              side: BorderSide(
-                color: context.colorScheme.surfaceContainerHighest,
-              ),
+              padding: const EdgeInsets.all(16),
+              primary: context.colorScheme.onSurface,
+              backgroundColor: context.isDarkMode
+                  ? Colors.grey.shade800
+                  : Colors.blue.shade50,
+              side: BorderSide(color: context.colorScheme.background),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -99,7 +106,11 @@ class HomePage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Image.asset(
-                  isAndroid ? sdCard ? "assets/sd_card.png" : "assets/mobile.png" : "assets/folder.png",
+                  isAndroid
+                      ? sdCard
+                          ? "assets/sd_card.png"
+                          : "assets/mobile.png"
+                      : "assets/folder.png",
                   width: 38,
                 ),
                 // Icon(
@@ -111,11 +122,14 @@ class HomePage extends StatelessWidget {
                 //       ? context.colorScheme.primary
                 //       : context.colorScheme.tertiary,
                 // ),
-                SizedBox(width: 20),
+                const SizedBox(width: 20),
                 Text(
                   //sdCard ? 'SD Card' : 'Internal Storage',
                   dirName,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -128,9 +142,9 @@ class HomePage extends StatelessWidget {
   Widget _gridView(BuildContext context) {
     final AppController controller = AppController();
     List<Directory> directories = controller.rootDirs;
-    final count = (context.widthOfScreen / 180).toInt();
+    final count = context.widthOfScreen ~/ 180;
     return Padding(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           mainAxisSpacing: 15,
@@ -146,10 +160,12 @@ class HomePage extends StatelessWidget {
                 ? directories[index].path.split('/').last != '0'
                 : false;
             final String dirName;
-            if(isAndroid){
+            if (isAndroid) {
               dirName = sdCard ? 'SD Card' : 'Internal Storage';
-            } else if (isLinux){
-              dirName = directories[index].path.split('/').last.isNotEmpty? directories[index].path.split('/').last: directories[index].path;
+            } else if (isLinux) {
+              dirName = directories[index].path.split('/').last.isNotEmpty
+                  ? directories[index].path.split('/').last
+                  : directories[index].path;
             } else {
               dirName = directories[index].path;
             }
@@ -159,12 +175,12 @@ class HomePage extends StatelessWidget {
               },
               style: OutlinedButton.styleFrom(
                 elevation: 0,
-                padding: EdgeInsets.all(12),
-                foregroundColor: context.colorScheme.onSurfaceVariant,
-                backgroundColor: context.colorScheme.surfaceContainerLowest,
-                side: BorderSide(
-                  color: context.colorScheme.surfaceContainerHighest,
-                ),
+                padding: const EdgeInsets.all(12),
+                primary: context.colorScheme.onSurface,
+                backgroundColor: context.isDarkMode
+                    ? Colors.grey.shade800
+                    : Colors.blue.shade50,
+                side: BorderSide(color: context.colorScheme.background),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -175,18 +191,24 @@ class HomePage extends StatelessWidget {
                 children: [
                   Flexible(
                     child: Image.asset(
-                      //sdCard ? "assets/sd_card.png" : "assets/mobile.png",
-                      isAndroid ? sdCard ? "assets/sd_card.png" : "assets/mobile.png" : "assets/folder.png",
-                      width: 80,
-                      fit: BoxFit.contain
-                    ),
+                        //sdCard ? "assets/sd_card.png" : "assets/mobile.png",
+                        isAndroid
+                            ? sdCard
+                                ? "assets/sd_card.png"
+                                : "assets/mobile.png"
+                            : "assets/folder.png",
+                        width: 80,
+                        fit: BoxFit.contain),
                   ),
-                  SizedBox(height: 12),
+                  const SizedBox(height: 12),
                   Text(
                     //sdCard ? 'SD Card' : 'Internal Storage',
                     dirName,
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),

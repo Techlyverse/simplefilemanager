@@ -5,11 +5,11 @@ import '../enums.dart';
 
 extension ContextExtension on BuildContext {
   ColorScheme get colorScheme => Theme.of(this).colorScheme;
-
-  bool get isDesktopView => MediaQuery.sizeOf(this).width > mobileMaxWidth;
+  bool get isDarkMode => Theme.of(this).brightness == Brightness.dark;
+  bool get isDesktopView => MediaQuery.of(this).size.width > mobileMaxWidth;
 
   LayoutType get layoutType {
-    final width = MediaQuery.sizeOf(this).width;
+    final width = MediaQuery.of(this).size.width;
     if (width <= mobileMaxWidth) {
       return LayoutType.mobile;
     } else if (width <= tabletMaxWidth) {

@@ -14,12 +14,10 @@ class DirectoryHelper {
     } else if (Platform.isIOS) {
       throw Exception("Implementation not found");
     } else if (Platform.isLinux) {
-      //throw Exception("Implementation not found");
       return _getLinuxRootDirectories();
     } else if (Platform.isMacOS) {
       throw Exception("Implementation not found");
     } else if (Platform.isWindows) {
-      //throw Exception("Implementation not found");
       return _getWindowsRootDirectories();
     } else {
       throw Exception("OS not supported");
@@ -39,8 +37,8 @@ Future<List<Directory>> _getAndroidRootDirectories() async {
 // get storage directories of linux os devices
 Future<List<Directory>> _getLinuxRootDirectories() async {
   final homeDirectory = Platform.environment['HOME'];
-  if(homeDirectory != null) {
-    return [ Directory(homeDirectory), Directory('/')];
+  if (homeDirectory != null) {
+    return [Directory(homeDirectory), Directory('/')];
   }
   return [Directory('/')]; // alternate
 }
@@ -50,20 +48,23 @@ Future<List<Directory>> _getWindowsRootDirectories() async {
   final userDirectory = Platform.environment['USERPROFILE'];
   final driveList = <Directory>[];
 
-  if(userDirectory != null){
+  if (userDirectory != null) {
     driveList.add(Directory(userDirectory));
   }
   // checking for available drives
-  for (var driveLetter = 'A'.codeUnitAt(0); driveLetter <= 'Z'.codeUnitAt(0); driveLetter++){
+  for (
+    var driveLetter = 'A'.codeUnitAt(0);
+    driveLetter <= 'Z'.codeUnitAt(0);
+    driveLetter++
+  ) {
     final drive = Directory('${String.fromCharCode(driveLetter)}:\\');
-    if(await drive.exists()){
+    if (await drive.exists()) {
       driveList.add(drive);
     }
   }
 
   return driveList;
 }
-
 
 /*
   Future<Directory> _getPlatformRootDirectory() async {

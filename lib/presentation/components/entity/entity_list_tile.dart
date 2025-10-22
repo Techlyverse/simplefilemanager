@@ -7,7 +7,7 @@ import 'package:filemanager/data/extensions/filesystementity_ext.dart';
 import 'entity_icon.dart';
 
 class EntityListTile extends StatelessWidget {
-  const EntityListTile({super.key, required this.entity});
+  const EntityListTile({Key? key, required this.entity}): super(key: key);
   final FileSystemEntity entity;
 
   @override
@@ -34,7 +34,7 @@ class EntityListTile extends StatelessWidget {
             width: 20,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: context.colorScheme.surfaceContainerLowest,
+              color: context.colorScheme.background,
               border: Border.all(
                 width: 2,
                 color: context.colorScheme.primary,
@@ -51,7 +51,7 @@ class EntityListTile extends StatelessWidget {
             width: 20,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: context.colorScheme.surfaceContainerLowest,
+              color: context.colorScheme.background,
               border: Border.all(
                 width: 2,
                 color: context.colorScheme.primary,
@@ -65,7 +65,7 @@ class EntityListTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2),
       child: ListTile(
-        tileColor: isSelected ? context.colorScheme.primaryFixedDim : null,
+        tileColor: isSelected ? context.colorScheme.background : null,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         onTap: () {
           controller.onTapEntity(entity);
@@ -79,7 +79,7 @@ class EntityListTile extends StatelessWidget {
           style: isSelected
               ? TextStyle(
                   fontSize: 15,
-                  color: context.colorScheme.onPrimaryFixed,
+                  color: context.colorScheme.background,
                   fontWeight: FontWeight.bold,
                 )
               : null,

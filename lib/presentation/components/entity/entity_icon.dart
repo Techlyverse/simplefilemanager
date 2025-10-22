@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import '../../../data/media_icons.dart';
 
 class EntityIcon extends StatelessWidget {
-  const EntityIcon(this.entity, {super.key});
+  const EntityIcon(this.entity, {Key? key}): super(key: key);
   final FileSystemEntity entity;
 
   @override

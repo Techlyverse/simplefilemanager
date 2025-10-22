@@ -7,7 +7,7 @@ import '../../../data/enums.dart';
 import 'quick_access_tile.dart';
 
 class QuickAccess extends StatelessWidget {
-  const QuickAccess({super.key});
+  const QuickAccess({Key? key}): super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +63,7 @@ class QuickAccess extends StatelessWidget {
             return _desktopView(snap.data!);
           }
         } else {
-          return SizedBox();
+          return const SizedBox();
         }
       },
     );
@@ -73,7 +73,7 @@ class QuickAccess extends StatelessWidget {
     return GridView.builder(
       itemCount: directories.length,
       shrinkWrap: true,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 3.4,
       ),
@@ -102,7 +102,7 @@ class QuickAccess extends StatelessWidget {
           width: 200,
           height: double.maxFinite,
           child: SingleChildScrollView(
-            padding: EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.only(bottom: 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: directories.map((e) {
@@ -114,7 +114,7 @@ class QuickAccess extends StatelessWidget {
             ),
           ),
         ),
-        VerticalDivider(),
+        const VerticalDivider(),
       ],
     );
   }

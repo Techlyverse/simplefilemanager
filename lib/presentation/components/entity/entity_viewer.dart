@@ -7,12 +7,12 @@ import 'entity_grid_tile.dart';
 import 'entity_list_tile.dart';
 
 class EntityViewer extends StatelessWidget {
-  const EntityViewer({super.key, required this.dir});
+  const EntityViewer({Key? key, required this.dir}): super(key: key);
   final Directory dir;
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
+    return ValueListenableBuilder<bool>(
         valueListenable: AppController().viewType,
         builder: (_, isGrid, __) {
           // TODO: replace bool with EntityViewType for more view options

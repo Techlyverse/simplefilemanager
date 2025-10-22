@@ -3,16 +3,15 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 final ColorScheme _lightColorScheme =
-    ColorScheme.fromSeed(seedColor: Colors.blue);
+    ColorScheme.fromSwatch(primarySwatch: Colors.blue);
 
 final ThemeData lightTheme = ThemeData(
   colorScheme: _lightColorScheme,
-  scaffoldBackgroundColor: _lightColorScheme.surfaceContainer,
   textTheme: GoogleFonts.poppinsTextTheme(),
-  appBarTheme: AppBarTheme(
+  appBarTheme: const AppBarTheme(
     elevation: 0,
-    scrolledUnderElevation: 0,
     backgroundColor: Colors.transparent,
+    foregroundColor: Colors.black,
     systemOverlayStyle: SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarBrightness: Brightness.light,

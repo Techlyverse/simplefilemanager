@@ -5,7 +5,7 @@ import 'package:filemanager/helper/app_controller.dart';
 import 'package:flutter/material.dart';
 
 class BreadCrumbBar extends StatelessWidget {
-  const BreadCrumbBar({super.key, required this.currentEntity});
+  const BreadCrumbBar({Key? key, required this.currentEntity}): super(key: key);
   final FileSystemEntity? currentEntity;
   static final controller = AppController();
 
@@ -33,7 +33,7 @@ class BreadCrumbBar extends StatelessWidget {
                   return TextButton.icon(
                     onPressed: () {},
                     style: TextButton.styleFrom(
-                      foregroundColor: context.colorScheme.primary,
+                      primary: context.colorScheme.primary,
                       padding: EdgeInsets.symmetric(horizontal: 4),
                       textStyle: TextStyle(fontWeight: FontWeight.bold),
                     ),
@@ -45,7 +45,7 @@ class BreadCrumbBar extends StatelessWidget {
                 return TextButton.icon(
                   onPressed: () {},
                   style: TextButton.styleFrom(
-                    foregroundColor: context.colorScheme.primary,
+                    primary: context.colorScheme.primary,
                     padding: EdgeInsets.symmetric(horizontal: 4),
                     textStyle: TextStyle(fontWeight: FontWeight.bold),
                   ),

@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class CurDirectoryPathBar extends StatelessWidget {
-  const CurDirectoryPathBar({super.key});
+  const CurDirectoryPathBar({Key? key}): super(key: key);
 
   @override
   Widget build(BuildContext context) {

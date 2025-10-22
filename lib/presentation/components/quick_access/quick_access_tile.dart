@@ -4,7 +4,8 @@ import 'package:filemanager/model/quick_access_model.dart';
 import 'package:flutter/material.dart';
 
 class QuickAccessTile extends StatelessWidget {
-  const QuickAccessTile({super.key, required this.quickAccessModel});
+  const QuickAccessTile({Key? key, required this.quickAccessModel})
+      : super(key: key);
   final QuickAccessModel quickAccessModel;
 
   @override
@@ -18,10 +19,15 @@ class QuickAccessTile extends StatelessWidget {
         style: OutlinedButton.styleFrom(
           elevation: 0,
           alignment: Alignment.centerLeft,
-          foregroundColor: context.colorScheme.onSurfaceVariant,
-          backgroundColor: context.colorScheme.surfaceContainerLowest,
+          primary: context.colorScheme.onSurface,
+          backgroundColor:
+              context.isDarkMode ? Colors.grey.shade700 : Colors.grey.shade200,
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6),
-          side: BorderSide(color: context.colorScheme.surfaceContainerHighest),
+          side: BorderSide(
+            color: context.isDarkMode
+                ? Colors.grey.shade600
+                : Colors.grey.shade400,
+          ),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
         ),
         child: Row(
