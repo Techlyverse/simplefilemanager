@@ -32,6 +32,8 @@ class PermissionHelper {
         Permission.photos,
         Permission.videos,
         Permission.audio,
+        // for thumbnail
+        Permission.storage
       ]);
     } else if (androidSdk >= 29) {
       permissions.addAll([Permission.manageExternalStorage]);

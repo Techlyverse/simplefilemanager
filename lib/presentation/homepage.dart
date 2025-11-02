@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:filemanager/data/extensions/context_extension.dart';
+import 'package:filemanager/globals.dart';
 import 'package:flutter/material.dart';
 import '../data/enums.dart';
 import '../helper/app_controller.dart';
@@ -14,40 +15,45 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final layoutType = context.layoutType;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (layoutType == LayoutType.mobile)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16),
-            child: Text(
-              "Quick Access",
-              style: TextStyle(
-                fontSize: 16,
-                color: context.colorScheme.primary,
-                fontWeight: FontWeight.bold,
+    return Align(
+      alignment: Alignment.topLeft,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (layoutType == LayoutType.mobile)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16),
+                child: Text(
+                  "Quick Access",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: context.colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            if (layoutType == LayoutType.mobile) QuickAccess(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Text(
+                "Storage",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: context.colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
-        if (layoutType == LayoutType.mobile) QuickAccess(),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Text(
-            "Storage",
-            style: TextStyle(
-              fontSize: 16,
-              color: context.colorScheme.primary,
-              fontWeight: FontWeight.bold,
+            ValueListenableBuilder(
+              valueListenable: controller.viewType,
+              builder: (_, showGrid, __) {
+                return SingleChildScrollView(child: showGrid ? _gridView(context) : _listView(context));
+              },
             ),
-          ),
+          ],
         ),
-        ValueListenableBuilder(
-          valueListenable: controller.viewType,
-          builder: (_, showGrid, __) {
-            return showGrid ? _gridView(context) : _listView(context);
-          },
-        ),
-      ],
+      ),
     );
   }
 
@@ -58,7 +64,18 @@ class HomePage extends StatelessWidget {
       shrinkWrap: true,
       itemCount: directories.length,
       itemBuilder: (_, index) {
-        final bool sdCard = directories[index].path.split('/').last != '0';
+        //final bool sdCard = directories[index].path.split('/').last != '0';
+        final bool sdCard = Platform.isAndroid
+            ? directories[index].path.split('/').last != '0'
+            : false;
+        final String dirName;
+        if(isAndroid){
+          dirName = sdCard ? 'SD Card' : 'Internal Storage';
+        } else if (isLinux){
+          dirName = directories[index].path.split('/').last.isNotEmpty? directories[index].path.split('/').last: directories[index].path;
+        } else {
+          dirName = directories[index].path;
+        }
         return Padding(
           padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           child: OutlinedButton(
@@ -82,7 +99,7 @@ class HomePage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Image.asset(
-                  sdCard ? "assets/sd_card.png" : "assets/mobile.png",
+                  isAndroid ? sdCard ? "assets/sd_card.png" : "assets/mobile.png" : "assets/folder.png",
                   width: 38,
                 ),
                 // Icon(
@@ -96,7 +113,8 @@ class HomePage extends StatelessWidget {
                 // ),
                 SizedBox(width: 20),
                 Text(
-                  sdCard ? 'SD Card' : 'Internal Storage',
+                  //sdCard ? 'SD Card' : 'Internal Storage',
+                  dirName,
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ],
@@ -123,7 +141,18 @@ class HomePage extends StatelessWidget {
         itemCount: directories.length,
         itemBuilder: (_, index) {
           if (directories.isNotEmpty) {
-            final bool sdCard = directories[index].path.split('/').last != '0';
+            //final bool sdCard = directories[index].path.split('/').last != '0';
+            final bool sdCard = Platform.isAndroid
+                ? directories[index].path.split('/').last != '0'
+                : false;
+            final String dirName;
+            if(isAndroid){
+              dirName = sdCard ? 'SD Card' : 'Internal Storage';
+            } else if (isLinux){
+              dirName = directories[index].path.split('/').last.isNotEmpty? directories[index].path.split('/').last: directories[index].path;
+            } else {
+              dirName = directories[index].path;
+            }
             return OutlinedButton(
               onPressed: () {
                 controller.openDirectory(directories[index]);
@@ -144,13 +173,18 @@ class HomePage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Image.asset(
-                    sdCard ? "assets/sd_card.png" : "assets/mobile.png",
-                    width: 80,
+                  Flexible(
+                    child: Image.asset(
+                      //sdCard ? "assets/sd_card.png" : "assets/mobile.png",
+                      isAndroid ? sdCard ? "assets/sd_card.png" : "assets/mobile.png" : "assets/folder.png",
+                      width: 80,
+                      fit: BoxFit.contain
+                    ),
                   ),
                   SizedBox(height: 12),
                   Text(
-                    sdCard ? 'SD Card' : 'Internal Storage',
+                    //sdCard ? 'SD Card' : 'Internal Storage',
+                    dirName,
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
