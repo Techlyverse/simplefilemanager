@@ -1,9 +1,50 @@
 import 'dart:io';
+import 'package:filemanager/data/enums.dart';
 import 'package:path/path.dart' as p;
 
 /// An extension on [FileSystemEntity] to provide convenient getters
 /// for extracting file/directory names, extensions, and type checks.
 extension FileSystemEntityExtension on FileSystemEntity {
+  static const Set<String> _imageExtensions = {
+    '.jpg',
+    '.jpeg',
+    '.png',
+    '.gif',
+    '.webp',
+    '.heic',
+    '.heif',
+    '.tiff',
+    '.bmp',
+  };
+  static const Set<String> _videoExtensions = {
+    '.mp4',
+    '.flv',
+    '.mkv',
+    '.avi',
+    '.mov',
+    '.wmv',
+    '.3gp',
+    '.webm',
+  };
+  static const Set<String> _audioExtensions = {
+    '.mp3',
+    '.wav',
+    '.ogg',
+    '.flac',
+    '.aac',
+    '.wma',
+    '.m4a',
+  };
+  static const Set<String> _archiveExtensions = {
+    '.zip',
+    '.rar',
+    '.7z',
+    '.tar',
+    '.gz',
+    '.bz2',
+    '.iso',
+  };
+
   /// Returns the full name of the file or directory, including its extension
   /// if it's a file. This is the last segment of the path.
   ///
@@ -42,5 +83,25 @@ extension FileSystemEntityExtension on FileSystemEntity {
     // p.extension returns the extension including the dot.
     // It correctly handles multiple extensions and no extension.
     return p.extension(path);
+  }
+
+  EntityType get fileType {
+    // Directories are not media files, so check first.
+    if (this is Directory) return EntityType.directory;
+
+    // Convert the extension to lowercase for reliable, case-insensitive checks
+    final String fileExt = extension.toLowerCase();
+
+    if (_imageExtensions.contains(fileExt)) {
+      return EntityType.image;
+    } else if (_videoExtensions.contains(fileExt)) {
+      return EntityType.video;
+    } else if (_audioExtensions.contains(fileExt)) {
+      return EntityType.audio;
+    } else if (_archiveExtensions.contains(fileExt)) {
+      return EntityType.archive;
+    } else {
+      return EntityType.other;
+    }
   }
 }

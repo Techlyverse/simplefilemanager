@@ -1,9 +1,8 @@
 import 'dart:io';
 
-import 'package:filemanager/data/extensions/filesystementity_ext.dart';
-import 'package:filemanager/globals.dart';
 import 'package:flutter/material.dart';
 
+import '../../../data/extensions/filesystementity_extension.dart';
 import '../../../helper/app_controller.dart';
 import 'entity_icon.dart';
 
@@ -15,44 +14,44 @@ class EntityGridTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    bool isSelected = controller.isCurrentEntitySelected(entity);
 
-    return SizedBox(
-      width: isAndroid ? 90 : 70,
-      height: isAndroid ? 90 : 70,
-      child: TextButton(
-        onPressed: () {
-          controller.onTapEntity(entity);
-        },
-        onLongPress: () {
-          controller.onLongPressEntity(entity);
-        },
-        style: TextButton.styleFrom(
-          backgroundColor: isSelected ? colorScheme.primaryFixedDim : null,
-          foregroundColor: colorScheme.onSurface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            EntityIcon(entity),
-            Text(
-              entity.name,
-              maxLines: 1,
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis,
-              style: isSelected
-                  ? TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                    )
-                  : null,
+    return ValueListenableBuilder(
+      valueListenable: AppController().updateUi,
+      builder: (context, value, child) {
+        bool isSelected = controller.isCurrentEntitySelected(entity);
+
+        return TextButton(
+          onPressed: () {
+            controller.onTapEntity(entity);
+          },
+          onLongPress: () {
+            controller.onLongPressEntity(entity);
+          },
+          style: TextButton.styleFrom(
+            padding: isSelected ? EdgeInsets.all(8) :EdgeInsets.zero,
+            backgroundColor: isSelected ? colorScheme.primaryFixedDim : null,
+            foregroundColor: colorScheme.onSurface,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
             ),
-          ],
-        ),
-      ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              EntityIcon(entity),
+              Text(
+                entity.name,
+                maxLines: 1,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                style: isSelected
+                    ? TextStyle(fontSize: 13, fontWeight: FontWeight.bold)
+                    : null,
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

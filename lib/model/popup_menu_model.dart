@@ -10,4 +10,3 @@ class PopupMenuModel {
   final IconData icon;
   final VoidCallback onTap;
 }
-

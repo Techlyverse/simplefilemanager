@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:filemanager/data/extensions/context_extension.dart';
-import 'package:filemanager/globals.dart';
 import 'package:filemanager/helper/app_controller.dart';
 import 'package:flutter/material.dart';
 
@@ -25,11 +24,11 @@ class BreadCrumbBar extends StatelessWidget {
                 final index = entry.key;
                 final segment = entry.value;
 
-                if (isAndroid && (index == 0 || index == 1)) {
+                if (Platform.isAndroid && (index == 0 || index == 1)) {
                   return const SizedBox.shrink();
                 }
 
-                if (index == 2 && isAndroid) {
+                if (index == 2 && Platform.isAndroid) {
                   return TextButton.icon(
                     onPressed: () {},
                     style: TextButton.styleFrom(

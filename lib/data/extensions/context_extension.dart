@@ -4,12 +4,10 @@ import 'package:flutter/material.dart';
 import '../enums.dart';
 
 extension ContextExtension on BuildContext {
+  double get width => MediaQuery.of(this).size.width;
   ColorScheme get colorScheme => Theme.of(this).colorScheme;
 
-  bool get isDesktopView => MediaQuery.sizeOf(this).width > mobileMaxWidth;
-
   LayoutType get layoutType {
-    final width = MediaQuery.sizeOf(this).width;
     if (width <= mobileMaxWidth) {
       return LayoutType.mobile;
     } else if (width <= tabletMaxWidth) {
@@ -18,7 +16,4 @@ extension ContextExtension on BuildContext {
       return LayoutType.desktop;
     }
   }
-
-  bool get isMobile => MediaQuery.of(this).size.width <= 480;
-  double get widthOfScreen => MediaQuery.of(this).size.width;
 }

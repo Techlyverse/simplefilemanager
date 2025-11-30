@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:path/path.dart' as p;
 import 'package:filemanager/helper/directory_helper.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -13,10 +15,10 @@ class AppController {
   factory AppController() => _instance;
 
   late final List<Directory> rootDirs = [];
-  static late Directory _tempDir;
+  late final Directory cacheDir;
 
-  final ValueNotifier<bool> viewType = ValueNotifier(Preferences.getViewType());
   final ValueNotifier<bool> updateUi = ValueNotifier(true);
+  final ValueNotifier<bool> viewType = ValueNotifier(Preferences.getViewType());
   final ValueNotifier<FileSystemEntity?> currentEntity = ValueNotifier(null);
   final List<FileSystemEntity> selectedEntities = [];
 
@@ -28,7 +30,7 @@ class AppController {
     if (rootDirs.isEmpty) {
       final dirs = await DirectoryHelper().getRootDirectories();
       rootDirs.addAll(dirs);
-      _tempDir = await getApplicationDocumentsDirectory();
+      cacheDir = await getApplicationCacheDirectory();
     }
   }
 
@@ -43,8 +45,9 @@ class AppController {
   Future<void> navigateBack() async {
     if (currentEntity.value != null) {
       /// if root directory contains parent directory then make currentDirectory null to show homepage
-      final bool showRootDir =
-          rootDirs.map((e) => e.path).contains(currentEntity.value!.path);
+      final bool showRootDir = rootDirs
+          .map((e) => e.path)
+          .contains(currentEntity.value!.path);
       final bool isParentExists = await currentEntity.value!.parent.exists();
       if (isParentExists && !showRootDir) {
         openDirectory(currentEntity.value!.parent);
@@ -84,5 +87,39 @@ class AppController {
 
   void onLongPressEntity(FileSystemEntity entity) {
     _selectEntity(entity);
+  }
+
+  Future<void> createFolder(String folderName) async {
+    if (currentEntity.value is! Directory) return;
+    final currentDir = currentEntity.value as Directory;
+    final newPath = p.join(currentDir.path, folderName);
+    final newFolder = Directory(newPath);
+    if (!await newFolder.exists()) {
+      await newFolder.create();
+      updateUi.value = !updateUi.value;
+    } else {
+      throw Exception("Folder already exists");
+    }
+  }
+
+  Future<void> renameEntity(FileSystemEntity entity, String newName) async {
+    final parentPath = entity.parent.path;
+    final newPath = p.join(parentPath, newName);
+    if (await FileSystemEntity.type(newPath) == FileSystemEntityType.notFound) {
+      await entity.rename(newPath);
+      updateUi.value = !updateUi.value;
+    } else {
+      throw Exception("File or folder already exists");
+    }
+  }
+
+  Future<void> deleteEntity(FileSystemEntity entity) async {
+    if (await entity.exists()) {
+      await entity.delete(recursive: true);
+      if (selectedEntities.contains(entity)) {
+        selectedEntities.remove(entity);
+      }
+      updateUi.value = !updateUi.value;
+    }
   }
 }

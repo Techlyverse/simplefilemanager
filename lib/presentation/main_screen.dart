@@ -47,7 +47,7 @@ class _MainScreenState extends State<MainScreen> {
                   child: entity == null
                       ? HomePage()
                       : DirectoryPage(currentEntity: entity),
-                )
+                ),
               ],
             ),
 
@@ -70,29 +70,35 @@ class _MainScreenState extends State<MainScreen> {
                         onTap: () async {
                           final folderNamesFromUser =
                               await showTwoTextFieldsDialog(
-                                  context,
-                                  "Rename Folder",
-                                  "Enter the folder you want to rename",
-                                  "Enter new folder name",
-                                  "Rename");
+                                context,
+                                "Rename Folder",
+                                "Enter the folder you want to rename",
+                                "Enter new folder name",
+                                "Rename",
+                              );
                           if (folderNamesFromUser![1].isNotEmpty) {
                             final oldName = folderNamesFromUser[0];
                             final newName = folderNamesFromUser[1];
                             final currentDir =
                                 controller.currentEntity.value as Directory;
-                            final oldFolder =
-                                Directory(p.join(currentDir.path, oldName));
+                            final oldFolder = Directory(
+                              p.join(currentDir.path, oldName),
+                            );
                             if (await oldFolder.exists()) {
                               await renameCurrentFolder(newName, oldFolder);
                             } else {
-                              await showTimedDialog(context,
-                                  "The folder you want to rename does not exist.");
+                              await showTimedDialog(
+                                context,
+                                "The folder you want to rename does not exist.",
+                              );
                             }
                             // controller.fileSystemEntities.value =
                             //     (controller.currentEntity.value as Directory).listSync();
                           } else {
-                            await showTimedDialog(context,
-                                "Either the folder you want to rename does not exist or you did not fill the data required, please retry.");
+                            await showTimedDialog(
+                              context,
+                              "Either the folder you want to rename does not exist or you did not fill the data required, please retry.",
+                            );
                           }
                         },
                       ),
@@ -107,14 +113,17 @@ class _MainScreenState extends State<MainScreen> {
                               controller.currentEntity.value?.path;
                           final folderNameFromUser =
                               await showEditingFolderDialog(
-                                  context,
-                                  "Create Folder",
-                                  "Enter new folder name",
-                                  "Create");
+                                context,
+                                "Create Folder",
+                                "Enter new folder name",
+                                "Create",
+                              );
                           if (folderNameFromUser != null &&
                               folderNameFromUser.isNotEmpty) {
                             await createNewFolderInCurrentDir(
-                                folderNameFromUser!, currentDirPath);
+                              folderNameFromUser!,
+                              currentDirPath,
+                            );
                             // controller.fileSystemEntities.value =
                             //     (controller.currentEntity.value as Directory).listSync();
                           }
@@ -131,22 +140,27 @@ class _MainScreenState extends State<MainScreen> {
                               controller.currentEntity.value?.path;
                           final folderToBeDeletedFromUser =
                               await showEditingFolderDialog(
-                                  context,
-                                  "Delete Folder",
-                                  "Enter the name of folder to be deleted",
-                                  "Delete");
-                          final isUserSure = await showChoiceDialog(context,
-                              "Are you sure you want to delete ${folderToBeDeletedFromUser} folder?");
+                                context,
+                                "Delete Folder",
+                                "Enter the name of folder to be deleted",
+                                "Delete",
+                              );
+                          final isUserSure = await showChoiceDialog(
+                            context,
+                            "Are you sure you want to delete ${folderToBeDeletedFromUser} folder?",
+                          );
                           if (folderToBeDeletedFromUser != null &&
                               folderToBeDeletedFromUser.isNotEmpty &&
                               isUserSure == true) {
                             await deleteFolder(
-                                folderToBeDeletedFromUser, currentDirPath);
+                              folderToBeDeletedFromUser,
+                              currentDirPath,
+                            );
                             // controller.fileSystemEntities.value =
                             //     (controller.currentEntity.value as Directory).listSync();
                           }
                         },
-                      )
+                      ),
                     ],
                   ),
           ),
@@ -157,133 +171,154 @@ class _MainScreenState extends State<MainScreen> {
 
   // function to show dialog prompt for editing buttons -MG
   Future<String?> showEditingFolderDialog(
-      BuildContext context, headingTitle, hintTitle, acceptButton) async {
+    BuildContext context,
+    headingTitle,
+    hintTitle,
+    acceptButton,
+  ) async {
     String folderName = '';
     final colorScheme = Theme.of(context).colorScheme;
     return showDialog<String>(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text(
-              headingTitle,
-              style: TextStyle(color: colorScheme.onSurface),
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            headingTitle,
+            style: TextStyle(color: colorScheme.onSurface),
+          ),
+          content: TextField(
+            style: TextStyle(color: colorScheme.onSurface),
+            decoration: InputDecoration(
+              hintText: hintTitle,
+              hintStyle: TextStyle(color: colorScheme.onSurface),
             ),
-            content: TextField(
-              style: TextStyle(color: colorScheme.onSurface),
-              decoration: InputDecoration(
-                  hintText: hintTitle,
-                  hintStyle: TextStyle(color: colorScheme.onSurface)),
-              onChanged: (value) {
-                folderName = value.trim();
+            onChanged: (value) {
+              folderName = value.trim();
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, null),
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                if (folderName.isNotEmpty) {
+                  Navigator.pop(context, folderName);
+                }
               },
+              child: Text(acceptButton),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, null),
-                child: Text('Cancel'),
-              ),
-              TextButton(
-                  onPressed: () {
-                    if (folderName.isNotEmpty) {
-                      Navigator.pop(context, folderName);
-                    }
-                  },
-                  child: Text(acceptButton)),
-            ],
-          );
-        });
+          ],
+        );
+      },
+    );
   }
 
   // function that shows the user a dialog for choice and returns a bool value -MG
   Future<bool?> showChoiceDialog(BuildContext context, headingTitle) {
     return showDialog<bool>(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text(
-              headingTitle,
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            headingTitle,
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, false);
+              },
+              child: Text("No"),
             ),
-            actions: [
-              TextButton(
-                  onPressed: () {
-                    Navigator.pop(context, false);
-                  },
-                  child: Text("No")),
-              TextButton(
-                  onPressed: () {
-                    Navigator.pop(context, true);
-                  },
-                  child: Text("Yes"))
-            ],
-          );
-        });
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+              child: Text("Yes"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   // function that shows a dialog box and takes two strings from user and returns a list of strings -MG
-  Future<List<String>?> showTwoTextFieldsDialog(BuildContext context,
-      headingTitle, hintTitle1, hintTitle2, acceptButton) {
+  Future<List<String>?> showTwoTextFieldsDialog(
+    BuildContext context,
+    headingTitle,
+    hintTitle1,
+    hintTitle2,
+    acceptButton,
+  ) {
     String oldFolderName = '';
     String newFolderName = '';
     final colorScheme = Theme.of(context).colorScheme;
     return showDialog<List<String>>(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text(
-              headingTitle,
-              style: TextStyle(color: colorScheme.onSurface),
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                children: [
-                  TextField(
-                    style: TextStyle(color: colorScheme.onSurface),
-                    decoration: InputDecoration(
-                        hintText: hintTitle1,
-                        hintStyle: TextStyle(color: colorScheme.onSurface)),
-                    onChanged: (value) {
-                      oldFolderName = value.trim();
-                    },
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            headingTitle,
+            style: TextStyle(color: colorScheme.onSurface),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  style: TextStyle(color: colorScheme.onSurface),
+                  decoration: InputDecoration(
+                    hintText: hintTitle1,
+                    hintStyle: TextStyle(color: colorScheme.onSurface),
                   ),
-                  SizedBox(
-                    height: 1,
-                  ),
-                  TextField(
-                    style: TextStyle(color: colorScheme.onSurface),
-                    decoration: InputDecoration(
-                        hintText: hintTitle2,
-                        hintStyle: TextStyle(color: colorScheme.onSurface)),
-                    onChanged: (value) {
-                      newFolderName = value.trim();
-                    },
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, null),
-                child: Text('Cancel'),
-              ),
-              TextButton(
-                  onPressed: () async {
-                    if (oldFolderName.isNotEmpty && newFolderName.isNotEmpty) {
-                      Navigator.pop(context, [oldFolderName, newFolderName]);
-                    } else {
-                      await showTimedDialog(context,
-                          "Please retry and fill the folder name fields.");
-                      Navigator.pop(context, null);
-                    }
+                  onChanged: (value) {
+                    oldFolderName = value.trim();
                   },
-                  child: Text(acceptButton))
-            ],
-          );
-        });
+                ),
+                SizedBox(height: 1),
+                TextField(
+                  style: TextStyle(color: colorScheme.onSurface),
+                  decoration: InputDecoration(
+                    hintText: hintTitle2,
+                    hintStyle: TextStyle(color: colorScheme.onSurface),
+                  ),
+                  onChanged: (value) {
+                    newFolderName = value.trim();
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, null),
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                if (oldFolderName.isNotEmpty && newFolderName.isNotEmpty) {
+                  Navigator.pop(context, [oldFolderName, newFolderName]);
+                } else {
+                  await showTimedDialog(
+                    context,
+                    "Please retry and fill the folder name fields.",
+                  );
+                  Navigator.pop(context, null);
+                }
+              },
+              child: Text(acceptButton),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> createNewFolderInCurrentDir(
-      String folderName, pathOfCurDir) async {
+    String folderName,
+    pathOfCurDir,
+  ) async {
     final newFolderPath = p.join(pathOfCurDir, folderName);
     final newFolder = Directory(newFolderPath);
     if (!(await newFolder.exists())) {
@@ -295,7 +330,9 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Future<void> renameCurrentFolder(
-      String newFolderName, Directory folderWeWantToRename) async {
+    String newFolderName,
+    Directory folderWeWantToRename,
+  ) async {
     final parentDir = folderWeWantToRename.parent;
     final newPath = p.join(parentDir.path, newFolderName);
 
@@ -318,17 +355,21 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  Future<void> showTimedDialog(BuildContext context, content,
-      {Duration duration = const Duration(seconds: 6)}) async {
+  Future<void> showTimedDialog(
+    BuildContext context,
+    content, {
+    Duration duration = const Duration(seconds: 6),
+  }) async {
     showDialog(
-        context: context,
-        //barrierDismissible: false,
-        builder: (context) => AlertDialog(
-              content: Text(content,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                  )),
-            ));
+      context: context,
+      //barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        content: Text(
+          content,
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+        ),
+      ),
+    );
     await Future.delayed(duration);
     if (Navigator.canPop(context)) {
       Navigator.pop(context);
@@ -366,7 +407,7 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

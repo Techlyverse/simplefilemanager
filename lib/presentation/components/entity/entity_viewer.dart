@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:filemanager/helper/app_controller.dart';
 import 'package:flutter/material.dart';
 
+import '../../../data/extensions/context_extension.dart';
 import 'entity_grid_tile.dart';
 import 'entity_list_tile.dart';
 
@@ -12,73 +13,71 @@ class EntityViewer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-        valueListenable: AppController().viewType,
-        builder: (_, isGrid, __) {
-          // TODO: replace bool with EntityViewType for more view options
-          return isGrid ? buildGrid() : buildList();
-        });
+    return FutureBuilder<List<FileSystemEntity>>(
+      future: dir.list().toList(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: SizedBox(
+              height: 80,
+              width: 80,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          );
+        } else if (snapshot.data != null && snapshot.data!.isNotEmpty) {
+          return ValueListenableBuilder<bool>(
+            valueListenable: AppController().viewType,
+            builder: (_, isGrid, _) {
+              return isGrid
+                  ? buildGrid(snapshot.data!, context)
+                  : buildList(snapshot.data!);
+            },
+          );
+        } else {
+          return SizedBox();
+        }
+      },
+    );
   }
 
-  Widget buildGrid() {
-    return FutureBuilder<List<FileSystemEntity>>(
-        future: dir.list().toList(),
-        builder: (_, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: SizedBox(
-                height: 80,
-                width: 80,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            );
-          } else if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-            final List<FileSystemEntity> entities = snapshot.data!;
+  Widget buildGrid(List<FileSystemEntity> entities, BuildContext context) {
+    // Get the available width of the screen/widget
+    final double screenWidth = context.width;
 
-            return SingleChildScrollView(
-              child: ValueListenableBuilder(
-                  valueListenable: AppController().updateUi,
-                  builder: (context, value, child) {
-                    return Wrap(
-                      spacing: 10,
-                      runSpacing: 10,
-                      children: entities.map((entity) {
-                        return EntityGridTile(entity: entity);
-                      }).toList(),
-                    );
-                  }),
-            );
-          }
-          return SizedBox();
-        });
+    final layoutType = context.layoutType;
+
+    // Define the minimum width you want for a grid tile
+    final double minItemWidth = layoutType == .mobile ? 80 : 120;
+
+    // Define the spacing between items
+    final double spacing = layoutType == .mobile ? 12 : 16;
+
+    // Calculate the crossAxisCount (number of items per row)
+    // This ensures the count adapts to screen size.
+    int crossAxisCount = (screenWidth / (minItemWidth + spacing)).floor();
+
+    // Ensure count is at least 1
+    if (crossAxisCount < 1) crossAxisCount = 1;
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
+        crossAxisSpacing: spacing,
+        mainAxisSpacing: spacing,
+        childAspectRatio: 0.8,
+      ),
+      itemCount: entities.length,
+      itemBuilder: (context, index) {
+        return EntityGridTile(entity: entities[index]);
+      },
+    );
   }
 
-  Widget buildList() {
-    return FutureBuilder<List<FileSystemEntity>>(
-        future: dir.list().toList(),
-        builder: (_, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: SizedBox(
-                height: 80,
-                width: 80,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            );
-          } else if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-            final List<FileSystemEntity> entities = snapshot.data!;
-
-            return ValueListenableBuilder(
-                valueListenable: AppController().updateUi,
-                builder: (context, value, child) {
-                  return ListView.builder(
-                      itemCount: entities.length,
-                      itemBuilder: (context, index) {
-                        return EntityListTile(entity: entities[index]);
-                      });
-                });
-          }
-          return SizedBox();
-        });
+  Widget buildList(List<FileSystemEntity> entities) {
+    return ListView.builder(
+      itemCount: entities.length,
+      itemBuilder: (context, index) {
+        return EntityListTile(entity: entities[index]);
+      },
+    );
   }
 }

@@ -30,7 +30,7 @@ class QuickAccessTile extends StatelessWidget {
           children: [
             Image.asset(
               quickAccessModel.image,
-              height: context.isMobile ? 45 : 30,
+              height: context.layoutType == .mobile ? 45 : 30,
             ),
             SizedBox(width: 20),
             Flexible(

@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:filemanager/data/extensions/context_extension.dart';
-import 'package:filemanager/globals.dart';
 import 'package:flutter/material.dart';
 import '../data/enums.dart';
 import '../helper/app_controller.dart';
@@ -16,24 +15,24 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final layoutType = context.layoutType;
     return Align(
-      alignment: Alignment.topLeft,
+      alignment: .topLeft,
       child: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
-            if (layoutType == LayoutType.mobile)
+            if (layoutType == .mobile)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16),
+                padding: const .symmetric(horizontal: 20.0, vertical: 16),
                 child: Text(
                   "Quick Access",
                   style: TextStyle(
                     fontSize: 16,
                     color: context.colorScheme.primary,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: .bold,
                   ),
                 ),
               ),
-            if (layoutType == LayoutType.mobile) QuickAccess(),
+            if (layoutType == .mobile) QuickAccess(),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Text(
@@ -48,7 +47,9 @@ class HomePage extends StatelessWidget {
             ValueListenableBuilder(
               valueListenable: controller.viewType,
               builder: (_, showGrid, __) {
-                return SingleChildScrollView(child: showGrid ? _gridView(context) : _listView(context));
+                return SingleChildScrollView(
+                  child: showGrid ? _gridView(context) : _listView(context),
+                );
               },
             ),
           ],
@@ -69,10 +70,12 @@ class HomePage extends StatelessWidget {
             ? directories[index].path.split('/').last != '0'
             : false;
         final String dirName;
-        if(isAndroid){
+        if (Platform.isAndroid) {
           dirName = sdCard ? 'SD Card' : 'Internal Storage';
-        } else if (isLinux){
-          dirName = directories[index].path.split('/').last.isNotEmpty? directories[index].path.split('/').last: directories[index].path;
+        } else if (Platform.isLinux) {
+          dirName = directories[index].path.split('/').last.isNotEmpty
+              ? directories[index].path.split('/').last
+              : directories[index].path;
         } else {
           dirName = directories[index].path;
         }
@@ -90,16 +93,18 @@ class HomePage extends StatelessWidget {
               side: BorderSide(
                 color: context.colorScheme.surfaceContainerHighest,
               ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+              shape: RoundedRectangleBorder(borderRadius: .circular(12)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Image.asset(
-                  isAndroid ? sdCard ? "assets/sd_card.png" : "assets/mobile.png" : "assets/folder.png",
+                  Platform.isAndroid
+                      ? sdCard
+                            ? "assets/sd_card.png"
+                            : "assets/mobile.png"
+                      : "assets/folder.png",
                   width: 38,
                 ),
                 // Icon(
@@ -128,7 +133,7 @@ class HomePage extends StatelessWidget {
   Widget _gridView(BuildContext context) {
     final AppController controller = AppController();
     List<Directory> directories = controller.rootDirs;
-    final count = (context.widthOfScreen / 180).toInt();
+    final count = (context.width / 180).toInt();
     return Padding(
       padding: EdgeInsets.all(16),
       child: GridView.builder(
@@ -146,10 +151,12 @@ class HomePage extends StatelessWidget {
                 ? directories[index].path.split('/').last != '0'
                 : false;
             final String dirName;
-            if(isAndroid){
+            if (Platform.isAndroid) {
               dirName = sdCard ? 'SD Card' : 'Internal Storage';
-            } else if (isLinux){
-              dirName = directories[index].path.split('/').last.isNotEmpty? directories[index].path.split('/').last: directories[index].path;
+            } else if (Platform.isLinux) {
+              dirName = directories[index].path.split('/').last.isNotEmpty
+                  ? directories[index].path.split('/').last
+                  : directories[index].path;
             } else {
               dirName = directories[index].path;
             }
@@ -165,9 +172,7 @@ class HomePage extends StatelessWidget {
                 side: BorderSide(
                   color: context.colorScheme.surfaceContainerHighest,
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: .circular(12)),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -176,9 +181,13 @@ class HomePage extends StatelessWidget {
                   Flexible(
                     child: Image.asset(
                       //sdCard ? "assets/sd_card.png" : "assets/mobile.png",
-                      isAndroid ? sdCard ? "assets/sd_card.png" : "assets/mobile.png" : "assets/folder.png",
+                      Platform.isAndroid
+                          ? sdCard
+                                ? "assets/sd_card.png"
+                                : "assets/mobile.png"
+                          : "assets/folder.png",
                       width: 80,
-                      fit: BoxFit.contain
+                      fit: BoxFit.contain,
                     ),
                   ),
                   SizedBox(height: 12),

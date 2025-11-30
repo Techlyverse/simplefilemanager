@@ -1,51 +1,65 @@
 import 'dart:io';
 
-import 'package:filemanager/data/extensions/filesystementity_ext.dart';
-import 'package:filemanager/presentation/components/entity/image_thumb_nail.dart';
 import 'package:flutter/material.dart';
 
+import '../../../data/extensions/filesystementity_extension.dart';
 import '../../../data/media_icons.dart';
+import '../../../helper/thumbnail_helper.dart';
 
-class EntityIcon extends StatelessWidget {
+class EntityIcon extends StatefulWidget {
   const EntityIcon(this.entity, {super.key});
   final FileSystemEntity entity;
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return entity is File
-  //       ? Image.asset(
-  //           mediaIcons[entity.extension] ?? 'assets/unknown.png',
-  //           width: 40,
-  //         )
-  //       : Image.asset(
-  //           mediaIcons[entity.extension] ?? 'assets/folder.png',
-  //           width: 40,
-  //         );
-  // }
+  @override
+  State<EntityIcon> createState() => _EntityIconState();
+}
 
-  // version for image thumbnail
-  bool get isDirectory => entity is Directory;
-  bool get isImageFile {
-    final ext = entity.extension.toLowerCase();
-    return ['jpg', 'jpeg', 'png','gif', 'webp'].contains(ext);
+class _EntityIconState extends State<EntityIcon> {
+  // Store the Future here so it only runs once per widget creation
+  late Future<File?> _thumbnailFuture;
+  @override
+  void initState() {
+    super.initState();
+    _thumbnailFuture = ThumbnailHelper.fetchOrCreateThumbnail(widget.entity);
   }
 
   @override
-  Widget build(BuildContext context){
-    if(isDirectory){
-      return Image.asset(
-        mediaIcons['folder'] ?? 'assets/folder.png',
-        width: 40,
-      );
+  Widget build(BuildContext context) {
+    if (widget.entity.fileType != .image) {
+      return _placeholder();
+    } else {
+      return _thumbnail();
     }
+  }
 
-    if (isImageFile) {
-      return ImageThumbnail(file: entity, size: 40,);
-    }
+  Widget _placeholder() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Image.asset(
+        widget.entity is Directory
+            ? 'assets/folder.png'
+            : mediaIcons[widget.entity.extension] ?? 'assets/unknown.png',
+      ),
+    );
+  }
 
-    return Image.asset(
-      mediaIcons[entity.extension] ?? 'assets/unknown.png',
-      width: 40,
+  Widget _thumbnail() {
+    return FutureBuilder(
+      future: _thumbnailFuture,
+      builder: (_, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done &&
+            snapshot.data != null) {
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: Image.file(snapshot.data!, fit: BoxFit.cover),
+            ),
+          );
+        } else {
+          return _placeholder();
+        }
+      },
     );
   }
 }
