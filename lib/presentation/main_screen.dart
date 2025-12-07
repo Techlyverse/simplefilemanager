@@ -29,7 +29,7 @@ class _MainScreenState extends State<MainScreen> {
 
     return ValueListenableBuilder<FileSystemEntity?>(
       valueListenable: controller.currentEntity,
-      builder: (_, entity, __) {
+      builder: (_, entity, _) {
         return PopScope(
           canPop: entity == null,
           onPopInvokedWithResult: (didPop, result) async {
@@ -38,7 +38,7 @@ class _MainScreenState extends State<MainScreen> {
             }
           },
           child: Scaffold(
-            appBar: ToolBar(currentEntity: entity),
+            appBar: ToolBar(entity: entity),
             body: Row(
               children: [
                 // do not show sidebar on mobile view
@@ -46,7 +46,7 @@ class _MainScreenState extends State<MainScreen> {
                 Expanded(
                   child: entity == null
                       ? HomePage()
-                      : DirectoryPage(currentEntity: entity),
+                      : DirectoryPage(dir: entity as Directory),
                 ),
               ],
             ),
@@ -121,7 +121,7 @@ class _MainScreenState extends State<MainScreen> {
                           if (folderNameFromUser != null &&
                               folderNameFromUser.isNotEmpty) {
                             await createNewFolderInCurrentDir(
-                              folderNameFromUser!,
+                              folderNameFromUser,
                               currentDirPath,
                             );
                             // controller.fileSystemEntities.value =
@@ -147,7 +147,7 @@ class _MainScreenState extends State<MainScreen> {
                               );
                           final isUserSure = await showChoiceDialog(
                             context,
-                            "Are you sure you want to delete ${folderToBeDeletedFromUser} folder?",
+                            "Are you sure you want to delete $folderToBeDeletedFromUser folder?",
                           );
                           if (folderToBeDeletedFromUser != null &&
                               folderToBeDeletedFromUser.isNotEmpty &&

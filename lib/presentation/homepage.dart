@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:filemanager/data/extensions/context_extension.dart';
 import 'package:flutter/material.dart';
-import '../data/enums.dart';
 import '../helper/app_controller.dart';
 import 'components/quick_access/quick_access.dart';
 

@@ -11,8 +11,8 @@ import 'breadcrumb/bread_crumb_bar.dart';
 import 'package:path/path.dart' as p;
 
 class ToolBar extends StatelessWidget implements PreferredSizeWidget {
-  const ToolBar({super.key, required this.currentEntity});
-  final FileSystemEntity? currentEntity;
+  const ToolBar({super.key, required this.entity});
+  final FileSystemEntity? entity;
 
   static final controller = AppController();
 
@@ -21,10 +21,10 @@ class ToolBar extends StatelessWidget implements PreferredSizeWidget {
     final LayoutType viewType = context.layoutType;
     return ValueListenableBuilder(
       valueListenable: controller.updateUi,
-      builder: (_, __, ___) {
+      builder: (_, _, _) {
         if (AppController().selectedEntities.isEmpty) {
           return AppBar(
-            leading: currentEntity == null
+            leading: entity == null
                 ? null
                 : IconButton(
                     onPressed: () {
@@ -33,9 +33,9 @@ class ToolBar extends StatelessWidget implements PreferredSizeWidget {
                     icon: Icon(Icons.arrow_back),
                   ),
             title: Text(
-              currentEntity?.path == "/storage/emulated/0"
+              entity?.path == "/storage/emulated/0"
                   ? "Home"
-                  : currentEntity?.name ?? "File Manager",
+                  : entity?.name ?? "File Manager",
             ),
             actions: [
               ValueListenableBuilder(
@@ -129,7 +129,7 @@ class ToolBar extends StatelessWidget implements PreferredSizeWidget {
                       ),
                       IconButton(onPressed: () {}, icon: Icon(Icons.refresh)),
                       if (viewType == LayoutType.desktop)
-                        BreadCrumbBar(currentEntity: currentEntity),
+                        BreadCrumbBar(uri: entity?.uri),
                     ],
                   )
                 : Text(

@@ -21,56 +21,22 @@ class EntityListTile extends StatelessWidget {
         bool isSelected = controller.isCurrentEntitySelected(entity);
 
         Widget trailing() {
-          if (controller.selectedEntities.isEmpty) {
-            return FutureBuilder<FileStat>(
-              future: entity.stat(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) return const SizedBox();
-                return Text(
-                  entity is File
-                      ? FileUtils.formatBytes(snapshot.data!.size)
-                      : "${snapshot.data!.modified}".substring(0, 10),
-                  style: TextStyle(fontSize: 12),
-                );
-              },
-            );
-          } else {
-            if (isSelected) {
-              return Container(
-                height: 20,
-                width: 20,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: context.colorScheme.surfaceContainerLowest,
-                  border: Border.all(
-                    width: 2,
-                    color: context.colorScheme.primary,
-                  ),
-                ),
-                padding: EdgeInsets.all(3),
-                child: CircleAvatar(
-                  backgroundColor: context.colorScheme.primary,
-                ),
+          return FutureBuilder<FileStat>(
+            future: entity.stat(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) return const SizedBox();
+              return Text(
+                entity is File
+                    ? FileUtils.formatBytes(snapshot.data!.size)
+                    : "${snapshot.data!.modified}".substring(0, 10),
+                style: TextStyle(fontSize: 12),
               );
-            } else {
-              return Container(
-                height: 20,
-                width: 20,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: context.colorScheme.surfaceContainerLowest,
-                  border: Border.all(
-                    width: 2,
-                    color: context.colorScheme.primary,
-                  ),
-                ),
-              );
-            }
-          }
+            },
+          );
         }
 
         return Padding(
-          padding: EdgeInsets.zero,
+          padding: EdgeInsets.symmetric(vertical: 1),
           child: ListTile(
             tileColor: isSelected ? context.colorScheme.primaryFixedDim : null,
             shape: RoundedRectangleBorder(borderRadius: .circular(8)),
@@ -80,18 +46,18 @@ class EntityListTile extends StatelessWidget {
             onLongPress: () {
               controller.onLongPressEntity(entity);
             },
+            leading: EntityIcon(entity, key: ValueKey(entity.path)),
             title: Text(
               entity.name,
               maxLines: 2,
               style: isSelected
                   ? TextStyle(
-                      fontSize: 15,
+                      fontSize: 13,
                       color: context.colorScheme.onPrimaryFixed,
                       fontWeight: FontWeight.bold,
                     )
                   : null,
             ),
-            leading: EntityIcon(entity),
             trailing: trailing(),
           ),
         );

@@ -1,31 +1,17 @@
 import 'dart:io';
-
+import 'package:filemanager/helper/app_controller.dart';
 import 'package:flutter/material.dart';
-
 import '../../../data/extensions/filesystementity_extension.dart';
 import '../../../data/media_icons.dart';
 import '../../../helper/thumbnail_helper.dart';
 
-class EntityIcon extends StatefulWidget {
+class EntityIcon extends StatelessWidget {
   const EntityIcon(this.entity, {super.key});
   final FileSystemEntity entity;
 
   @override
-  State<EntityIcon> createState() => _EntityIconState();
-}
-
-class _EntityIconState extends State<EntityIcon> {
-  // Store the Future here so it only runs once per widget creation
-  late Future<File?> _thumbnailFuture;
-  @override
-  void initState() {
-    super.initState();
-    _thumbnailFuture = ThumbnailHelper.fetchOrCreateThumbnail(widget.entity);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (widget.entity.fileType != .image) {
+    if (entity.fileType != .image) {
       return _placeholder();
     } else {
       return _thumbnail();
@@ -33,27 +19,45 @@ class _EntityIconState extends State<EntityIcon> {
   }
 
   Widget _placeholder() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
+    return ValueListenableBuilder(
+      key: key,
+      valueListenable: AppController().viewType,
       child: Image.asset(
-        widget.entity is Directory
+        entity is Directory
             ? 'assets/folder.png'
-            : mediaIcons[widget.entity.extension] ?? 'assets/unknown.png',
+            : mediaIcons[entity.extension] ?? 'assets/unknown.png',
       ),
+      builder: (_, isGrid, child) {
+        return Padding(
+          padding: isGrid ? EdgeInsets.only(bottom: 20) : EdgeInsets.all(5),
+          child: child,
+        );
+      },
     );
   }
 
   Widget _thumbnail() {
-    return FutureBuilder(
-      future: _thumbnailFuture,
+    return FutureBuilder<String?>(
+      key: key,
+      future: ThumbnailHelper.fetchOrCreateThumbnail(entity.path),
       builder: (_, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done &&
+        if (snapshot.connectionState == ConnectionState.waiting ||
+            snapshot.hasError ||
+            !snapshot.hasData) {
+          return _placeholder();
+        } else if (snapshot.connectionState == ConnectionState.done &&
             snapshot.data != null) {
           return ClipRRect(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(4),
             child: AspectRatio(
               aspectRatio: 1,
-              child: Image.file(snapshot.data!, fit: BoxFit.cover),
+              child: Image.file(
+                File(snapshot.data!),
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) {
+                  return _placeholder();
+                },
+              ),
             ),
           );
         } else {

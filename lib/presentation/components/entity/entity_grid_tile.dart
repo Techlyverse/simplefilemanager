@@ -28,26 +28,32 @@ class EntityGridTile extends StatelessWidget {
             controller.onLongPressEntity(entity);
           },
           style: TextButton.styleFrom(
-            padding: isSelected ? EdgeInsets.all(8) :EdgeInsets.zero,
+            padding: isSelected ? EdgeInsets.all(8) : EdgeInsets.zero,
             backgroundColor: isSelected ? colorScheme.primaryFixedDim : null,
             foregroundColor: colorScheme.onSurface,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Stack(
             children: [
-              EntityIcon(entity),
-              Text(
-                entity.name,
-                maxLines: 1,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-                style: isSelected
-                    ? TextStyle(fontSize: 13, fontWeight: FontWeight.bold)
-                    : null,
+              Align(
+                alignment: Alignment.topCenter,
+                child: EntityIcon(entity, key: ValueKey(entity.path)),
               ),
+              if (entity.fileType != .image)
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Text(
+                    entity.name,
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: isSelected
+                        ? TextStyle(fontSize: 12, fontWeight: FontWeight.bold)
+                        : TextStyle(fontSize: 13),
+                  ),
+                ),
             ],
           ),
         );
