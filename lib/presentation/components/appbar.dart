@@ -39,7 +39,7 @@ class ToolBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             actions: [
               ValueListenableBuilder(
-                valueListenable: controller.viewType,
+                valueListenable: controller.showGridView,
                 builder: (_, showGrid, __) {
                   return IconButton(
                     onPressed: () {

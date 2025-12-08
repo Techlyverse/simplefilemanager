@@ -7,7 +7,6 @@ import 'components/quick_access/quick_access.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
-
   static final AppController controller = AppController();
 
   @override
@@ -44,7 +43,7 @@ class HomePage extends StatelessWidget {
               ),
             ),
             ValueListenableBuilder(
-              valueListenable: controller.viewType,
+              valueListenable: controller.showGridView,
               builder: (_, showGrid, __) {
                 return SingleChildScrollView(
                   child: showGrid ? _gridView(context) : _listView(context),
@@ -207,57 +206,3 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-
-/*
-  final _deviceInfoPlugin = DeviceInfoPlugin();
-  AppController controller = AppController();
-
-  List<Permission> permissions = [];
-  bool isPermissionGranted = false;
-
-  //TODO: create a helper class for this
-  Future<int> getAndroidSdkVersion() async {
-    final int? version = Preferences.getAndroidVersion();
-    if (version != null) return version;
-
-    final androidInfo = await _deviceInfoPlugin.androidInfo;
-    return androidInfo.version.sdkInt;
-  }
-
-  //TODO: create a helper class for this
-  Future<void> getPermissionList() async {
-    int androidSdk = await getAndroidSdkVersion();
-    Preferences.setAndroidVersion(androidSdk);
-
-    if (androidSdk >= 33) {
-      permissions.addAll([
-        Permission.photos,
-        Permission.videos,
-        Permission.audio,
-      ]);
-    } else if (androidSdk >= 29) {
-      permissions.addAll([Permission.manageExternalStorage]);
-    } else {
-      permissions.addAll([Permission.storage]);
-    }
-  }
-
-  Future<void> requestAndCheckPermissions() async {
-    if (permissions.isNotEmpty) await permissions.request();
-    List<bool> status = await Future.wait(permissions.map((e) => e.isGranted));
-    isPermissionGranted = !status.contains(false);
-    setState(() {});
-  }
-
-  Future<void> checkPermissions() async {
-    await getPermissionList();
-    List<bool> status = await Future.wait(permissions.map((e) => e.isGranted));
-    isPermissionGranted = !status.contains(false);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    // checkPermissions();
-  }
- */

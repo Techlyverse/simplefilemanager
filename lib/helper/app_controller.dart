@@ -13,11 +13,14 @@ class AppController {
   static final AppController _instance = AppController._();
   factory AppController() => _instance;
 
-  late final List<Directory> rootDirs = [];
+  final Set<String> _rootPaths = {};
+  final Set<String> _selectedPaths = {};
+
   late final Directory cacheDir;
+  final List<Directory> rootDirs = [];
 
   final ValueNotifier<bool> updateUi = ValueNotifier(true);
-  final ValueNotifier<bool> viewType = ValueNotifier(Preferences.getViewType());
+  final ValueNotifier<bool> showGridView = ValueNotifier(Preferences.getViewType());
   final ValueNotifier<FileSystemEntity?> currentEntity = ValueNotifier(null);
   final List<FileSystemEntity> selectedEntities = [];
 
@@ -57,8 +60,8 @@ class AppController {
   }
 
   void updateViewType() {
-    viewType.value = !viewType.value;
-    Preferences.setViewType(!viewType.value);
+    showGridView.value = !showGridView.value;
+    Preferences.setViewType(!showGridView.value);
   }
 
   bool isCurrentEntitySelected(FileSystemEntity entity) {

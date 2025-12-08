@@ -7,21 +7,22 @@ class DirectoryHelper {
   factory DirectoryHelper() => _instance;
 
   Future<List<Directory>> getRootDirectories() async {
-    //TODO: complete below functions
-    if (Platform.isAndroid) {
-      return _getAndroidRootDirectories();
-    } else if (Platform.isIOS) {
-      throw Exception("Implementation not found");
-    } else if (Platform.isLinux) {
-      //throw Exception("Implementation not found");
-      return _getLinuxRootDirectories();
-    } else if (Platform.isMacOS) {
-      throw Exception("Implementation not found");
-    } else if (Platform.isWindows) {
-      //throw Exception("Implementation not found");
-      return _getWindowsRootDirectories();
-    } else {
-      throw Exception("OS not supported");
+    try {
+      if (Platform.isAndroid) {
+        return _getAndroidRootDirectories();
+      } else if (Platform.isIOS) {
+        throw Exception("Implementation not found");
+      } else if (Platform.isLinux) {
+        return _getLinuxRootDirectories();
+      } else if (Platform.isMacOS) {
+        throw Exception("Implementation not found");
+      } else if (Platform.isWindows) {
+        return _getWindowsRootDirectories();
+      } else {
+        throw Exception("OS not supported");
+      }
+    } catch (e) {
+      return [Directory.systemTemp];
     }
   }
 }
@@ -38,31 +39,26 @@ Future<List<Directory>> _getAndroidRootDirectories() async {
 // get storage directories of linux os devices
 Future<List<Directory>> _getLinuxRootDirectories() async {
   final homeDirectory = Platform.environment['HOME'];
-  if(homeDirectory != null) {
-    return [ Directory(homeDirectory), Directory('/')];
-  }
-  return [Directory('/')]; // alternate
+  return [if (homeDirectory != null) Directory(homeDirectory), Directory('/')];
 }
 
 // get storage directories of windows devices
 Future<List<Directory>> _getWindowsRootDirectories() async {
-  final userDirectory = Platform.environment['USERPROFILE'];
-  final driveList = <Directory>[];
+  final rootDirs = <Directory>[];
 
-  if(userDirectory != null){
-    driveList.add(Directory(userDirectory));
-  }
-  // checking for available drives
-  for (var driveLetter = 'A'.codeUnitAt(0); driveLetter <= 'Z'.codeUnitAt(0); driveLetter++){
-    final drive = Directory('${String.fromCharCode(driveLetter)}:\\');
-    if(await drive.exists()){
-      driveList.add(drive);
-    }
-  }
+  final drives = List.generate(26, (i) {
+    final letter = String.fromCharCode('A'.codeUnitAt(0) + i);
+    return Directory('$letter:\\');
+  });
 
-  return driveList;
+  await Future.wait(
+    drives.map((drive) async {
+      if (await drive.exists()) rootDirs.add(drive);
+    }),
+  );
+
+  return rootDirs;
 }
-
 
 /*
   Future<Directory> _getPlatformRootDirectory() async {

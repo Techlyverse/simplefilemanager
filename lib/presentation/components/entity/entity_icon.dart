@@ -21,7 +21,7 @@ class EntityIcon extends StatelessWidget {
   Widget _placeholder() {
     return ValueListenableBuilder(
       key: key,
-      valueListenable: AppController().viewType,
+      valueListenable: AppController().showGridView,
       child: Image.asset(
         entity is Directory
             ? 'assets/folder.png'

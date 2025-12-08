@@ -13,7 +13,7 @@ class Preferences {
     _prefs = await SharedPreferences.getInstance();
   }
 
-  static Future<void> setViewType(bool viewType) async => await _prefs.setBool(_keyViewType, viewType);
+  static Future<void> setViewType(bool showGridView) async => await _prefs.setBool(_keyViewType, showGridView);
   static bool getViewType() => _prefs.getBool(_keyViewType) ?? true;
 
   static Future<void> setAndroidVersion(int sdk) async => await _prefs.setInt(_keyAndroidSdk, sdk);
