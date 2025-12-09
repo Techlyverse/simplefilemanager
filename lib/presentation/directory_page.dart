@@ -99,7 +99,7 @@ class _DirectoryPageState extends State<DirectoryPage> {
   Widget _buildGrid(List<FileSystemEntity> entities) {
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: context.layoutType == .mobile ? 100 : 150,
+        maxCrossAxisExtent: context.layoutType == .mobile ? 90 : 120,
         mainAxisSpacing: 10,
         crossAxisSpacing: 10,
         childAspectRatio: 1,

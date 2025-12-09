@@ -22,7 +22,7 @@ class ToolBar extends StatelessWidget implements PreferredSizeWidget {
     return ValueListenableBuilder(
       valueListenable: controller.updateUi,
       builder: (_, _, _) {
-        if (AppController().selectedEntities.isEmpty) {
+        if (!AppController().isSelectionMode) {
           return AppBar(
             leading: entity == null
                 ? null
@@ -43,7 +43,7 @@ class ToolBar extends StatelessWidget implements PreferredSizeWidget {
                 builder: (_, showGrid, __) {
                   return IconButton(
                     onPressed: () {
-                      controller.updateViewType();
+                      controller.toggleEntityViewType();
                     },
                     icon: Icon(
                       showGrid ? Icons.format_list_bulleted : Icons.grid_view,
@@ -51,27 +51,27 @@ class ToolBar extends StatelessWidget implements PreferredSizeWidget {
                   );
                 },
               ),
-              PopupMenuButton(
-                color: context.colorScheme.surfaceContainerLowest,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                itemBuilder: (_) {
-                  return listPopupMenu.map((e) {
-                    return PopupMenuItem(
-                      onTap: e.onTap,
-                      value: e.label,
-                      child: Row(
-                        children: [
-                          Icon(e.icon, size: 20),
-                          SizedBox(width: 12),
-                          Text(e.label),
-                        ],
-                      ),
-                    );
-                  }).toList();
-                },
-              ),
+              // PopupMenuButton(
+              //   color: context.colorScheme.surfaceContainerLowest,
+              //   shape: RoundedRectangleBorder(
+              //     borderRadius: BorderRadius.circular(12),
+              //   ),
+              //   itemBuilder: (_) {
+              //     return listPopupMenu.map((e) {
+              //       return PopupMenuItem(
+              //         onTap: e.onTap,
+              //         value: e.label,
+              //         child: Row(
+              //           children: [
+              //             Icon(e.icon, size: 20),
+              //             SizedBox(width: 12),
+              //             Text(e.label),
+              //           ],
+              //         ),
+              //       );
+              //     }).toList();
+              //   },
+              // ),
               /*
               IconButton(
                         icon: Icon(Icons.add),
@@ -112,7 +112,7 @@ class ToolBar extends StatelessWidget implements PreferredSizeWidget {
               icon: Icon(Icons.close),
               onPressed: () {
                 // clear selection
-                controller.selectedEntities.clear();
+                controller.clearSelection();
                 controller.updateUi.value = !controller.updateUi.value;
               },
             ),
@@ -133,7 +133,7 @@ class ToolBar extends StatelessWidget implements PreferredSizeWidget {
                     ],
                   )
                 : Text(
-                    '${controller.selectedEntities.length} selected',
+                    '${controller.selectedCount} selected',
                     style: TextStyle(fontSize: 16),
                   ),
             actions: [
@@ -149,95 +149,95 @@ class ToolBar extends StatelessWidget implements PreferredSizeWidget {
               //   onPressed: () {},
               //   icon: Icon(Icons.paste),
               // ),
-              IconButton(
-                onPressed: () async {
-                  if (controller.selectedEntities.length > 1) {
-                    await showTimedDialog(
-                      context,
-                      "Please select only one item to use rename function.",
-                    );
-                    return;
-                  }
-                  final folderNamesFromUser =
-                      controller.selectedEntities.first.name;
-                  final newFolderName = await showTwoTextFieldsDialog(
-                    context,
-                    "Rename Folder",
-                    "Enter new folder name",
-                    "Rename",
-                  );
-                  if (folderNamesFromUser.isNotEmpty) {
-                    final oldName = folderNamesFromUser;
-                    final newName = newFolderName;
-                    final currentDir =
-                        controller.currentEntity.value as Directory;
-                    final oldFolder = Directory(
-                      p.join(currentDir.path, oldName),
-                    );
-                    if (await oldFolder.exists()) {
-                      await renameCurrentFolder(context, newName!, oldFolder);
-                    } else {
-                      await showTimedDialog(
-                        context,
-                        "The folder you want to rename does not exist.",
-                      );
-                    }
-                    // refresh ui
-                    if (controller.currentEntity.value is Directory) {
-                      final dir = controller.currentEntity.value as Directory;
-                      controller.currentEntity.value = Directory(dir.path);
-                    }
-                    // clear selection
-                    controller.selectedEntities.clear();
-                  } else {
-                    await showTimedDialog(
-                      context,
-                      "Either the folder you want to rename does not exist or you did not fill the data required, please retry.",
-                    );
-                  }
-                },
-                icon: Icon(Icons.drive_file_rename_outline),
-              ),
-              IconButton(
-                onPressed: () async {
-                  final currentDirPath = controller.currentEntity.value?.path;
-                  bool? isUserSure;
-                  if (controller.selectedEntities.length > 1) {
-                    isUserSure = await showChoiceDialog(
-                      context,
-                      "Are you sure you want to delete the selected folders?",
-                    );
-                  } else {
-                    isUserSure = await showChoiceDialog(
-                      context,
-                      "Are you sure you want to delete ${controller.selectedEntities.first.name} folder?",
-                    );
-                  }
-
-                  final foldersToBeDeleted = List<FileSystemEntity>.from(
-                    controller.selectedEntities,
-                  );
-                  for (final entity in foldersToBeDeleted) {
-                    final folderToBeDeletedFromUser = entity.name;
-                    if (folderToBeDeletedFromUser.isNotEmpty &&
-                        isUserSure == true) {
-                      await deleteFolder(
-                        context,
-                        folderToBeDeletedFromUser,
-                        currentDirPath,
-                      );
-                    }
-                    // refresh ui
-                    if (controller.currentEntity.value is Directory) {
-                      final dir = controller.currentEntity.value as Directory;
-                      controller.currentEntity.value = Directory(dir.path);
-                    }
-                    // clear selection
-                    controller.selectedEntities.clear();
-                  }
-                },
-                icon: Icon(Icons.delete_outline),
-              ),
+              // IconButton(
+              //   onPressed: () async {
+              //     if (controller.selectedCount > 1) {
+              //       await showTimedDialog(
+              //         context,
+              //         "Please select only one item to use rename function.",
+              //       );
+              //       return;
+              //     }
+              //     final folderNamesFromUser =
+              //         controller.selectedEntities.first.name;
+              //     final newFolderName = await showTwoTextFieldsDialog(
+              //       context,
+              //       "Rename Folder",
+              //       "Enter new folder name",
+              //       "Rename",
+              //     );
+              //     if (folderNamesFromUser.isNotEmpty) {
+              //       final oldName = folderNamesFromUser;
+              //       final newName = newFolderName;
+              //       final currentDir =
+              //           controller.currentEntity.value as Directory;
+              //       final oldFolder = Directory(
+              //         p.join(currentDir.path, oldName),
+              //       );
+              //       if (await oldFolder.exists()) {
+              //         await renameCurrentFolder(context, newName!, oldFolder);
+              //       } else {
+              //         await showTimedDialog(
+              //           context,
+              //           "The folder you want to rename does not exist.",
+              //         );
+              //       }
+              //       // refresh ui
+              //       if (controller.currentEntity.value is Directory) {
+              //         final dir = controller.currentEntity.value as Directory;
+              //         controller.currentEntity.value = Directory(dir.path);
+              //       }
+              //       // clear selection
+              //       controller.clearSelection();
+              //     } else {
+              //       await showTimedDialog(
+              //         context,
+              //         "Either the folder you want to rename does not exist or you did not fill the data required, please retry.",
+              //       );
+              //     }
+              //   },
+              //   icon: Icon(Icons.drive_file_rename_outline),
+              // ),
+              // IconButton(
+              //   onPressed: () async {
+              //     final currentDirPath = controller.currentEntity.value?.path;
+              //     bool? isUserSure;
+              //     if (controller.selectedCount > 1) {
+              //       isUserSure = await showChoiceDialog(
+              //         context,
+              //         "Are you sure you want to delete the selected folders?",
+              //       );
+              //     } else {
+              //       isUserSure = await showChoiceDialog(
+              //         context,
+              //         "Are you sure you want to delete ${controller.selectedEntities.first.name} folder?",
+              //       );
+              //     }
+              //
+              //     final foldersToBeDeleted = List<FileSystemEntity>.from(
+              //       controller.selectedEntities,
+              //     );
+              //     for (final entity in foldersToBeDeleted) {
+              //       final folderToBeDeletedFromUser = entity.name;
+              //       if (folderToBeDeletedFromUser.isNotEmpty &&
+              //           isUserSure == true) {
+              //         await deleteFolder(
+              //           context,
+              //           folderToBeDeletedFromUser,
+              //           currentDirPath,
+              //         );
+              //       }
+              //       // refresh ui
+              //       if (controller.currentEntity.value is Directory) {
+              //         final dir = controller.currentEntity.value as Directory;
+              //         controller.currentEntity.value = Directory(dir.path);
+              //       }
+              //       // clear selection
+              //       controller.clearSelection();
+              //     }
+              //   },
+              //   icon: Icon(Icons.delete_outline),
+              // ),
             ],
           );
         }

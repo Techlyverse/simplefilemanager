@@ -15,14 +15,19 @@ class AppController {
 
   final Set<String> _rootPaths = {};
   final Set<String> _selectedPaths = {};
+  // Exposed getter for UI feedback
+  int get selectedCount => _selectedPaths.length;
+  bool get isSelectionMode => _selectedPaths.isNotEmpty;
 
   late final Directory cacheDir;
   final List<Directory> rootDirs = [];
 
   final ValueNotifier<bool> updateUi = ValueNotifier(true);
-  final ValueNotifier<bool> showGridView = ValueNotifier(Preferences.getViewType());
+  final ValueNotifier<bool> showGridView = ValueNotifier(
+    Preferences.getViewType(),
+  );
+
   final ValueNotifier<FileSystemEntity?> currentEntity = ValueNotifier(null);
-  final List<FileSystemEntity> selectedEntities = [];
 
   // a list that contains all the directories that we went through for the current directory -MG
   List<String> pathList = [];
@@ -45,6 +50,7 @@ class AppController {
   }
 
   Future<void> navigateBack() async {
+    clearSelection();
     if (currentEntity.value != null) {
       /// if root directory contains parent directory then make currentDirectory null to show homepage
       final bool showRootDir = rootDirs
@@ -59,56 +65,68 @@ class AppController {
     }
   }
 
-  void updateViewType() {
+  void toggleEntityViewType() {
     showGridView.value = !showGridView.value;
-    Preferences.setViewType(!showGridView.value);
+    Preferences.setViewType(showGridView.value);
   }
 
-  bool isCurrentEntitySelected(FileSystemEntity entity) {
-    return selectedEntities.where((e) => e.path == entity.path).isNotEmpty;
+  bool isSelected(String path) {
+    return _selectedPaths.contains(path);
   }
 
-  void _selectEntity(FileSystemEntity entity) {
-    isCurrentEntitySelected(entity)
-        ? selectedEntities.removeWhere((e) => e.path == entity.path)
-        : selectedEntities.add(entity);
+  void toggleEntitySelectType(String path) {
+    _selectedPaths.contains(path)
+        ? _selectedPaths.remove(path)
+        : _selectedPaths.add(path);
     updateUi.value = !updateUi.value;
   }
 
   void onTapEntity(FileSystemEntity entity) {
-    if (selectedEntities.isNotEmpty) {
-      _selectEntity(entity);
+    if (_selectedPaths.isNotEmpty) {
+      toggleEntitySelectType(entity.path);
     } else {
-      if (entity is File) {
-        OpenFile.open(entity.path);
-      } else {
+      if (entity is Directory) {
         openDirectory(entity);
+      } else {
+        OpenFile.open(entity.path);
       }
     }
   }
 
-  void onLongPressEntity(FileSystemEntity entity) {
-    _selectEntity(entity);
+  void onLongPressEntity(String path) {
+    toggleEntitySelectType(path);
+  }
+
+  void clearSelection() {
+    if (_selectedPaths.isNotEmpty) {
+      _selectedPaths.clear();
+      updateUi.value = !updateUi.value;
+    }
   }
 
   Future<void> createFolder(String folderName) async {
-    if (currentEntity.value is! Directory) return;
-    final currentDir = currentEntity.value as Directory;
-    final newPath = p.join(currentDir.path, folderName);
+    final current = currentEntity.value;
+    if (current is! Directory) return;
+
+    final newPath = p.join(current.path, folderName);
     final newFolder = Directory(newPath);
+
     if (!await newFolder.exists()) {
       await newFolder.create();
       updateUi.value = !updateUi.value;
     } else {
+      // Throwing an exception is fine for error feedback
       throw Exception("Folder already exists");
     }
   }
 
   Future<void> renameEntity(FileSystemEntity entity, String newName) async {
-    final parentPath = entity.parent.path;
-    final newPath = p.join(parentPath, newName);
+    final newPath = p.join(entity.parent.path, newName);
     if (await FileSystemEntity.type(newPath) == FileSystemEntityType.notFound) {
       await entity.rename(newPath);
+
+      // Remove old path and add new path to selection set if it was selected
+      if (_selectedPaths.remove(entity.path)) _selectedPaths.add(newPath);
       updateUi.value = !updateUi.value;
     } else {
       throw Exception("File or folder already exists");
@@ -118,9 +136,8 @@ class AppController {
   Future<void> deleteEntity(FileSystemEntity entity) async {
     if (await entity.exists()) {
       await entity.delete(recursive: true);
-      if (selectedEntities.contains(entity)) {
-        selectedEntities.remove(entity);
-      }
+      // Ensure the path is removed from the selection set
+      _selectedPaths.remove(entity.path);
       updateUi.value = !updateUi.value;
     }
   }

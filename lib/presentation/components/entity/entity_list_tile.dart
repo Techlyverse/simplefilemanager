@@ -18,7 +18,7 @@ class EntityListTile extends StatelessWidget {
     return ValueListenableBuilder(
       valueListenable: AppController().updateUi,
       builder: (context, value, child) {
-        bool isSelected = controller.isCurrentEntitySelected(entity);
+        bool isSelected = controller.isSelected(entity.path);
 
         Widget trailing() {
           return FutureBuilder<FileStat>(
@@ -44,7 +44,7 @@ class EntityListTile extends StatelessWidget {
               controller.onTapEntity(entity);
             },
             onLongPress: () {
-              controller.onLongPressEntity(entity);
+              controller.onLongPressEntity(entity.path);
             },
             leading: EntityIcon(entity, key: ValueKey(entity.path)),
             title: Text(

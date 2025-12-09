@@ -56,6 +56,7 @@ Future<List<Directory>> _getWindowsRootDirectories() async {
       if (await drive.exists()) rootDirs.add(drive);
     }),
   );
+  print("root: ${rootDirs.length}");
 
   return rootDirs;
 }

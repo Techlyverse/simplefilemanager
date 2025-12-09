@@ -18,14 +18,14 @@ class EntityGridTile extends StatelessWidget {
     return ValueListenableBuilder(
       valueListenable: AppController().updateUi,
       builder: (context, value, child) {
-        bool isSelected = controller.isCurrentEntitySelected(entity);
+        bool isSelected = controller.isSelected(entity.path);
 
         return TextButton(
           onPressed: () {
             controller.onTapEntity(entity);
           },
           onLongPress: () {
-            controller.onLongPressEntity(entity);
+            controller.onLongPressEntity(entity.path);
           },
           style: TextButton.styleFrom(
             padding: isSelected ? EdgeInsets.all(8) : EdgeInsets.zero,
